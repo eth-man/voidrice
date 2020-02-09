@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# required folder with .ovpn files
+VPNDIR=/$HOME/.local/ovpn-config
+cd $VPNDIR
+
+VPN=$(ls *.ovpn | dmenu -l 35 -p "VPN: ")
+
+[ -z "$VPN" ] && exit
+
+$TERMINAL -e /bin/bash -c "sudo openvpn $VPNDIR/$VPN"
+
+
+exit
