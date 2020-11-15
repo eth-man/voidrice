@@ -1,0 +1,37 @@
+#!/bin/sh
+# openvpn connection info
+
+  OPENVPN_CONNECTION=$(pgrep -a openvpn$ | head -n 1 | awk '{print $NF }' | sed 's/\/etc\/openvpn\/client\///g' | sed 's/.conf//g')
+
+
+  if [[ ! -z ${OPENVPN_CONNECTION} ]]; then
+    color="#e8cb61"
+    status="🖧 "
+    info="$OPENVPN_CONNECTION"
+    info_server=$(awk '$1 == "remote"{print $2}' $OPENVPN_CONNECTION)
+    info_port=$(awk '$1 == "remote"{print $3}' $OPENVPN_CONNECTION)
+    info_proto=$(awk '$1 == "proto"{print $2}' $OPENVPN_CONNECTION)
+    info_cipher=$(awk '$1 == "cipher"{print $2}' $OPENVPN_CONNECTION)
+    info_auth=$(awk '$1 == "auth"{print $2}' $OPENVPN_CONNECTION)
+information="- Config:   ${info}
+- Server:   ${info_server}
+- Port:     ${info_port}
+- Protocol: ${info_proto}
+- Cipher:   ${info_cipher}
+- Auth:     ${info_auth}"
+
+else
+	color="#969993"
+	status="🖧 "
+        information="Disconnected"
+  fi
+
+printf "<span color='%s'>%s%s%s</span>\n" "$color" $status""
+
+
+case $BLOCK_BUTTON in
+	1) notify-send "🔐VPN Status:" "
+${information}" ;;
+	3) notify-send "🔐VPN module" "\- Shows OPENVPN connection status.
+- Left Click to show OpenVpn info." ;;
+esac
