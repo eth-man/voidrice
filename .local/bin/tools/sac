@@ -1,0 +1,57 @@
+#!/bin/bash
+# SAC, SSH alias creator
+
+
+    if [ $# -lt 2 ]; then
+        echo "Usage: sac <alias> [<user>@]<hostname> [-p <port>]" >&2
+	exit
+    fi
+
+   short=$1
+   arg=$2
+
+   ## uncomment to enable
+   # allow cipbaord over ssh by default?
+   clipboard="yes"
+
+
+    if $(echo "$arg" | grep '@' >/dev/null); then
+        user=$(echo "$arg"|sed -e 's/@.*$//')
+    fi
+
+    host=$(echo "$arg"|sed -e 's/^.*@//')
+
+    if [ "$3" == "-p" ]; then
+        port=$4
+    fi
+
+    if $(grep -i "host $short" "$HOME/.ssh/config" > /dev/null); then
+        echo "Alias '$short' already exists" >&2
+        exit 
+    fi
+
+    if $(grep -i "HostName $host" "$HOME/.ssh/config" > /dev/null); then
+        echo "HostName/IP '$host' already exists" >&2
+        exit 
+    fi
+
+    if [ -z "$host" ]; then
+        echo "No hostname found" >&2
+        exit
+    fi
+
+    
+    echo >> "$HOME/.ssh/config"
+    echo "Host $short" >> "$HOME/.ssh/config"
+    echo "  HostName $host" >> "$HOME/.ssh/config"
+    [ ! -z "$user" ] && echo "  User     $user" >> "$HOME/.ssh/config"
+    [ ! -z "$port" ] && echo "  Port     $port" >> "$HOME/.ssh/config"
+    # adding x11 over ssh for clipoard usage over ssh (vim etc)
+    [ ! -z "$clipboard" ] && echo "  ForwardX11 yes
+  ForwardX11Trusted yes" >> "$HOME/.ssh/config"
+
+# user output
+    echo "added alias '$short' for $host to $HOME/.ssh/config"
+    [ ! -z "$user" ] && echo "  User     $user"
+    [ ! -z "$port" ] && echo "  Port     $port"
+
