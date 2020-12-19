@@ -20,6 +20,7 @@ im trying to make changes that will fit to my regular day usage (Mostly Sysadmin
 + ncmpcpp and mpd (my main music player)
 + mpv
 + And many little scripts I use filed in the `~/.local/bin/` directory
++ ranger
 
 ## More documentation
 
