@@ -66,6 +66,9 @@ interval=5
 label=📅
 interval=30
 
+[vpn]
+interval=60
+
 [internet]
 interval=10
 

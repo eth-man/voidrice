@@ -1,5 +1,5 @@
 #!/bin/sh
-# openvpn connection info
+
 
   OPENVPN_CONNECTION=$(pgrep -a openvpn$ | head -n 1 | awk '{print $NF }' | sed 's/\/etc\/openvpn\/client\///g' | sed 's/.conf//g')
 
