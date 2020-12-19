@@ -7,6 +7,7 @@ im trying to make changes that will fit to my regular day usage (Mostly Sysadmin
 + Dmenu - SSH selector (super + CTRL + s)
 + Dmenu - Mac address convertor (super + c  >>  mac-convert)
 + Dmenu - openvpn connect
++ sac - SSH alias creator
 
 ## Programs whose configs can be found here
 
