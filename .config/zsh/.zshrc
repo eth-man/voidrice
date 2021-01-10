@@ -1,7 +1,6 @@
 # Luke's config for the Zoomer Shell
 
 autoload -U colors && colors
-#PS1="%B%{$fg[red]%}[%{$fg[cyan]%}%n%{$fg[green]%}@%{$fg[blue]%}%M %{$fg[magenta]%}%~%{$fg[red]%}]%{$reset_color%}$%b "
 PS1="%B%{$fg[blue]%}[%{$fg[cyan]%}%n%{$fg[green]%}@%{$fg[blue]%}%M %{$fg[magenta]%}%~%{$fg[blue]%}]%{$reset_color%}$%b "
 
 # Load aliases and shortcuts if existent.
@@ -88,9 +87,3 @@ if [[ $#h -gt 0 ]]; then
   zstyle ':completion:*:ssh:*' hosts $h
   zstyle ':completion:*:slogin:*' hosts $h
 fi
-
-# The next line updates PATH for the Google Cloud SDK.
-if [ -f '/home/ran/google-cloud-sdk/path.zsh.inc' ]; then . '/home/ran/google-cloud-sdk/path.zsh.inc'; fi
-
-# The next line enables shell command completion for gcloud.
-if [ -f '/home/ran/google-cloud-sdk/completion.zsh.inc' ]; then . '/home/ran/google-cloud-sdk/completion.zsh.inc'; fi
