@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# change_background - Change desktop background and lockscreen background randomly
+
+# Export DBUS_SESSION_BUS_ADDRESS environment variable
+euid=$(id --real --user)
+pid=$(pgrep --euid $euid gnome-session)
+#export DBUS_SESSION_BUS_ADDRESS=$(grep -z DBUS_SESSION_BUS_ADDRESS /proc/$pid/environ|cut -d= -f2-)
+
+# Wallpapers directory
+dir="$HOME/Wallpapers"
+
+# randomize Wallpaper
+background=$(ls $dir/* | shuf -n1)
+
+# Set the wallpaper and screensaver
+setbg $background
