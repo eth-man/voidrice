@@ -55,6 +55,6 @@ Donations are earmarked for whatever the donator wants, usually to go to funds f
 
 The programs I use here are always changing, but luckily you can just look at the installation list for [LARBS](http://larbs.xyz) here:
 
-+ [List of programs installed by LARBS, including optional packages](https://github.com/eth-man/LARBS/blob/master/archi3/progs.csv)
++ [List of programs installed by LARBS, including optional packages](https://github.com/eth-man/larbs/blob/master/progs.csv)
 
 `A` marks programs in the AUR, `G` marks git repositories.
