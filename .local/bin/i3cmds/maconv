@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
-# Script created to convert Between MAC address.
+# Script created to convert Between MAC address. (used by the cabl script)
 ## Available MAC address Notational conventions :
 #	0123.4567.89AB		(Cisco)
 #	01-23-45-67-89-AB	(Windows)
