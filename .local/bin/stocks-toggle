@@ -1,0 +1,13 @@
+#!/bin/sh
+
+#file location
+FILE="$HOME/.local/bin/statusbar/ticker.enabled"
+
+# If Stocks bar is running, will ask to stop, else will ask to enable.
+if [ -f "$FILE" ] >/dev/null ;
+then
+	[ "$(printf "No\\nYes" | dmenu -i -p "stop stocks bar?")" = "Yes" ] && rm -f $FILE && notify-send "Stcoks Bar deactivated"
+else
+	[ "$(printf "No\\nYes" | dmenu -i -p "Enable stocks bar?")" = "Yes" ] && touch $FILE && notify-send "Stocks Bar enabled"
+fi
+sleep 3 && pkill -RTMIN+4 "${STATUSBAR:?}"
