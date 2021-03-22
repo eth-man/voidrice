@@ -2,11 +2,12 @@
 
 
   OPENVPN_CONNECTION=$(pgrep -a openvpn$ | head -n 1 | awk '{print $NF }' | sed 's/\/etc\/openvpn\/client\///g' | sed 's/.conf//g')
+  #OPENVPN_CONNECTION=$(pgrep -a openvpn$ | head -n 1 | grep -oP '(?<=config)(\s+)?\K([^ ]*)')
 
 
   if [[ ! -z ${OPENVPN_CONNECTION} ]]; then
     color="#e8cb61"
-    status="🖧 "
+    status=" "
     info="$OPENVPN_CONNECTION"
     info_server=$(awk '$1 == "remote"{print $2}' $OPENVPN_CONNECTION)
     info_port=$(awk '$1 == "remote"{print $3}' $OPENVPN_CONNECTION)
@@ -22,7 +23,7 @@ information="- Config:   ${info}
 
 else
 	color="#969993"
-	status="🖧 "
+	status=" "
         information="Disconnected"
   fi
 

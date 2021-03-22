@@ -1,0 +1,24 @@
+#!/bin/sh
+# script to notify on high ping latency
+# the script will apply single ping by the i3blocks module interval
+
+  latency="$(ping -c 1 8.8.8.8 | sed -ne '/.*time=/{;s///;s/\..*//;p;}')"
+
+  if [ "$latency" -gt 500 ]; then
+    #              critical
+    icon=稜
+    color=#DC143C
+    notify-send -u low "凌Network Latency is very High!...  ($latency)"
+  elif [ "$latency" -gt 150 ]; then
+    #                warning
+    icon=稜
+    color="#ffff00"
+    notify-send -u low "凌Network Latency is above Normal...($latency)"
+  else
+    #                   normal
+    icon=凌
+    color="#ffffff"
+  fi
+
+
+printf "<span color='%s'>%s%s%s</span>\n" "$color" $icon""
