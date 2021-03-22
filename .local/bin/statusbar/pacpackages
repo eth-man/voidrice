@@ -2,9 +2,7 @@
 
 # i3blocks module for pacman upgrades.
 # Displays number of upgradeable packages.
-# For this to work, have a `pacman -Sy` command run in the background as a
-# cronjob every so often as root. This script will then read those packages.
-# When clicked, it will run an upgrade via pacman.
+# When clicked, it will run an upgrade via yay.
 
 case $BLOCK_BUTTON in
 	1) $TERMINAL -e popupgrade ;;
@@ -15,4 +13,14 @@ case $BLOCK_BUTTON in
 esac
 
 
-pacman -Qu | grep -v "\[ignored\]" | wc -l | sed -e "s/^0$//g"
+pacpackages=$(yay -Qu | grep -v "\[ignored\]" | wc -l | sed -e "s/^0$//g")
+  if [[ ! -z ${pacpackages} ]]; then
+    icon=""
+    color="#e8cb61"
+printf "<span color='%s'>%s%s%s</span>\n" "$color" $icon""
+else
+    icon=""
+printf "%s\n" $icon""
+  fi
+
+

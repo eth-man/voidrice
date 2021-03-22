@@ -13,7 +13,7 @@ interval=once
 signal=11
 
 [news]
-label=📰
+label=
 interval=once
 signal=6
 
@@ -21,7 +21,6 @@ signal=6
 #interval=30
 
 [pacpackages]
-label=📦
 interval=once
 signal=8
 
@@ -34,7 +33,7 @@ interval=18000
 signal=5
 
 [mailbox]
-label=📬
+label=
 interval=180
 signal=12
 
@@ -44,7 +43,7 @@ signal=12
 
 #[cpu]
 #interval=15
-#label=💻
+#label=
 
 [volume]
 interval=once
@@ -63,8 +62,12 @@ command=battery BAT0
 interval=5
 
 [clock]
-label=📅
+label=
 interval=30
+
+[ping-lat]
+interval=60
+signal=31
 
 [vpn]
 interval=60
