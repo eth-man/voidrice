@@ -1,15 +1,25 @@
 #!/bin/sh
-# script to notify on high ping latency
-# the script will apply single ping by the i3blocks module interval
+# by ETH-Man
+# script to notify on bad network latency , you can change the default alert numbers as you wish
 
   latency="$(ping -c 1 8.8.8.8 | sed -ne '/.*time=/{;s///;s/\..*//;p;}')"
 
-  if [ "$latency" -gt 500 ]; then
+case $BLOCK_BUTTON in
+	1) $TERMINAL -e ping 8.8.8.8 ;;
+	2) notify-send "the latency is $latency" ;;
+	3) pgrep -x dunst >/dev/null && notify-send "Ping Latency module" "凌: notify on bad network latency
+- Left click to start ping
+- Middle click to show latnecy" ;;
+esac
+
+
+
+  if [ "$latency" -gt 110 ]; then
     #              critical
     icon=稜
     color=#DC143C
-    notify-send -u low "凌Network Latency is very High!...  ($latency)"
-  elif [ "$latency" -gt 150 ]; then
+    notify-send -u normal "凌Network Latency is very High!...  ($latency)"
+  elif [ "$latency" -gt 80 ]; then
     #                warning
     icon=稜
     color="#ffff00"

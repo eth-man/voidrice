@@ -12,6 +12,12 @@ label=🎼
 interval=once
 signal=11
 
+[btcprice]
+#markup=pango
+command=sb-price BTC Bitcoin 
+interval=120
+signal=29
+
 [news]
 label=
 interval=once
