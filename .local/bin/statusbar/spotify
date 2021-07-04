@@ -1,0 +1,52 @@
+#!/bin/bash
+title=$(dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.freedesktop.DBus.Properties.Get string:'org.mpris.MediaPlayer2.Player' string:'Metadata'|grep -E -A 1 "title"|cut -b 44-|cut -d '"' -f 1|grep -E -v ^$)
+artist=$(dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.freedesktop.DBus.Properties.Get string:'org.mpris.MediaPlayer2.Player' string:'Metadata'|grep -E -A 2 "artist"|cut -b 20-|cut -d '"' -f 2|grep -E -v ^$|grep -E -v array|grep -E -v artist)
+
+scrollfile="/tmp/.scrollposition"
+songfile="/tmp/.song"
+maxlen=20
+interval=0.15
+scrollsmallsongs=false
+
+if [[ -n "$artist" ]]; then
+    song="$artist : $title      "
+    scrollposition=1
+    # If scrollfile exists and the current song was already playing load scrollposition
+    if [[ -f "${scrollfile}" ]] && [[ -f "${songfile}" ]] && [[ "${song}" == $(cat "${songfile}") ]]; then
+        scrollposition=$(cat "${scrollfile}")
+    fi
+
+    echo "${song}" > $songfile
+
+    # Pad text until it is the size of the block
+    textlen=${#song}
+    if [[ $textlen -lt $maxlen ]]; then
+        song=$(printf "%${maxlen}s" "$song")
+        if ! $scrollsmallsongs; then
+            scrollposition=1
+        fi
+    fi
+
+    # Load substring to display
+    lastIndex=$((${#song}))
+    if [[ $((${#song} - scrollposition)) -ge $maxlen ]]; then
+        song="${song:$scrollposition:$maxlen}"
+    else
+        readuntil=$((maxlen - $((lastIndex - scrollposition))))
+        song="${song:$scrollposition:${#song}}${song:0:$readuntil}"
+    fi
+
+    # Update scrollposition
+    scrollposition=$((scrollposition + 1))
+    if [[ $scrollposition -ge $textlen ]] && [[ $scrollposition -gt $maxlen ]]; then
+        scrollposition=1
+    fi
+    echo "${scrollposition}" > $scrollfile
+
+    # Sleep to control scroll speed
+    sleep "${interval}"
+
+    # Print song
+    echo "<span font='10'> ${song//[&]/&amp;}</span>"
+    echo "<span font='10'> ${song//[&]/&amp;}</span>"
+fi
