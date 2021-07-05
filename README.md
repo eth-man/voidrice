@@ -6,7 +6,7 @@ currently tested on Arch  thinkpad X230, T460s, P14s
 im trying to make changes that will fit to my regular day usage (Mostly Sysadmin task's)
 
 ## what has been changed from the original repo?
-# new scriptes added :
+# new scripts :
 + Dmenu - SSH selector (super + CTRL + s)
 + Dmenu - Mac address convertor (Super + c  >  mac-convert)
 + Dmenu - openvpn connect
@@ -18,7 +18,7 @@ im trying to make changes that will fit to my regular day usage (Mostly Sysadmin
 + changed Dunst geometry to to fit higher task bar:   geometry = "350x10-0+34"
 + using nerd-fonts icons
 
-
+__________
 
 
 
