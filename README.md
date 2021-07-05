@@ -1,6 +1,8 @@
 # The Voidrice - ETH-MAN
 Forked from Luke Smith's repo.
-currently running on T460S Arch
+this repo still using the i3wm and ranger
+
+currently tested on Arch  thinkpad X230, T460s, P14s
 im trying to make changes that will fit to my regular day usage (Mostly Sysadmin task's)
 
 # new scriptes added :

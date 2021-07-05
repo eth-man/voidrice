@@ -7,6 +7,12 @@ command=cat /tmp/recordingicon
 interval=once
 signal=9
 
+[spotifyControls]
+interval=once
+
+[spotify]
+interval=repeat
+
 [music]
 label=🎼
 interval=once
