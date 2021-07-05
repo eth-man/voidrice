@@ -1,6 +1,6 @@
 ## The Voidrice - ETH-MAN
 Forked from Luke Smith's repo.
-this repo still using the i3wm and ranger
+this repo still use the i3wm and ranger.
 
 currently tested on Arch  thinkpad X230, T460s, P14s
 im trying to make changes that will fit to my regular day usage (Mostly Sysadmin task's)
