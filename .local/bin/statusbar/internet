@@ -1,0 +1,18 @@
+#!/usr/bin/env sh
+
+case $BLOCK_BUTTON in
+	1) $TERMINAL -e nmtui ;;
+	3) pgrep -x dunst >/dev/null && notify-send "🌐 Internet module" "\- Click to connect
+睊 : no wifi connection
+  : wifi connection with quality
+  : no ethernet
+  : ethernet working
+" ;;
+esac
+
+case "$(cat /sys/class/net/w*/operstate 2>/dev/null)" in
+	down) wifiicon="睊" && wificolor="#969993";;
+	up) wifiicon="$(awk '/^\s*w/ { print "", int($3 * 100 / 70) "% " }' /proc/net/wireless)" && wificolor="#ffffff" ;;
+esac
+
+printf "<span color='%s'>%s</span> <span color=%s\n" "$wificolor" "$wifiicon"  "$(sed ";s/up/'#ffffff'> <\/\span>/;s/down/'#969993'> <\/\span>/" /sys/class/net/e*/operstate 2>/dev/null)"

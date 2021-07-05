@@ -1,0 +1,9 @@
+#!/bin/sh
+#script used to easy select saved screen layout
+
+
+cd ~/.screenlayout
+
+layout="$(ls ~/.screenlayout/* | xargs -n1 basename)"
+chosen="$(echo "$layout" | dmenu -i -p "Chose which layout?")" || exit 1
+./$chosen && notify-send "screen layout changed" || notify-send "screen layout unchanged"

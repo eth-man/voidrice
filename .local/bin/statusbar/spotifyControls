@@ -1,0 +1,18 @@
+#!/bin/bash
+playpause="dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.PlayPause"
+nextsong="dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Next"
+prevsong="dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Previous"
+
+case $BLOCK_BUTTON in
+    1)
+        $playpause > /dev/null
+        ;;
+    2)
+        $nextsong > /dev/null
+        ;;
+    3)
+        $prevsong > /dev/null
+        ;;
+esac
+
+echo "<span font_desc='NerdFont 10'></span>"
