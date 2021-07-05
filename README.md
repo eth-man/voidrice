@@ -10,6 +10,7 @@ im trying to make changes that will fit to my regular day usage (Mostly Sysadmin
 + Dmenu - SSH selector (super + CTRL + s)
 + Dmenu - Mac address convertor (Super + c  >  mac-convert)
 + Dmenu - openvpn connect
++ Dmenu - screen layout select saved screen profile for multiple screens (Super+Shift+F3)
 + sac - SSH alias creator ```Usage: sac <alias> [<user>@]<hostname> [-p <port>]```
 + i3blocks: most icons changed to support dynamic coloring when needed, cryptocurrency script improvement, weather color change by temp threshold , network latency monitoring, new vpn script , grayd out network icons when disconnected, pacpackages script.
 + new script allow to hover mpv youtube videos when youtube link copy (Super+c > start-mpv-hover-mode)
