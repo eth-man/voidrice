@@ -1,17 +1,29 @@
-# The Voidrice - ETH-MAN
+## The Voidrice - ETH-MAN
 Forked from Luke Smith's repo.
 this repo still using the i3wm and ranger
 
 currently tested on Arch  thinkpad X230, T460s, P14s
 im trying to make changes that will fit to my regular day usage (Mostly Sysadmin task's)
 
+## what has been changed from the original repo?
 # new scriptes added :
 + Dmenu - SSH selector (super + CTRL + s)
-+ Dmenu - Mac address convertor (Super + c  >>  mac-convert)
++ Dmenu - Mac address convertor (Super + c  >  mac-convert)
 + Dmenu - openvpn connect
 + sac - SSH alias creator ```Usage: sac <alias> [<user>@]<hostname> [-p <port>]```
-+ i3blocks: most icons changed to support dynamic coloring when needed, crypto bar improvment, weather color change by temp trashold , network latency monitoring, vpn , grayd out network icons when disconnected.
-+ new script allow to hover mpv youtube videos (Super+c)
++ i3blocks: most icons changed to support dynamic coloring when needed, cryptocurrency script improvement, weather color change by temp threshold , network latency monitoring, new vpn script , grayd out network icons when disconnected, pacpackages script.
++ new script allow to hover mpv youtube videos when youtube link copy (Super+c > start-mpv-hover-mode)
+
+# misc
++ changed Dunst geometry to to fit higher task bar:   geometry = "350x10-0+34"
++ using nerd-fonts icons
+
+
+
+
+
+
+
 
 ## Programs whose configs can be found here
 
