@@ -1,0 +1,4 @@
+#!/usr/bin/env sh
+
+vid=$1
+notify-send "  youtube video started in a hover mode" && mpv "$vid" --ytdl-format=bestvideo+bestaudio/best --title="mpvhover" || notify-send "Failed to execute video.."
