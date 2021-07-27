@@ -11,8 +11,17 @@ case $BLOCK_BUTTON in
 esac
 
 case "$(cat /sys/class/net/w*/operstate 2>/dev/null)" in
-	down) wifiicon="睊" && wificolor="#969993";;
-	up) wifiicon="$(awk '/^\s*w/ { print "", int($3 * 100 / 70) "% " }' /proc/net/wireless)" && wificolor="#ffffff" ;;
+	down) wificon="睊" && wificolor="#969993";;
+	up) wificon="$(awk '/^\s*w/ { print "", int($3 * 100 / 70) "% " }' /proc/net/wireless)" && wificolor="#ffffff"
 esac
 
-printf "<span color='%s'>%s</span> <span color=%s\n" "$wificolor" "$wifiicon"  "$(sed ";s/up/'#ffffff'> <\/\span>/;s/down/'#969993'> <\/\span>/" /sys/class/net/e*/operstate 2>/dev/null)"
+case "$(cat /sys/class/net/e*/operstate 2>/dev/null)" in
+	down) lanicon="" && lancolor="#969993";;
+	up) lanicon="" && lancolor="#ffffff" ;;
+esac
+
+
+[ -n "$wificon" ] && printf "<span color='%s'>%s</span>" "$wificolor" "$wificon"
+[ -n "$lanicon" ] && printf "<span color='%s'>%s</span>" "$lancolor" "$lanicon"
+
+printf "\n"
