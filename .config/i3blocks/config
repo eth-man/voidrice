@@ -87,5 +87,10 @@ interval=60
 [internet]
 interval=10
 
+[i3-keyboardlayout]
+interval=10
+command=i3-keyboard-layout i3status
+signal=30
+
 [help]
 interval=once
