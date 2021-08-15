@@ -1,6 +1,6 @@
 ## The Voidrice - ETH-MAN
-Forked from Luke Smith's repo since i prefer the old style setup
-This repository still uses i3wm and Ranger and i3blocks (I don't feel that wm-blocks is the right choice for me)
+Forked from Luke Smith's repo since i prefer the old style setup..
+This repository still uses i3wm and Ranger, i3blocks (I don't feel that wm-blocks is the right choice for me)
 
 currently tested on Arch on thinkpad X230, T460s, P14s, X1 Carbon 7th gen.
 im trying to make changes that will fit to my regular day usage (Mostly Sysadmin task's)
@@ -25,9 +25,8 @@ im trying to make changes that will fit to my regular day usage (Mostly Sysadmin
 # misc
 + changed Dunst geometry to to fit higher task bar:   geometry = "350x10-0+34"
 + using nerd-fonts icons
-+ i3bars: all icons changed to support dynamic coloring,,
++ i3bars: all icons changed to support dynamic coloring
 __________
-
 
 
 
@@ -36,11 +35,11 @@ __________
 ## Programs whose configs can be found here
 
 + i3 (i3-gaps)
-+ ~~Xresourses/Xdefaults settings~~ Now moved to [my terminal (st) build](https://github.com/lukesmithxyz/st) which uses them
++ st
 + vim
 + bash
 + vifm
-+ ~~mutt/msmtp/offlineimap~~ Now moved to [LukeSmithxyz/mutt-wizard](https://github.com/LukeSmithxyz/mutt-wizard)
++ mutt-wizard
 + calcurse
 + ncmpcpp and mpd (my main music player)
 + mpv
