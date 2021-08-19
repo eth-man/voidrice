@@ -12,6 +12,7 @@ im trying to make changes that will fit to my regular day usage (Mostly Sysadmin
 + Dmenu - openvpn connect
 + Dmenu - screen layout select saved screen profile for multiple screens (Super+Shift+F3)
 + sac - SSH alias creator ```Usage: sac <alias> [<user>@]<hostname> [-p <port>]```
++ Dmenu - MAC OUI script (Super + c > mac-vendor-check ) when copying mac address
 
 # new status bar scripts
 + new script allow to hover mpv youtube videos when youtube link copy (Super+c > start-mpv-hover-mode)
