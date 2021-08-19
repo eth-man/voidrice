@@ -25,12 +25,10 @@ im trying to make changes that will fit to my regular day usage (Mostly Sysadmin
 + new script allow to hover mpv youtube videos when youtube link copy (Super+c > start-mpv-hover-mode)
 
 # misc
+
 + changed Dunst geometry to to fit higher task bar:   geometry = "350x10-0+34"
 + using nerd-fonts icons
-<<<<<<< HEAD
-+ i3bars: all icons changed to support dynamic coloring
 __________
-
 
 
 
