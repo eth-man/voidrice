@@ -1,15 +1,21 @@
 #!/bin/bash
+if pidof spotify >/dev/null ;
+then
+
 title=$(dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.freedesktop.DBus.Properties.Get string:'org.mpris.MediaPlayer2.Player' string:'Metadata'|grep -E -A 1 "title"|cut -b 44-|cut -d '"' -f 1|grep -E -v ^$)
 artist=$(dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.freedesktop.DBus.Properties.Get string:'org.mpris.MediaPlayer2.Player' string:'Metadata'|grep -E -A 2 "artist"|cut -b 20-|cut -d '"' -f 2|grep -E -v ^$|grep -E -v array|grep -E -v artist)
+
+
+album=$(dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.freedesktop.DBus.Properties.Get string:'org.mpris.MediaPlayer2.Player' string:'Metadata'|grep -E -A 1 "album"|cut -b 44-|cut -d '"' -f 1|grep -E -v ^$)
 
 scrollfile="/tmp/.scrollposition"
 songfile="/tmp/.song"
 maxlen=20
-interval=0.15
+interval=0.5
 scrollsmallsongs=false
 
 if [[ -n "$artist" ]]; then
-    song="$artist : $title      "
+    song="title:$artist - $title    Album:$album    "
     scrollposition=1
     # If scrollfile exists and the current song was already playing load scrollposition
     if [[ -f "${scrollfile}" ]] && [[ -f "${songfile}" ]] && [[ "${song}" == $(cat "${songfile}") ]]; then
@@ -47,6 +53,7 @@ if [[ -n "$artist" ]]; then
     sleep "${interval}"
 
     # Print song
-    echo "<span font='10'> ${song//[&]/&amp;}</span>"
-    echo "<span font='10'> ${song//[&]/&amp;}</span>"
+    echo "<span font='8'> ${song//[&]/&amp;}</span>"
+    echo "<span font='8'> ${song//[&]/&amp;}</span>"
 fi
+	fi

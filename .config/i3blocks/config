@@ -8,10 +8,12 @@ interval=once
 signal=9
 
 [spotifyControls]
-interval=once
+interval=10
+signal=32
+separator=false
 
-[spotify]
-interval=repeat
+[spotifyPlay]
+interval=1
 
 [music]
 label=🎼
