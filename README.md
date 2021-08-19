@@ -1,8 +1,15 @@
 ## The Voidrice - ETH-MAN
+<<<<<<< HEAD
+Forked from Luke Smith's repo since i prefer the old style setup..
+This repository still uses i3wm and Ranger, i3blocks (I don't feel that wm-blocks is the right choice for me)
+
+currently tested on Arch on thinkpad X230, T460s, P14s, X1 Carbon 7th gen.
+=======
 Forked from Luke Smith's repo.
 this repo still use the i3wm and ranger.
 
 currently tested on Arch  thinkpad X230, T460s, P14s
+>>>>>>> fb6809a03249c2680111dcfcc60033d56f38a93b
 im trying to make changes that will fit to my regular day usage (Mostly Sysadmin task's)
 
 ## what has been changed from the original repo?
@@ -12,28 +19,47 @@ im trying to make changes that will fit to my regular day usage (Mostly Sysadmin
 + Dmenu - openvpn connect
 + Dmenu - screen layout select saved screen profile for multiple screens (Super+Shift+F3)
 + sac - SSH alias creator ```Usage: sac <alias> [<user>@]<hostname> [-p <port>]```
+<<<<<<< HEAD
++
+# new status bar scripts
++ new script allow to hover mpv youtube videos when youtube link copy (Super+c > start-mpv-hover-mode)
++ improved cryptocurrency status script.
++ weather color change by temp threshold
++ network latency monitoring
++ new vpn script
++ grayd out network icons when disconnected,
++ pacpackages script.
+=======
 + i3blocks: most icons changed to support dynamic coloring when needed, cryptocurrency script improvement, weather color change by temp threshold , network latency monitoring, new vpn script , grayd out network icons when disconnected, pacpackages script.
 + new script allow to hover mpv youtube videos when youtube link copy (Super+c > start-mpv-hover-mode)
+>>>>>>> fb6809a03249c2680111dcfcc60033d56f38a93b
 
 # misc
 + changed Dunst geometry to to fit higher task bar:   geometry = "350x10-0+34"
 + using nerd-fonts icons
+<<<<<<< HEAD
++ i3bars: all icons changed to support dynamic coloring
+=======
 
+>>>>>>> fb6809a03249c2680111dcfcc60033d56f38a93b
 __________
 
 
 
+<<<<<<< HEAD
+=======
 
+>>>>>>> fb6809a03249c2680111dcfcc60033d56f38a93b
 
 
 ## Programs whose configs can be found here
 
 + i3 (i3-gaps)
-+ ~~Xresourses/Xdefaults settings~~ Now moved to [my terminal (st) build](https://github.com/lukesmithxyz/st) which uses them
++ st
 + vim
 + bash
 + vifm
-+ ~~mutt/msmtp/offlineimap~~ Now moved to [LukeSmithxyz/mutt-wizard](https://github.com/LukeSmithxyz/mutt-wizard)
++ mutt-wizard
 + calcurse
 + ncmpcpp and mpd (my main music player)
 + mpv
@@ -63,6 +89,8 @@ qutebrowser and fish.
 ## Like my rice?
 
 Feel free to add other suggestions and I may implement them.
+<<<<<<< HEAD
+=======
 
 I have a job, but every penny I get from followers or subscribers is more incentive to perfect what I'm doing.
 You can donate to me at [https://paypal.me/LukeMSmith](https://paypal.me/LukeMSmith).
@@ -75,3 +103,4 @@ The programs I use here are always changing, but luckily you can just look at th
 + [List of programs installed by LARBS, including optional packages](https://github.com/eth-man/larbs/blob/master/progs.csv)
 
 `A` marks programs in the AUR, `G` marks git repositories.
+>>>>>>> fb6809a03249c2680111dcfcc60033d56f38a93b
