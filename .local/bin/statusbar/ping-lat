@@ -2,7 +2,7 @@
 # by ETH-Man
 # script to notify on bad network latency , you can change the default alert numbers as you wish
 
-  latency="$(ping -c 1 8.8.8.8 | sed -ne '/.*time=/{;s///;s/\..*//;p;}')"
+  latency="$(ping -c 1 8.8.8.8 | sed -ne '/.*time=/{;s///;s/\..*//;p;}' )  "
 
 case $BLOCK_BUTTON in
 	1) $TERMINAL -e ping 8.8.8.8 ;;
@@ -17,13 +17,19 @@ esac
   if [ "$latency" -gt 110 ]; then
     #              critical
     icon=稜
-    color=#DC143C
-    notify-send -u normal "凌Network Latency is very High!...  ($latency)"
+    color="#DC143C"
+    notify-send -u normal --hint=string:x-dunst-stack-tag:"凌Network latency" "Very High Network Latency!...  ($latency)"
+   # notify-send -u normal "凌Network Latency is very High!...  ($latency)"
   elif [ "$latency" -gt 80 ]; then
     #                warning
     icon=稜
     color="#ffff00"
-    notify-send -u low "凌Network Latency is above Normal...($latency)"
+    notify-send -u low --hint=string:x-dunst-stack-tag:"凌Network latency" "High Network Latency...($latency)"
+    #notify-send -u low "凌Network Latency is above Normal...($latency)"
+  elif [ -z "$latency" ]; then
+    #                   no connection
+    icon=稜
+    color="#969993"
   else
     #                   normal
     icon=凌
