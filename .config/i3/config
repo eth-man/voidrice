@@ -35,7 +35,7 @@ for_window [instance="dropdown_dropdowncalc"] border pixel 2
 for_window [instance="dropdown_*"] move position center
 
 bar {
-	font pango:mono 10
+	font pango:mono 16
 	status_command i3blocks
 	position top
 	mode dock
