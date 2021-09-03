@@ -17,13 +17,17 @@ esac
   if [ "$latency" -gt 110 ]; then
     #              critical
     icon=稜
-    color=#DC143C
-    notify-send -u normal "凌Network Latency is very High!...  ($latency)"
+    color="#DC143C"
+    notify-send -u normal --hint=string:x-dunst-stack-tag:"凌Network latency" "Very High Network Latency!...  ($latency)"
   elif [ "$latency" -gt 80 ]; then
     #                warning
     icon=稜
     color="#ffff00"
-    notify-send -u low "凌Network Latency is above Normal...($latency)"
+    notify-send -u low --hint=string:x-dunst-stack-tag:"凌Network latency" "High Network Latency...($latency)"
+  elif [ -z "$latency" ]; then
+    #                   no connection
+    icon=稜
+    color="#969993"
   else
     #                   normal
     icon=凌

@@ -1,0 +1,17 @@
+#!/bin/bash
+# scirpt helping editing your markdown files via dmenu
+# change folder name to whare you saving your markdown files
+
+folder="$HOME/Documents"
+suffix=".md"
+
+shopt -s nullglob globstar
+item=( "$folder"/**/*${suffix})               # Search *.md in all dirs/subdirs
+item=( "${item[@]#"$folder"/}" )
+item=( "${item[@]%${suffix}}" )               # Removes '.md' string from item name
+
+result=$(printf '%s\n' "${item[@]}" | dmenu -l 10 -p "select markdown file to edit:")
+
+[[ -n $result ]] || exit                      # exit if nothing is found
+
+nvim "${folder}/${result}.md"                # Open file by adding again '.md'
