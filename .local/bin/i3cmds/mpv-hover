@@ -1,4 +1,7 @@
 #!/usr/bin/env sh
+# Play YT videos in a hover mode , this script requires i3 config changes to work properly
 
 vid=$1
-notify-send "  youtube video started in a hover mode" && mpv "$vid" --ytdl-format=bestvideo+bestaudio/best --title="mpvhover" || notify-send "Failed to execute video.."
+
+#FHD qauilty and best audio
+notify-send "  youtube video started in a hover mode" && mpv "$vid" --ytdl-format="bestvideo[height<=?1080]+bestaudio/best" --title="mpvhover" || notify-send "Failed to execute video.."
