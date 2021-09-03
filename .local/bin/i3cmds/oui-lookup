@@ -1,0 +1,19 @@
+#!/bin/sh
+#
+# Runs MAC address against IEEE OUI list
+# to return device vendor name.
+#
+# Usage:
+# > oui-lookup 64:01:3c:08:c6:b5
+
+  mac=${1^^}
+
+#convert to Unix format and cut last letters
+mac=$( echo $mac | sed 's![-.:]!!g;s!\(..\)!\1:!g;s!:$!!'| cut -c-8)
+
+#echo "checking : $mac"
+notify-send -u low "checking mac addres vendor online..."
+
+oui=$(curl -s https://gitlab.com/wireshark/wireshark/raw/master/manuf | grep -i $mac)
+
+[ -n "$oui" ] && notify-send -t 15000 "Vendor details: $oui" || notify-send "can't find mac vendor"
