@@ -2,3 +2,4 @@
 for i in $(ls /tmp/mpvsoc*); do
 	echo '{ "command": ["set_property", "pause", true] }' | socat - $i;
 done
+exit 0

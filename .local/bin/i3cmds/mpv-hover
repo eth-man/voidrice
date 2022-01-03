@@ -1,7 +1,18 @@
 #!/usr/bin/env sh
-# Play YT videos in a hover mode , this script requires i3 config changes to work properly
 
 vid=$1
 
-#FHD qauilty and best audio
-notify-send "  youtube video started in a hover mode" && mpv "$vid" --ytdl-format="bestvideo[height<=?1080]+bestaudio/best" --title="mpvhover" || notify-send "Failed to execute video.."
+
+if ! pgrep -x "mpv" > /dev/null
+then
+    echo "not running, starting mpv.."
+ notify-send "  youtube video started in a hover mode" && mpv "$vid" --ytdl-format="bestvideo[height<=?720]+bestaudio/best" --title="mpvhover" || notify-send "Failed to execute video.."
+else
+	 mpvpid=$(pidof mpv)
+	 socname="/tmp/mpvSockets/$mpvpid"
+
+        notify-send "  mpv is running"
+	echo loadfile "$vid" append-play | socat - "$socname";
+#
+	echo '{"command":["show-text","  video appended to playlist"]}' | socat - "$socname" && notify-send "  video appended to playlist" || notify-send "Failed to append video..";
+fi
