@@ -6,6 +6,9 @@
 #
 # export TERMINAL="st"
 
+# auto lock screen
+exec_always xautolock -time 5 -locker auto_lock_screen
+
 # #---Basic Definitions---# #
 set $inner_gaps 11
 set $outer_gaps 10
@@ -139,7 +142,7 @@ bindsym $mod+Ctrl+l		move workspace to output right
 bindsym $mod+z			gaps outer current plus 5
 bindsym $mod+Shift+z		gaps outer current minus 5
 
-bindsym $mod+x			exec --no-startup-id xset dpms force off && mpc pause && pauseallmpv && slock &
+bindsym $mod+x			exec --no-startup-id xset dpms force off && mpc pause && pauseallmpv && setxkbmap us && slock &
 bindsym $mod+Shift+x		exec --no-startup-id prompt "Shutdown computer?" "$shutdown"
 
 bindsym $mod+c			exec --no-startup-id cabl
