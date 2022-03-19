@@ -1,0 +1,38 @@
+#!/usr/bin/env sh
+# dmenu pritunl vpn selection script
+
+# Requires:
+# 1. Arch-linux server version of pritunl-client ( https://github.com/pritunl/pritunl-client.git )
+# 2. ttf-nerd font
+# 3. import your pritunl key's with  " pritunl-client add pritunl://********* "
+# 4. Optional : use my i3-blocks "vpn" connection status script
+
+stop_vpn() {
+	vpnid=$( pritunl-client list | awk  '{print $2}'  | sed 1,3d )
+	pritunl-client stop $(echo ${vpnid[0]} )
+	notify-send "🔓Pritunl Disconnected."
+	sleep 3 &&
+	pkill -RTMIN+3 "${STATUSBAR}"
+		}
+
+start_vpn() {
+	vpnlist=$( pritunl-client list | awk  '{print $2}'  | sed 1,3d )
+	[ ! -z $vpnlist ] && echo "got the list" ||  exit
+	vpnid=$( echo $vpnlist | dmenu -i -p "select profile")
+	#vpnid=$( pritunl-client list | awk '{print $2}'  | sed 1,3d | dmenu -i -p "select profile")
+	OTP=$(dmenupass "Enter OTP:")&&
+	notify-send " OTP accepted" &&
+	[ -n "$OTP" ] && pritunl-client start $vpnid -p $OTP || pritunl-client start $vpnid &&
+	notify-send "🔐Printnl Started." &&
+	sleep 3 &&
+	pkill -RTMIN+3 "${STATUSBAR}"
+		}
+
+#toggle mode
+    if pidof openvpn >/dev/null ;
+ 	 then
+	[ "$(printf "No\\nYes" | dmenu -i -p "Stop Pritunl VPN?")" = "Yes" ] && stop_vpn
+	 else
+	ifinstalled pritunl-client || exit
+	[ "$(printf "No\\nYes" | dmenu -i -p "Start Pirtunl VPN?")" = "Yes" ]  && start_vpn
+    fi
