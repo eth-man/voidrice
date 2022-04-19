@@ -85,6 +85,7 @@ signal=31
 
 [vpn]
 interval=60
+signal=3
 
 [internet]
 interval=10
