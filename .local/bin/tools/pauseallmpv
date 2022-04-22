@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
-for i in $(ls /tmp/mpvsoc*); do
+for i in $(ls /tmp/mpvSockets/*); do
 	echo '{ "command": ["set_property", "pause", true] }' | socat - $i;
 done
 exit 0
