@@ -1,4 +1,6 @@
 #!/usr/bin/env sh
+# run mpv in hover mode
+# this require mpvSockets and proper i3 config
 
 vid=$1
 
@@ -6,13 +8,13 @@ vid=$1
 if ! pgrep -x "mpv" > /dev/null
 then
     echo "not running, starting mpv.."
- notify-send "  youtube video started in a hover mode" && mpv "$vid" --ytdl-format="bestvideo[height<=?720]+bestaudio/best" --title="mpvhover" || notify-send "Failed to execute video.."
+ notify-send " MPV Hover" "Starting Video.." && mpv "$vid" --ytdl-format="bestvideo[height<=?720]+bestaudio/best" --title="mpvhover" || notify-send " MPV Hover" "Failed to execute video.."
 else
 	 mpvpid=$(pidof mpv)
 	 socname="/tmp/mpvSockets/$mpvpid"
 
-        notify-send "  mpv is running"
+        notify-send " MPV Hover" "mpv is running"
 	echo loadfile "$vid" append-play | socat - "$socname";
 #
-	echo '{"command":["show-text","  video appended to playlist"]}' | socat - "$socname" && notify-send "  video appended to playlist" || notify-send "Failed to append video..";
+echo '{"command":["show-text"," Video appended to playlist"]}' | socat - "$socname" && notify-send " MPV Hover" "Video appended to playlist" || notify-send " MPV Hover" "Failed to append video..";
 fi
