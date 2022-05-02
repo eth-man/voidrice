@@ -7,25 +7,37 @@
 # 3. import your pritunl key's with  " pritunl-client add pritunl://********* "
 # 4. Optional : use my i3-blocks "vpn" connection status script
 
+
+
+
+vpn_status() {
+	status=$( pritunl-client list $1 | awk  '{print $7}'  | sed 1,3d )
+	notify-send "🔓Pritunl " "Connection is $status."
+	pkill -RTMIN+3 "${STATUSBAR}"
+}
+
 stop_vpn() {
 	vpnid=$( pritunl-client list | awk  '{print $2}'  | sed 1,3d )
 	pritunl-client stop $(echo ${vpnid[0]} )
-	notify-send "🔓Pritunl Disconnected."
-	sleep 3 &&
-	pkill -RTMIN+3 "${STATUSBAR}"
+	notify-send "🔓Pritunl " "Disconnecting VPN."
+	sleep 5 &&
+	vpn_status $vpnid
 		}
 
 start_vpn() {
 	vpnlist=$( pritunl-client list | awk  '{print $2}'  | sed 1,3d )
 	[ ! -z $vpnlist ] && echo "got the list" ||  exit
 	vpnid=$( echo $vpnlist | dmenu -i -p "select profile")
-	#vpnid=$( pritunl-client list | awk '{print $2}'  | sed 1,3d | dmenu -i -p "select profile")
 	OTP=$(dmenupass "Enter OTP:")&&
 	notify-send " OTP accepted" &&
+
 	[ -n "$OTP" ] && pritunl-client start $vpnid -p $OTP || pritunl-client start $vpnid &&
-	notify-send "🔐Printnl Started." &&
-	sleep 3 &&
-	pkill -RTMIN+3 "${STATUSBAR}"
+	notify-send "🔓Pritunl " "Starteing VPN." &&
+	sleep 5 &&
+	vpn_status $vpnid
+	sleep 5
+	vpn_status $vpnid
+
 		}
 
 #toggle mode
