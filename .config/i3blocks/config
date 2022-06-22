@@ -79,6 +79,9 @@ interval=5
 label=
 interval=30
 
+[sb-bluetooth]
+interval=5
+
 [ping-lat]
 interval=60
 signal=31

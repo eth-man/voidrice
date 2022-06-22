@@ -6,6 +6,7 @@
 
 # installation
 1. cp slock* /etc/systemd/system/
-2. systemctl enable slock@your_username.service
-3. systemctl enable slock-lang@your_username.service
-4. systemctl systemctl daemon-reload
+2. chmod 644 /etc/systemd/system/slock*
+3. systemctl enable slock@your_username.service
+4. systemctl enable slock-lang@your_username.service
+5. systemctl systemctl daemon-reload
