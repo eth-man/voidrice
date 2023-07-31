@@ -27,7 +27,7 @@ interval=120
 signal=29
 
 [news]
-label=
+label=󰎕
 interval=once
 signal=6
 
@@ -47,7 +47,7 @@ interval=18000
 signal=5
 
 [mailbox]
-label=
+label=󰺻
 interval=180
 signal=12
 
@@ -76,7 +76,7 @@ command=battery BAT0
 interval=5
 
 [clock]
-label=
+label=
 interval=30
 
 [sb-bluetooth]

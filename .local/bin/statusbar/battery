@@ -16,31 +16,31 @@ status=$(cat /sys/class/power_supply/"$1"/status)
 
 if [ "$capacity" -ge 90 ]; then
 	color="#00ff00"
-	baticon=""
-	chicon=""
+        baticon="󰂂"
+        chicon="󰂋"
 elif [ "$capacity" -ge 70 ]; then
 	color="#00ff00"
-	baticon=""
-	chicon=""
+        baticon="󰂀"
+        chicon="󰢞"
 elif [ "$capacity" -ge 50 ]; then
 	color="#ffffff"
-	baticon=""
-	chicon=""
+        baticon="󰁾"
+        chicon="󰢝"
 elif [ "$capacity" -ge 30 ]; then
 	color="#ffff00"
-	baticon=""
-	chicon=""
+        baticon="󰁼"
+        chicon="󰂇"
 elif [ "$capacity" -ge 20 ]; then
 	color="#ffff00"
-	baticon=""
-	chicon=""
+        baticon="󰁻"
+        chicon="󰂆"
 else
 	color="#ff0000"
-	warn="❗"
+        warn="❗󰢟"
 fi
 
 [ -z $warn ] && warn=" "
 
 [ "$status" = "Charging" ] && color="#06CDB2"
 
-printf "<span color='%s'>%s%s%s</span>\n" "$color" "$(echo "$status" | sed -e "s/,//;s/Discharging/$baticon/;s/Not charging//;s/Charging/$chicon/;s/Unknown//;s/Full//;s/ 0*/ /g;s/ :/ /g")" "$warn" "$(echo "$capacity" | sed -e 's/$/%/')"
+printf "<span color='%s'>%s%s%s</span>\n" "$color" "$(echo "$status" | sed -e "s/,//;s/Discharging/$baticon/;s/Not Charging/󰂌/;s/Charging/$chicon/;s/Unknown/󰂑/;s/Full/󰂅/;s/ 0*/ /g;s/ :/ /g")" "$warn" "$(echo "$capacity" | sed -e 's/$/%/')"
