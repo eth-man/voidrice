@@ -14,6 +14,6 @@ mac=$( echo $mac | sed 's![-.:]!!g;s!\(..\)!\1:!g;s!:$!!'| cut -c-8)
 #echo "checking : $mac"
 notify-send -u low "checking mac addres vendor online..."
 
-oui=$(curl -s https://gitlab.com/wireshark/wireshark/raw/master/manuf | grep -i $mac)
+oui=$(curl -s https://raw.githubusercontent.com/wireshark/wireshark/release-4.0/manuf | grep -i $mac)
 
 [ -n "$oui" ] && notify-send -t 15000 "Vendor details: $oui" || notify-send "can't find mac vendor"
