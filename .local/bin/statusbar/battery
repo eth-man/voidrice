@@ -1,46 +1,81 @@
 #!/usr/bin/env sh
-# Give a battery name (e.g. BAT0) as an argument.
 
-case $BLOCK_BUTTON in
-    3) pgrep -x dunst >/dev/null && notify-send "🔋 Battery module" ": discharging
-: not charging
-: stagnant charge
-: charging
-: charged
-❗: battery very low!
-- Text & icon color reflects charge left" ;;
-esac
+battery_name="$1"
+brightness_file="$HOME/.brightness"
+charging_state_file="$HOME/.charging_state"
 
-capacity=$(cat /sys/class/power_supply/"$1"/capacity) || exit
-status=$(cat /sys/class/power_supply/"$1"/status)
+brightnessctl_path=$(which brightnessctl)
+cat_path=$(which cat)
 
-if [ "$capacity" -ge 90 ]; then
-	color="#00ff00"
-        baticon="󰂂"
-        chicon="󰂋"
-elif [ "$capacity" -ge 70 ]; then
-	color="#00ff00"
-        baticon="󰂀"
-        chicon="󰢞"
-elif [ "$capacity" -ge 50 ]; then
-	color="#ffffff"
-        baticon="󰁾"
-        chicon="󰢝"
-elif [ "$capacity" -ge 30 ]; then
-	color="#ffff00"
-        baticon="󰁼"
-        chicon="󰂇"
-elif [ "$capacity" -ge 20 ]; then
-	color="#ffff00"
-        baticon="󰁻"
-        chicon="󰂆"
-else
-	color="#ff0000"
-        warn="❗󰢟"
+if [! -d /sys/class/power_supply/"$battery_name" ]; then
+    echo "Battery '$battery_name' not found!" >&2
+    exit 1
 fi
 
-[ -z $warn ] && warn=" "
+case $BLOCK_BUTTON in
+    3) pgrep -x dunst >/dev/null && notify-send "🔋 Battery module" ": discharging\n: not charging\n: stagnant charge\n: charging\n: charged\n❗: battery very low!\n- Text & icon color reflects charge left";;
+esac
 
-[ "$status" = "Charging" ] && color="#06CDB2"
+capacity="$("$cat_path" /sys/class/power_supply/"$battery_name"/capacity)" || exit
+status="$("$cat_path" /sys/class/power_supply/"$battery_name"/status)"
 
-printf "<span color='%s'>%s%s%s</span>\n" "$color" "$(echo "$status" | sed -e "s/,//;s/Discharging/$baticon/;s/Not Charging/󰂌/;s/Charging/$chicon/;s/Unknown/󰂑/;s/Full/󰂅/;s/ 0*/ /g;s/ :/ /g")" "$warn" "$(echo "$capacity" | sed -e 's/$/%/')"
+prev_status="$("$cat_path" "$charging_state_file" 2>/dev/null)"
+current_brightness="$("$brightnessctl_path" get 2>/dev/null)"
+
+icon="󰂑" # Default icon
+warn=""
+
+if [ "$capacity" -ge 90 ]; then
+    color="#32CD32"
+    icon="󰂂"
+elif [ "$capacity" -ge 70 ]; then
+    color="#7CFC00"
+    icon="󰂀"
+elif [ "$capacity" -ge 50 ]; then
+    color="#FFFF00"
+    icon="󰁾"
+elif [ "$capacity" -ge 30 ]; then
+    color="#FFD700"
+    icon="󰁼"
+    "$brightnessctl_path" set 25% >/dev/null
+elif [ "$capacity" -ge 20 ]; then
+    color="#FFA500"
+    icon="󰁻"
+    "$brightnessctl_path" set 15% >/dev/null
+elif [ "$capacity" -ge 15 ]; then
+    color="#FF0000"
+    icon="󰁺"
+    warn="❗󰢟"
+    "$brightnessctl_path" set 5% >/dev/null
+else
+    color="#FF4500"
+    icon="󰁺"
+    warn="Connect charger❗󰢟"
+    "$brightnessctl_path" set 5% >/dev/null
+fi
+
+if [ "$status" = "Charging" ]; then
+    color="#A9E2F3" # Light Sky Blue
+    icon="󰂋"
+
+    if [ "$prev_status"!= "Charging" ]; then
+        if [ -f "$brightness_file" ]; then
+            "$brightnessctl_path" set "$("$cat_path" "$brightness_file")" >/dev/null
+        fi
+    fi
+
+# The following two elif blocks were missing in the previous response
+elif [ "$status" = "Discharging" ]; then
+    if [ "$prev_status" = "Charging" ] && [ "$capacity" -gt 15 ]; then
+        echo "$current_brightness" > "$brightness_file"
+    fi
+elif [ "$status" = "Full" ]; then
+    icon="󰂅"
+    if [ "$prev_status" = "Charging" ] && [ "$capacity" -gt 15 ]; then
+        echo "$current_brightness" > "$brightness_file"
+    fi
+fi
+
+echo "$status" > "$charging_state_file"
+
+printf "<span color='%s'>%s%s %s</span>\n" "$color" "$icon" "$warn" "$capacity%"
