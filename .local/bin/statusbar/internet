@@ -1,27 +1,42 @@
 #!/usr/bin/env sh
 
+# Function to ensure dunst is running before sending notifications
+send_notify() {
+    pgrep -x dunst >/dev/null && notify-send "$@"
+}
+
 case $BLOCK_BUTTON in
-	1) $TERMINAL -e nmtui ;;
-	2) pgrep -x dunst >/dev/null && notify-send "Your Connection Strength:" $(grep "^\s*w" /proc/net/wireless | awk '{print int($3 * 100 / 70)"%"}') ;;
-	3) pgrep -x dunst >/dev/null && notify-send " Internet module" "\- Click to connect
-: wifi darker color = greater signal
-: no Internet
- : ethernet
-" ;;
+    1) $TERMINAL -e nmtui ;;
+    2)
+        send_notify "Connection Strength:" "$(awk 'NR==3 {print int($3 * 100 / 70)"%"}' /proc/net/wireless)"
+        send_notify "SSID is:" "$(nmcli -t -f active,ssid dev wifi | grep '^yes' | cut -d\: -f2)"
+        ;;
+    3)
+        send_notify " Internet module" "\- Click to connect
+        : wifi darker color = greater signal
+        󰤮: no Internet
+        󰈀 : ethernet"
+        ;;
 esac
 
-signal=$(grep "^\s*w" /proc/net/wireless | awk '{ print int($3 * 100 / 70)}')
+# Signal Calculation using your initial command
+signal=$(awk 'NR==3 {print int($3 * 100 / 70)}' /proc/net/wireless)
+#signal=$(grep '^\s*w' /proc/net/wireless | awk '{ print int($3 * 100 / 70)}')
 
-
-if [ $(grep up /sys/class/net/e*/operstate)  ]; then
-wifiicon="<span color='#90EE90'></span>";
+# Condition Checks and Icon Assignment.
+if grep -q up /sys/class/net/e*/operstate; then
+    wifiicon="<span color='#90EE90'>󰈀</span>"
 elif [ "$(cat /sys/class/net/w*/operstate)" = "up" ]; then
-    [ $signal -gt 25 ] && wifiicon="<span color='#83a598'></span>"
-    [ $signal -gt 50 ] && wifiicon="<span color='#458588'></span>"
-    [ $signal -gt 75 ] && wifiicon="<span color='#076678'></span>"
+    case $signal in
+        [0-25]) wifiicon="<span color='#FF0000'></span>" ;;
+        [26-50]) wifiicon="<span color='#FFFF00'></span>" ;;
+        [51-75]) wifiicon="<span color='#076670'></span>" ;;
+        *) wifiicon="<span color='#008008'></span>" ;;
+    esac
 else
-wifiicon="<span color='#969993'></span>";
+    wifiicon="<span color='#8c8c83'>󰤮</span>"
 fi
+
 
 
 
