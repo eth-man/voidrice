@@ -15,6 +15,9 @@ separator=false
 [spotifyPlay]
 interval=1
 
+[screen-timeout]
+interval=10
+
 [music]
 label=🎼
 interval=once
