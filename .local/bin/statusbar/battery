@@ -7,7 +7,7 @@ charging_state_file="$HOME/.charging_state"
 brightnessctl_path=$(which brightnessctl)
 cat_path=$(which cat)
 
-if [! -d /sys/class/power_supply/"$battery_name" ]; then
+if [ ! -d /sys/class/power_supply/"$battery_name" ]; then
     echo "Battery '$battery_name' not found!" >&2
     exit 1
 fi
@@ -16,8 +16,8 @@ case $BLOCK_BUTTON in
     3) pgrep -x dunst >/dev/null && notify-send "🔋 Battery module" ": discharging\n: not charging\n: stagnant charge\n: charging\n: charged\n❗: battery very low!\n- Text & icon color reflects charge left";;
 esac
 
-capacity="$("$cat_path" /sys/class/power_supply/"$battery_name"/capacity)" || exit
-status="$("$cat_path" /sys/class/power_supply/"$battery_name"/status)"
+capacity=$(cat /sys/class/power_supply/"$battery_name"/capacity) || exit
+status=$(cat /sys/class/power_supply/"$battery_name"/status)
 
 prev_status="$("$cat_path" "$charging_state_file" 2>/dev/null)"
 current_brightness="$("$brightnessctl_path" get 2>/dev/null)"
@@ -25,46 +25,91 @@ current_brightness="$("$brightnessctl_path" get 2>/dev/null)"
 icon="󰂑" # Default icon
 warn=""
 
+# Color Gradient Function (using awk)
+color_gradient() {
+  local level=$1
+  local r g b
+
+  if [ "$level" -ge 75 ]; then    # Green for 75% and above
+    r=0
+    g=255
+    b=0
+  elif [ "$level" -ge 50 ]; then  # Yellow for 50% to 74%
+    r=$(( (75 - $level) * 255 / 25 ))
+    g=255
+    b=0
+  elif [ "$level" -ge 25 ]; then  # Orange for 25% to 49%
+    r=255
+    g=$(( ($level - 25) * 255 / 25 ))
+    b=0
+  else                          # Red for below 25%
+    r=255
+    g=0
+    b=0
+  fi
+
+  printf "#%02x%02x%02x" $r $g $b
+}
+
+# Assign colors based on battery level
+color=$(color_gradient "$capacity")
+
+# Charging and Full states
+if [ "$status" = "Charging" ]; then
+  color="#A9E2F3" # Light blue
+elif [ "$status" = "Full" ]; then
+  color="#00FF00" # Green
+fi
+
+# Low Battery Warning (flashing)
+if [ "$capacity" -le 15 ]; then
+  if (( EPOCHSECONDS % 2 )); then
+    color="#FF0000" # Red
+  else
+    color="#000000" # Black (or your background color)
+  fi
+fi
+
+
 if [ "$capacity" -ge 90 ]; then
-    color="#32CD32"
     icon="󰂂"
 elif [ "$capacity" -ge 70 ]; then
-    color="#7CFC00"
     icon="󰂀"
 elif [ "$capacity" -ge 50 ]; then
-    color="#FFFF00"
     icon="󰁾"
 elif [ "$capacity" -ge 30 ]; then
-    color="#FFD700"
     icon="󰁼"
     "$brightnessctl_path" set 25% >/dev/null
 elif [ "$capacity" -ge 20 ]; then
-    color="#FFA500"
     icon="󰁻"
     "$brightnessctl_path" set 15% >/dev/null
 elif [ "$capacity" -ge 15 ]; then
-    color="#FF0000"
     icon="󰁺"
     warn="❗󰢟"
     "$brightnessctl_path" set 5% >/dev/null
 else
-    color="#FF4500"
     icon="󰁺"
     warn="Connect charger❗󰢟"
     "$brightnessctl_path" set 5% >/dev/null
 fi
 
-if [ "$status" = "Charging" ]; then
-    color="#A9E2F3" # Light Sky Blue
-    icon="󰂋"
 
-    if [ "$prev_status"!= "Charging" ]; then
-        if [ -f "$brightness_file" ]; then
-            "$brightnessctl_path" set "$("$cat_path" "$brightness_file")" >/dev/null
+if [ "$status" = "Charging" ]; then
+    #...
+
+    if [[ "$prev_status"!= "Charging" ]]; then
+        if [[ -f "$brightness_file" ]]; then
+            brightness_value="$("$cat_path" "$brightness_file")"
+            echo "Restoring brightness to: $brightness_value"
+            "$brightnessctl_path" set "$brightness_value" >/dev/null
+            restored=$?
+            echo "brightnessctl exit code: $restored"
+            if [[ $restored -ne 0 ]]; then
+                echo "Error restoring brightness"
+            fi
         fi
     fi
 
-# The following two elif blocks were missing in the previous response
 elif [ "$status" = "Discharging" ]; then
     if [ "$prev_status" = "Charging" ] && [ "$capacity" -gt 15 ]; then
         echo "$current_brightness" > "$brightness_file"
