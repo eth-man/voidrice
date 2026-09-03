@@ -74,6 +74,10 @@ signal=10
 #interval=60
 #command=disk /home 🏠
 
+[brightness]
+interval=5
+signal=13
+
 [battery]
 command=battery BAT0
 interval=5
@@ -84,6 +88,9 @@ interval=30
 
 [sb-bluetooth]
 interval=5
+
+[nettraf]
+interval=2
 
 [ping-lat]
 interval=60

@@ -1,0 +1,30 @@
+#!/usr/bin/env sh
+
+# Discover SMB/CIFS servers on the LAN with avahi and mount a share under /mnt.
+# Requires: avahi (avahi-browse), smbclient, cifs-utils.
+
+ifinstalled avahi-browse smbclient || exit 1
+
+srvname="$(avahi-browse _smb._tcp -t | awk '{print $4}' | sort -u | dmenu -i -p "Which NAS?")" || exit 1
+[ -z "$srvname" ] && exit 1
+
+notify-send "🔍 Searching for network shares..." "Please wait..."
+
+share="$(smbclient -L "$srvname" -N | grep Disk | awk '{print $1}' | dmenu -i -p "Mount which share?")" || exit 1
+[ -z "$share" ] && exit 1
+
+share2mnt="//$srvname.local/$share"
+
+if mount -v | grep -q "$share2mnt"; then
+	notify-send "🌐 Netshare $share already mounted"
+	exit 1
+fi
+
+[ -d "/mnt/$share" ] || sudo -A mkdir -p "/mnt/$share"
+
+if sudo -A mount -t cifs "$share2mnt" -o user=nobody,password="",noperm "/mnt/$share"; then
+	notify-send "🌐 Netshare mounted" "$share2mnt -> /mnt/$share"
+else
+	notify-send "🌐 Mount failed" "Could not mount $share2mnt"
+	exit 1
+fi

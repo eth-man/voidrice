@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+# Re-runs `remaps` whenever a USB input device appears. Without this, docking
+# the laptop or plugging in an external keyboard silently loses the caps/escape
+# remap until `remaps` is run by hand.
+#
+# Start it from ~/.config/x11/xprofile with:  remapd &
+
+while :; do
+	remaps
+	grep -qP -m1 '[^un]bind.+/[^:]+\(usb\)' <(udevadm monitor -u -t seat -s input -s usb)
+done

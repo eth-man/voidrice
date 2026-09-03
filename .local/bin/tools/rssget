@@ -1,0 +1,73 @@
+#!/usr/bin/env bash
+
+# Find the RSS/Atom feed for a site and add it to newsboat via `rssadd`.
+# Knows the hidden feed URLs for YouTube, Reddit, GitHub, GitLab and Medium;
+# otherwise it scrapes the page's <link rel=alternate> tags.
+#
+# Usage: rssget [url] [tags]
+# With no url, reads the X clipboard - so: copy a link, hit the shortcut.
+
+getlink() {
+	local url="$1" feeds rsspath link
+	feeds="$(curl -s "$url" | grep -Ex '.*type=.*(rss|rdf|atom).*' | sed 's/ //g')"
+	# Normalise to scheme+host with a trailing slash, so relative feed paths
+	# concatenate correctly even when the input url had no trailing slash.
+	url="$(echo "$url" | sed 's|^\(https\?://[^/]*\).*|\1/|')"
+	for rsspath in $feeds; do
+		rsspath="$(echo "$rsspath" | sed -n "s|.*href=['\"]\([^'\"]*\)['\"].*|\1|p")"
+		if echo "$rsspath" | grep -q "http"; then
+			link="$rsspath"
+		elif echo "$rsspath" | grep -qE "^/"; then
+			link="$url$(echo "$rsspath" | sed 's|^/||')"
+		else
+			link="$url$rsspath"
+		fi
+		echo "$link"
+	done
+}
+
+getYoutubeRss() {
+	local path channel_id
+	path="${1#http*://}"
+	case "$path" in
+		*/channel/*)
+			channel_id="$(echo "$path" | sed -r 's|.*channel/([^/]*).*|\1|')"
+			echo "https://www.youtube.com/feeds/videos.xml?channel_id=${channel_id}" ;;
+		*/@*|*/c/*|*/user/*)
+			curl -s "$1" | sed -n 's|.*"rssUrl":"\([^"]*\)".*|\1|p' | head -n 1 ;;
+	esac
+}
+
+getGithubRss() {
+	local url="${1%/}"
+	if echo "$url" | grep -qE "github.com/[^/]*/[a-zA-Z0-9].*"; then
+		echo "${url}/commits.atom"; echo "${url}/releases.atom"; echo "${url}/tags.atom"
+	elif echo "$url" | grep -qE "github.com/[^/]*(/)?$"; then
+		echo "${url}.atom"
+	fi
+}
+
+url="$1"
+[ -z "$url" ] && url="$(xclip -selection clipboard -o 2>/dev/null)"
+[ -z "$url" ] && echo "usage: rssget url 'tag1 tag2'" && exit 1
+
+case "$url" in
+	*youtube.com/*|*invidious*|*yewtu.be/*) list="$(getYoutubeRss "$url")" ;;
+	*reddit.com*) list="${url%/}.rss" ;;
+	*github.com*) list="$(getGithubRss "$url")" ;;
+	*gitlab.com/*) list="${url%/}.atom" ;;
+	*medium.com/tag*) list="$(echo "$url" | sed 's|/tag/|/feed/|')" ;;
+	*) list="$(getlink "$url")" ;;
+esac
+
+list="$(echo "$list" | sed '/^$/d')"
+[ -z "$list" ] && notify-send "📰 rssget" "No feed found for $url" && exit 1
+
+if [ "$(echo "$list" | wc -l)" -eq 1 ]; then
+	chosen_link="$list"
+else
+	chosen_link="$(echo "$list" | dmenu -i -p "Choose a feed:")" || exit 1
+fi
+
+[ -z "$chosen_link" ] && exit 1
+rssadd "$chosen_link" "$2"
