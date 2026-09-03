@@ -13,10 +13,10 @@ high=$(sed '13q;d' "$HOME/.local/share/weatherreport" | grep -o "m\\(-\\)*[0-9]\
 
 if [ "$rain" -gt 50 ]; then
 	color1="#3498db"
-	rainicon="歹$rain%"
+	rainicon="󰖌$rain%"
 else
 	color1="#ffffff"
-	rainicon="歹$rain%"
+	rainicon="󰖌$rain%"
 fi
 
 
@@ -25,13 +25,13 @@ if [ "$low" -lt 14 ]; then
 	lowicon="$low"
 else
 	color2="#ffffff"
-	lowicon="$low"
+	lowicon="󰜗$low"
 fi
 
 
 if [ "$high" -ge 22 ]; then
 	color3="#ca7201"
-	highicon="$high"
+	highicon="󰖨$high"
 else
 	color3="#ffffff"
 	highicon="$high"
