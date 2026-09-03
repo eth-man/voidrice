@@ -1,4 +1,13 @@
 #!/usr/bin/env sh
-for i in $(ls /tmp/mpvsoc*); do
-	echo '{ "command": ["set_property", "pause", true] }' | socat - $i;
-done
+# this script will pause all running mpv
+# require Mpvsockets script
+
+if [[ $(ls -A /tmp/mpvSockets | head -c1 | wc -c) -ne 0 ]]; then
+
+	for i in $(ls /tmp/mpvSockets/*); do
+		echo '{ "command": ["set_property", "pause", true] }' | socat - $i;
+	done
+
+fi
+
+exit 0

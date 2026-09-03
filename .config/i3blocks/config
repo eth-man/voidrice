@@ -18,16 +18,19 @@ separator=false
 [spotifyPlay]
 interval=1
 
+[screen-timeout]
+interval=10
+
 [music]
 label=🎼
 interval=once
 signal=11
 
-#[btcprice]
-##markup=pango
-#command=sb-price BTC Bitcoin 
-#interval=120
-#signal=29
+[btcprice]
+#markup=pango
+command=sb-price BTC Bitcoin 
+interval=120
+signal=29
 
 [news]
 label=󰎕
@@ -91,6 +94,7 @@ signal=31
 
 [vpn]
 interval=60
+signal=3
 
 [internet]
 interval=10

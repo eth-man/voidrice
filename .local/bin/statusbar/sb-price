@@ -2,7 +2,7 @@
 #
 # Usage:
 #	price <url> <Name of currency> <icon> [amount hold] [ price purchased in $]
-#	price BTC "Bitcoin"  0.1382 4543
+#	price BTC "Bitcoin"  0.1382 4543
 # ttf-nerd-fonts-symbols-mono is required to show crypto symbols
 # When the name of the currency is multi-word, put it in quotes.
 ##
@@ -77,9 +77,9 @@ span="</span>"
  if [ "$theprice" != "null" ]; then
 
 if [ "$len" -lt 3 ]; then # if price is less the 3 decimal show as float
-    printf "$BOLD$3$%.2f $span" $theprice
+    printf "$span$3$%.2f $span" $theprice
 else
-    printf "$BOLD$3$%.0f $span" $theprice
+    printf "$span$3$%.0f $span" $theprice
 fi
     [ -n "$pvalue" ] && printf "$color%s$span" $worth
 	fi

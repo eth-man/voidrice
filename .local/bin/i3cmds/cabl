@@ -2,6 +2,7 @@
 # Dependencies are xclip and xorg-xprop.
 # qrencode required for qrcode generation.
 # groff/zathura required for man pages.
+
 prim="$(xclip -o)"; [ -z "$prim" ] && exit
 
 PID=$(xprop -id "$(xprop -root | awk '/_NET_ACTIVE_WINDOW\(WINDOW\)/{print $NF}')" | grep -m 1 PID | cut -d " " -f 3)
@@ -18,16 +19,14 @@ ebay() { "$BROWSER" "https://www.ebay.com/sch/$@" ;}
 
 echo "$prim" | grep "^.*\.[A-Za-z]\+.*" >/dev/null && gotourl() { "$BROWSER" "$@" ;}
 echo "$prim" | grep "^.*@.*\.[A-Za-z]\+$" >/dev/null && email() { xdg-email "$@" ;}
-echo "$prim" | grep -i "[0-9A-F]\{2\}\(:[0-9A-F]\{2\}\)\{5\}" >/dev/null && mac-converter() { "maconv" "$@" ;}
-echo "$prim" | grep -i "[0-9A-F]\{2\}\(-[0-9A-F]\{2\}\)\{5\}" >/dev/null && mac-converter() { "maconv" "$@" ;}
-echo "$prim" | grep -i "[0-9A-F]\{4\}\(.[0-9A-F]\{4\}\)\{2\}" >/dev/null && mac-converter() { "maconv" "$@" ;}
+echo "$prim" | grep -i "[0-9A-F]\{2\}\(:[0-9A-F]\{2\}\)\{5\}" >/dev/null && 󰈀_mac-converter() { "maconv" "$@" ;}
+echo "$prim" | grep -i "[0-9A-F]\{2\}\(-[0-9A-F]\{2\}\)\{5\}" >/dev/null && 󰈀_mac-converter() { "maconv" "$@" ;}
+echo "$prim" | grep -i "[0-9A-F]\{4\}\(.[0-9A-F]\{4\}\)\{2\}" >/dev/null && 󰈀_mac-converter() { "maconv" "$@" ;}
 echo "$prim" | grep -i "[0-9A-F]\{2\}\(:[0-9A-F]\{2\}\)\{5\}" >/dev/null && mac-vendor-lookup() { "oui-lookup" "$@" ;}
 echo "$prim" | grep -i "[0-9A-F]\{2\}\(-[0-9A-F]\{2\}\)\{5\}" >/dev/null && mac-vendor-lookup() { "oui-lookup" "$@" ;}
 echo "$prim" | grep -i "[0-9A-F]\{4\}\(.[0-9A-F]\{4\}\)\{2\}" >/dev/null && mac-vendor-lookup() { "oui-lookup" "$@" ;}
-echo "$prim" | grep -i 'youtube.\|youtu.\|twitter.com\|twitch.tv\|fb.watch\|vimeo.com\|instagram.com\|pornhub.com\|tiktok.com' >/dev/null && _mpv-hover_() { "mpv-hover" "$@" ;}
-#echo "$prim" | grep -i 'youtube >/dev/null && start-mpv-hover-mode() { "mpv-hover" "$@" ;}
-
-command -v qrencode >/dev/null && qrcode() { qrencode "$@" -s 10 -o /tmp/qr.png && xdg-open /tmp/qr.png ;}
+echo "$prim" | grep -i 'youtube.\|youtu.\|twitter.com\|twitch.tv\|fb.watch\|vimeo.com\|instagram.com\|tiktok.com' >/dev/null && _mpv-hover_() { "mpv-hover" "$@" ;}
+command -v qrencode >/dev/null && qrcode() { qrencode "$@" -s 10 -o /tmp/qr.png && xdg-open /tmp/qr.png ;}
 man -k "^$prim$" >/dev/null && manual() { man -Tpdf "$prim" | zathura - ;}
 
 func="$(declare -F | awk '{print $3}' | dmenu -p "Plumb \"$(echo "$prim" | cut -c -30)\" to?" -i -l 15)"
