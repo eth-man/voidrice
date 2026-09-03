@@ -15,11 +15,11 @@ esac
 
 pacpackages=$(yay -Qu | grep -v "\[ignored\]" | wc -l | sed -e "s/^0$//g")
   if [[ ! -z ${pacpackages} ]]; then
-    icon=""
+    icon="󰏔"
     color="#e8cb61"
 printf "<span color='%s'>%s%s%s</span>\n" "$color" $icon""
 else
-    icon=""
+    icon="󰏔"
 printf "%s\n" $icon""
   fi
 

@@ -11,13 +11,13 @@ case $BLOCK_BUTTON in
 esac
 
 case "$(cat /sys/class/net/w*/operstate 2>/dev/null)" in
-	down) wificon="睊" && wificolor="#969993";;
-	up) wificon="$(awk '/^\s*w/ { print "", int($3 * 100 / 70) "% " }' /proc/net/wireless)" && wificolor="#ffffff"
+	down) wificon="󰖪" && wificolor="#969993";;
+	up) wificon="$(awk '/^\s*w/ { print "󰖩", int($3 * 100 / 70) "% " }' /proc/net/wireless)" && wificolor="#ffffff"
 esac
 
 case "$(cat /sys/class/net/e*/operstate 2>/dev/null)" in
-	down) lanicon="" && lancolor="#969993";;
-	up) lanicon="" && lancolor="#ffffff" ;;
+	down) lanicon="" && lancolor="#969993";;
+	up) lanicon="󰈀" && lancolor="#ffffff" ;;
 esac
 
 

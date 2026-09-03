@@ -24,7 +24,9 @@ echo "$prim" | grep -i "[0-9A-F]\{4\}\(.[0-9A-F]\{4\}\)\{2\}" >/dev/null && mac-
 echo "$prim" | grep -i "[0-9A-F]\{2\}\(:[0-9A-F]\{2\}\)\{5\}" >/dev/null && mac-vendor-lookup() { "oui-lookup" "$@" ;}
 echo "$prim" | grep -i "[0-9A-F]\{2\}\(-[0-9A-F]\{2\}\)\{5\}" >/dev/null && mac-vendor-lookup() { "oui-lookup" "$@" ;}
 echo "$prim" | grep -i "[0-9A-F]\{4\}\(.[0-9A-F]\{4\}\)\{2\}" >/dev/null && mac-vendor-lookup() { "oui-lookup" "$@" ;}
-echo "$prim" | grep -i "youtube" >/dev/null && start-mpv-hover-mode() { "mpv-hover" "$@" ;}
+echo "$prim" | grep -i 'youtube.\|youtu.\|twitter.com\|twitch.tv\|fb.watch\|vimeo.com\|instagram.com\|pornhub.com\|tiktok.com' >/dev/null && _mpv-hover_() { "mpv-hover" "$@" ;}
+#echo "$prim" | grep -i 'youtube >/dev/null && start-mpv-hover-mode() { "mpv-hover" "$@" ;}
+
 command -v qrencode >/dev/null && qrcode() { qrencode "$@" -s 10 -o /tmp/qr.png && xdg-open /tmp/qr.png ;}
 man -k "^$prim$" >/dev/null && manual() { man -Tpdf "$prim" | zathura - ;}
 

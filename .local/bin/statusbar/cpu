@@ -6,5 +6,7 @@ case $BLOCK_BUTTON in
 - Click to show intensive processes.
 - % is of single core." ;;
 esac
-
-sensors | awk '/Core 0/ {print $3}'
+temp=$(sensors | awk '/Core 0/ {print $3}' | cut -c2- |cut -c-2 )
+#sensors | awk '/Core 0/ {print $3}' | cut -c2- |cut -c-2
+#sensors | awk '/Core 0/ {print $3}'
+printf "%sC\n" "$temp"

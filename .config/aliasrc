@@ -24,8 +24,10 @@ alias ka="killall" \
 	ref="shortcuts >/dev/null; source ~/.config/shortcutrc" \
 	upc="sudo pacman -Syu; pkill -RTMIN+8 i3blocks" \
 	lsp="pacman -Qett --color=always | less" \
-	ffmpeg="ffmpeg -hide_banner"
-	lpkg="expac --timefmt='%Y-%m-%d %T' '%l\t%n'|sort -n"
+	ffmpeg="ffmpeg -hide_banner" \
+	lpkg="expac --timefmt='%Y-%m-%d %T' '%l\t%n'|sort -n" \
+	fusee="sudo /home/ran/.local/src/fusee-launcher/fusee-launcher.py /home/ran/.local/src/fusee-launcher/fusee_1.5.5.bin" \
+	dus="du --block-size=MiB --max-depth=1 | sort -n"
 
 command -v nvim >/dev/null && alias vim="nvim" vimdiff="nvim -d" # Use neovim for vim if present.
 
