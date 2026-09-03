@@ -22,8 +22,10 @@ im trying to make changes that will fit to my regular day usage (Mostly Sysadmin
 + new vpn script
 + grayd out network icons when disconnected,
 + pacpackages script.
-+ i3blocks: most icons changed to support dynamic coloring when needed, cryptocurrency script improvement, weather color change by temp threshold , network latency monitoring, new vpn script , grayd out network icons when disconnected, pacpackages script.
++ i3blocks: most icons changed to support dynamic coloring , cryptocurrency script improvement, weather color change by temp threshold , network latency monitoring, new vpn script , grayd out network icons when disconnected, pacpackages script.
 + new script allow to hover mpv youtube videos when youtube link copy (Super+c > start-mpv-hover-mode)
++ mpv-hover playlist support (append yanked videos into playlist)
++ lockscreen handling - added optional systemd scripts.
 
 # misc
 

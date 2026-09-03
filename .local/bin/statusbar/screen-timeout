@@ -1,0 +1,83 @@
+#!/usr/bin/env sh
+
+# Function to set timeout and display message
+set_timeout() {
+  local dpms_time="$1"
+  local saver_time="$1"
+  local message="$2"
+
+  xset dpms 0 0 "$dpms_time"
+  xset s "$saver_time"
+  notify-send "Screen Timeout" "$message"
+}
+
+case "$BLOCK_BUTTON" in
+  1)
+    # Left click: Show remaining time
+    dpms_off_seconds=$(xset q | grep "Off:" | awk '{print $NF}')
+    minutes=$((dpms_off_seconds / 60))
+    notify-send "Screen Timeout" "Remaining time: $minutes minutes"
+    ;;
+  3)
+    # Right click: Display options menu
+    choice=$(echo "1 Hour\n30 Minutes\n15 Minutes\n1 Minute\nNever" | dmenu -p "Screen Timeout:")
+
+    case "$choice" in
+      "1 Hour")
+        set_timeout 3600 "Screen timeout set to 1 hour."
+        ;;
+      "30 Minutes")
+        set_timeout 1800 "Screen timeout set to 30 minutes."
+        ;;
+      "15 Minutes")
+        set_timeout 900 "Screen timeout set to 15 minutes."
+        ;;
+      "1 Minute")
+        set_timeout 60 "Screen timeout set to 1 minute."
+        ;;
+      "Never")
+        xset -dpms
+        xset s off
+        notify-send "Screen Timeout" "Screen timeout disabled."
+        ;;
+      "") # dmenu cancelled
+        ;;
+      *)
+        notify-send "Screen Timeout" "Invalid choice."
+        ;;
+    esac
+    ;;
+esac
+
+# Display current timeout in i3blocks with icon
+
+# Get the DPMS Off timeout value more reliably
+dpms_off_seconds=$(xset q | grep "Off:" | awk '{print $NF}')
+
+# Convert seconds to minutes for display
+minutes=$((dpms_off_seconds / 60))
+
+# Check if DPMS is disabled
+dpms_enabled=$(xset q | grep "DPMS is" | awk '{print $3}')
+
+# Calculate remaining time (simplified approach)
+# This is a basic estimation. For more accurate remaining time, you would need to track user activity.
+remaining_minutes=$minutes
+
+# Determine icon and color
+if [[ "$dpms_enabled" == "Disabled" ]]; then
+  icon="󱎫"
+  color="#ffffff" # White
+  output="$icon off"
+elif [[ $remaining_minutes -le 1 ]]; then
+  icon="󱎫"
+  color="#ff0000" # Red
+  output="$icon"
+else
+  icon="󱎫"
+  color="#ffffff" # White
+  output="$icon"
+fi
+
+# Output with color
+printf "<span color='%s'>%s</span>\n" "$color" "$output"

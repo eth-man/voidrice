@@ -1,4 +1,10 @@
 #!/usr/bin/env sh
+
+# when to change icon color
+rain_gt=50 # rain % greater
+temp_lt=14 # temp < lower then
+temp_gt=34 # temp > greater then
+
 location="$1"; [ -z "$location" ] || { location="$location+" && rm -f "$HOME/.local/share/weatherreport" ;}
 
 getforecast() { ping -q -c 1 1.1.1.1 >/dev/null || exit 1
@@ -11,7 +17,7 @@ low=$(sed '13q;d' "$HOME/.local/share/weatherreport" | grep -o "m\\(-\\)*[0-9]\\
 high=$(sed '13q;d' "$HOME/.local/share/weatherreport" | grep -o "m\\(-\\)*[0-9]\\+" | sort -n -t 'm' -k 1n | sed -e '$!d' | tr -d "\n|m")
 
 
-if [ "$rain" -gt 50 ]; then
+if [ "$rain" -gt "$rain_gt" ]; then
 	color1="#3498db"
 	rainicon="󰖌$rain%"
 else
@@ -20,21 +26,21 @@ else
 fi
 
 
-if [ "$low" -lt 14 ]; then
+if [ "$low" -lt "$temp_lt" ]; then
 	color2="#3498db"
-	lowicon="$low"
+	lowicon="󰜗$low"
 else
 	color2="#ffffff"
 	lowicon="󰜗$low"
 fi
 
 
-if [ "$high" -ge 22 ]; then
+if [ "$high" -ge "$temp_gt" ]; then
 	color3="#ca7201"
 	highicon="󰖨$high"
 else
 	color3="#ffffff"
-	highicon="$high"
+	highicon="󰖨$high"
 fi
 
 

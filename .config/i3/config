@@ -6,6 +6,9 @@
 #
 # export TERMINAL="st"
 
+# auto lock screen
+exec_always xautolock -time 5 -locker auto_lock_screen
+
 # #---Basic Definitions---# #
 set $inner_gaps 11
 set $outer_gaps 10
@@ -44,18 +47,7 @@ bar {
 	modifier None
 	colors {
 		background #00000999
-		#background #00000000
-		#statusline #4c7899
-		#separator #4c7899
-
-		#focused_workspace  #00000000 #4c7899   #ffffff
-	        #active_workspace   #00000000 #00000000 #ffffff
-        	#inactive_workspace #00000000 #00000000 #888888
-      		#urgent_workspace   #00000000 #00000000 #900000
-        	#binding_mode       #00000000 #00000000 #900000
-	}
-
-
+		}
 }
 
 # #---Basic Bindings---# #
@@ -168,14 +160,15 @@ bindsym $mod+Ctrl+l		move workspace to output right
 bindsym $mod+z			gaps outer current plus 5
 bindsym $mod+Shift+z		gaps outer current minus 5
 
-bindsym $mod+x			exec --no-startup-id xset dpms force off && mpc pause && pauseallmpv && slock &
+bindsym $mod+x			exec --no-startup-id xset dpms force off && mpc pause && pauseallmpv && setxkbmap us && slock &
 bindsym $mod+Shift+x		exec --no-startup-id prompt "Shutdown computer?" "$shutdown"
 
 bindsym $mod+c			exec --no-startup-id cabl
 bindsym $mod+Shift+c		exec --no-startup-id camtoggle
 
 bindsym $mod+v			exec --no-startup-id $term -e $EDITOR -c "VimwikiIndex"
-#bindsym $mod+Shift+v
+bindsym $mod+Shift+v            exec --no-startup-id dmenu-vpn-pritunl
+#bindsym $mod+Shift+v            exec --no-startup-id dmenu-vpn-openvpn
 
 bindsym $mod+b			bar mode toggle
 bindsym $mod+Shift+b		floating toggle; sticky toggle; exec --no-startup-id hover left
