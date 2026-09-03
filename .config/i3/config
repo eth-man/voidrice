@@ -68,7 +68,7 @@ bindsym $mod+space		focus mode_toggle
 bindsym $mod+Escape		workspace prev
 bindsym $mod+Shift+Escape	exec --no-startup-id prompt "Exit i3?" "i3 exit"
 
-# bindsym $mod+BackSpace
+bindsym $mod+BackSpace		exec --no-startup-id sysact
 bindsym $mod+Shift+BackSpace	exec --no-startup-id prompt "Reboot computer?" "$reboot"
 
 bindsym $mod+grave		exec --no-startup-id dmenuunicode
@@ -168,7 +168,7 @@ bindsym $mod+Ctrl+l		move workspace to output right
 bindsym $mod+z			gaps outer current plus 5
 bindsym $mod+Shift+z		gaps outer current minus 5
 
-bindsym $mod+x			exec --no-startup-id xset dpms force off && mpc pause && pauseallmpv && slock &
+bindsym $mod+x			exec --no-startup-id lockscreen
 bindsym $mod+Shift+x		exec --no-startup-id prompt "Shutdown computer?" "$shutdown"
 
 bindsym $mod+c			exec --no-startup-id cabl
@@ -270,8 +270,9 @@ bindsym $mod+F5		exec --no-startup-id $netrefresh
 bindsym $mod+F6		exec --no-startup-id torwrap
 bindsym $mod+F7		exec --no-startup-id stocks-toggle
 bindsym $mod+F8		exec --no-startup-id mw sync
-bindsym $mod+F9		exec --no-startup-id dmenumount
-bindsym $mod+F10	exec --no-startup-id dmenuumount
+bindsym $mod+F9		exec --no-startup-id mounter
+bindsym $mod+Shift+F9	exec --no-startup-id dmenumountcifs
+bindsym $mod+F10	exec --no-startup-id unmounter
 bindsym $mod+F11	exec --no-startup-id ducksearch
 bindsym $mod+F12	exec $term -e nmtui
 bindsym $mod+Shift+F1	exec --no-startup-id toggle-welcome
