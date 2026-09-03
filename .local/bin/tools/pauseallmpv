@@ -1,4 +1,24 @@
 #!/usr/bin/env sh
-for i in $(ls /tmp/mpvsoc*); do
-	echo '{ "command": ["set_property", "pause", true] }' | socat - $i;
+
+# Pauses every running mpv instance at once.
+#
+# The socket path must match what mpv is actually told to use. This setup has
+# two producers: the `mpv` alias in ~/.config/aliasrc and the mpvSockets.lua
+# script module, which writes to /tmp/mpvSockets/<ppid>. Handle both.
+
+pause_socket() {
+	echo '{ "command": ["set_property", "pause", true] }' |
+		socat - "UNIX-CONNECT:$1" >/dev/null 2>&1
+}
+
+# mpvSockets.lua layout: a directory of sockets named by parent pid.
+[ -d /tmp/mpvSockets ] && find /tmp/mpvSockets -type s | while read -r sock; do
+	pause_socket "$sock"
 done
+
+# Legacy layout from the `mpv --input-ipc-server=/tmp/mpvsoc$(date +%s)` alias.
+for sock in /tmp/mpvsoc*; do
+	[ -S "$sock" ] && pause_socket "$sock"
+done
+
+exit 0
