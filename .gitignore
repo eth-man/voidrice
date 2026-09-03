@@ -1,0 +1,91 @@
+# This repository's work tree is $HOME, so every file in the home directory is
+# a candidate for `git add`. This file is the safety net: it keeps credentials,
+# wallets, browser profiles and caches out of what is a PUBLIC repository.
+#
+# Nothing here is tracked today. Ignoring a path does NOT untrack it, so if a
+# secret ever does get committed, rewriting history is still required.
+# Still avoid `git add -A` / `git add .` -- stage explicit paths instead.
+
+# --- Credentials and keys ---------------------------------------------------
+.ssh/
+.gnupg/
+.pki/
+.netrc
+.aws/
+.azure/
+.kube/
+.docker/config.json
+.local/share/password-store/
+.local/ovpn-config/
+.config/filezilla/
+.config/remmina/
+.config/rclone/
+.anydesk/
+*.pem
+*.key
+*.p12
+*.pfx
+*.kdbx
+*.ovpn
+*.gpg
+*.asc
+id_rsa*
+id_dsa*
+id_ecdsa*
+id_ed25519*
+*_history
+.*_history
+known_hosts*
+
+# --- Wallets and finance ----------------------------------------------------
+.config/Ledger Live/
+.electrum/
+.ethereum/
+.bitcoin/
+.monero/
+
+# --- Browser profiles (saved passwords, cookies, session tokens) ------------
+.mozilla/
+.config/chromium/
+.config/google-chrome/
+.config/BraveSoftware/
+.config/opera/
+.config/vivaldi/
+
+# --- Agent / tooling state --------------------------------------------------
+.claude/
+.claude.json*
+.config/gh/
+.npmrc
+.pypirc
+.git-credentials
+
+# --- Caches, VMs and other bulk --------------------------------------------
+.cache/
+.cargo/
+.rustup/
+.npm/
+.node_modules/
+.local/share/Trash/
+.local/share/containers/
+.config/VirtualBox/
+VirtualBox VMs/
+.local/share/mpd/
+.config/mpd/database
+.config/mpd/state
+.config/mpd/pid
+.config/mpd/log
+.config/mpd/sticker.sql
+.config/pulse/
+.config/dconf/
+.Xauthority
+.esd_auth
+.ICEauthority
+
+# --- Editor / plugin state --------------------------------------------------
+.config/nvim/plugged/
+.config/nvim/autoload/
+.vim/plugged/
+*.swp
+*.swo
+*~
