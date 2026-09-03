@@ -1,87 +1,132 @@
 # Directory of Scripts
 
-I keep all my user-created scripts here in `~/.local/bin/`.  Scripts are sorted
-into sub-directories for easy management, and all are seamlessly added to
-`$PATH` with the command below in `~/.profile`:
+All user-created scripts live in `~/.local/bin/`, sorted into sub-directories
+for management only. Every sub-directory is added to `$PATH` wholesale by this
+line in `~/.profile`, so any executable here is callable by bare name
+regardless of which folder it sits in:
 
 ```
-export PATH="$(du $HOME/.local/bin/ | cut -f2 | tr '\n' ':')$PATH"
+export PATH="$PATH:$(du "$HOME/.local/bin/" | cut -f2 | tr '\n' ':' | sed 's/:*$//')"
 ```
+
+A new script therefore needs nothing but `chmod +x`. Conversely, a script that
+is not executable is silently unreachable.
+
+Scripts marked **(fork)** do not exist in Luke Smith's upstream voidrice.
 
 ## `statusbar/`
 
-For modules used in i3blocks.
+i3blocks modules. Each is wired up by a `[block]` section in
+`~/.config/i3blocks/config`, which sets `command=~/.local/bin/statusbar/$BLOCK_NAME`
+globally. Modules handle clicks through `$BLOCK_BUTTON` and, because
+`markup=pango` is set, colour themselves with `<span color='#rrggbb'>`. Icons
+are Nerd Fonts glyphs, not emoji. A module with a `signal=N` line is refreshed
+on demand by `pkill -RTMIN+N i3blocks`.
 
-- `battery` -- i3blocks module. Shows available power remaining with icon indicating battery status. Colors indicate different levels of charge.
-- `clock` -- Shows time and date. If clicked, brings up calender or coming calcuse events.
-- `cpu` -- Shows CPU temperature. If clicked, shows most processor-intensive processes.
-- `help` -- Module which appears as a question mark. Brings up readme if clicked.
-- `internet` -- Shows whether machine is connected to wifi and ethernet. If clicked, brings up `nmtui`.
-- `mailbox` -- i3blocks module for use with mutt-wizard. Shows unread mail and if `mailsync.sh` is running.
-- `mem` -- Shows memory usage. If clicked, shows most memory-intensive processes.
-- `music` -- i3blocks module. Shows current song; if paused, name will be grayed and italic.
-- `mpdupdate` -- A daemon running by default that will update the i3mpd block on mpd change.
-- `news` -- Shows unread newsboat articles. Brings up newsboat or refreshes RSS feeds.
-- `pacpackages` -- i3blocks module. Detects new installable upgrades. Only works if you use cronjobs to automatically sync repositories.
-- `popupgrade` -- Called by clicking on the update icon if there are new packages. Spawns a `yay` upgrade of the main Arch repos and AUR packages, updates the i3blocks module once complete.
-- `torrent` -- i3blocks module. Shows torrents idle (⌛️), downloading (⬇️) or finished (🌱).
-- `volume` -- i3blocks module. Shows volume percentage or mute notification.
-- `weather` -- i3blocks module. Gets weather forcast from wttr.in and returns today's precipitation chance (☔), daily low (❄️) and daily high (☀️).
+- `battery` -- Power remaining, with the icon and colour tracking charge level. Takes the battery name as an argument (`battery BAT0`).
+- `brightness` -- **(fork)** Backlight level from sysfs, icon shifting with brightness. Scroll to change (needs `brightnessctl`). Signal 13.
+- `clock` -- Time and date. Click for a calendar or upcoming calcurse events.
+- `cpu` -- CPU temperature. Click for the most processor-intensive processes.
+- `disk` -- Disk usage for the mountpoint given as an argument.
+- `help` -- A question mark that opens the readme when clicked.
+- `i3-keyboard-layout` -- **(fork)** Current keyboard layout; cycled by `$mod+control+space`. Signal 30.
+- `internet` -- **(fork, reworked)** Wifi and ethernet state. Icons grey out (`#969993`) when a link is down. Click for `nmtui`.
+- `iplocate` -- Geolocation of the current public IP. Needs `geoiplookup`.
+- `mailbox` -- Unread mail count, for use with mutt-wizard. Signal 12.
+- `memory` -- Memory usage. Click for the most memory-intensive processes.
+- `mpdupdate` -- Daemon that refreshes the `music` block whenever mpd changes. Signal 11.
+- `music` -- Current song; greyed and italic when paused.
+- `nettraf` -- **(fork)** Network throughput since the last run; at `interval=2` this reads as bytes per second. Turns amber above 1 MiB per interval. Complements `ping-lat` (latency) and `internet` (link state).
+- `news` -- Unread newsboat articles. Opens newsboat or refreshes feeds. Signal 6.
+- `pacpackages` -- **(fork, reworked)** Count of upgradable packages via `yay`. Only meaningful if a cronjob syncs repositories. Signal 8.
+- `ping-lat` -- **(fork)** Network latency monitor. Colours by threshold and raises a dunst notification above 80ms/110ms. Signal 31.
+- `popupgrade` -- Spawns a `yay` upgrade, then refreshes `pacpackages`.
+- `sb-bluetooth` -- **(fork)** Bluetooth adapter state. *Untracked by git.*
+- `sb-price` -- **(fork)** Cryptocurrency ticker. Signal 29.
+- `screen-timeout` -- **(fork)** Toggles and displays the DPMS screen timeout. *Untracked by git.*
+- `spotifyControls`, `spotifyPlay` -- **(fork)** Spotify transport controls and now-playing. Signal 32.
+- `torrent` -- Torrents idle, downloading or seeding. Signal 7.
+- `volume` -- Volume percentage or a mute glyph. Middle click mutes, scroll changes. Signal 10.
+- `vpn` -- **(fork)** VPN connection state.
+- `weather` -- **(fork, reworked)** Forecast from wttr.in, with the temperature colour-coded by threshold. Signal 5.
 
 ## `cron/`
 
-For scripts meant to be cronjobs. None are active by default on LARBS.
+Cronjob scripts. None are enabled by default; see `IMPORTANT_NOTE.md` for the
+environment exports a cronjob needs before it can raise notifications.
 
-- `checkup` -- If connected to internet, syncs package repositories and downloads (but does not install) any potential updates. Gives `notify-send` notifications of when it is active since other `pacman` install commands cannot be run simultaneously. You may need to grant your user the ability to run `pacman -Syyuw --noconfirm` without a password (done in `/etc/sudoers`).
-- `cronbat` -- Gives a dunst notification if the battery is less than 25%.
-- `crontog` -- Not actually a cronjob, but just turns off/on all user cronjobs.
-- `getforecast` -- Updates the weather forecast. This is automatically run by `weather` if there hasn't been a new forecast today.
-- `newsup` -- Updates newsboat RSS feeds if connected to internet. Will also display a newspaper update icon on i3blocks if it has not be user disabled.
+- `bgcron` -- **(fork)** Rotates the desktop wallpaper from `~/Wallpapers`.
+- `checkup` -- Syncs package repositories and downloads (but does not install) updates.
+- `cronbat` -- Warns via dunst when the battery drops below 25%.
+- `crontog` -- Not a cronjob itself; toggles all user cronjobs on and off.
+- `newsup` -- Refreshes newsboat feeds and updates the `news` block.
 
 ## `tools/`
 
-Scripts intended to be run either manually by the user or linked to a shortcut
-in vim or another program.
+Run manually or bound from within vim and other programs.
 
-- `compiler` -- Compiles a markdown, R markdown or LaTeX document with the approriate command.  Will also run `make && sudo make install` if in a `config.h` file.  Otherwise it will create a sent presentation.  This can be thought of a general output handler.  I have it bound to `<leader>c` in vim.
-- `dmenuhandler` -- Give this script a url and it will offer dmenu options for opening it. Used by `newsboat` and some other programs as a link handler.
-- `extract` -- Will detect file type of archive and run appropriate extraction command.
-- `getbib` -- Use crossref.org to automatically detect bibtex entry of a .pdf. Attempts to search for the .pdf's DOI. Returns nothing if none detected.
-- `getkeys` -- Get the LARBS documentation on what bindings exist for main programs.
-- `linkhandler` -- The automatic link handler used by `newsboat` and other programs. Urls of video sites or of video files are opened in `mpv`, images are downloaded/opened in `feh`, music files are downloaded with `wget` and all other urls are opened in the default browser.
-- `lmc` -- A music controller that simplifies music/audio management and improves the interface with i3blocks. Check inside to see what it does. This is what i3 audio/music commands run by default. If you use a difference music system or ALSA, you can change this script rather than changing all the shortcuts in different places.
-- `note` -- Give this script some text/a message as an argument. It will print it to the terminal, and if `dunst` is running, display a notification.
-- `opout` -- "Open output", opens the corresponding `.pdf` file if run on a `.md`, `.tex` or `.rmd` file, or if given an `.html` file, will open it in the browser.  Bound to `<leader>p` in my vim config to reveal typical output.
-- `pauseallmpv` -- Pauses all mpv instances by sending the `,` key to each. Used by several scripts, but can be used alone as well. It will not pause an audio only mpv instance. If you know how to add a hack to do this, feel free to PR it or email me an addition.
-- `remaps` -- Remaps capslock to escape when pressed and super/mod when held. Maps the menu key to super as well. Runs the US international keyboard setup. If you want another keyboard setup, edit this fine.
-- `shortcuts` -- For updating bash and ranger shortcuts. Reads `~/.config/bmdirs` and `~/.config/bmfiles` for pairs of keypresses and directories and files, then autoproduces bash aliases and ranger shortcuts for them which output to `~/.config/shortcutrc` and `~/.config/ranger/shortcuts.conf` respectively. These are read automatically by my bash and ranger configs. You don't have to run this script manually though, as it's run by vim whenever you edit one of the `~/.bm*` files.
-- `speedvid` -- Speed up a given video file (`$1`) by a given ammount (`$2`).
-- `tpb` -- Search Pirate Bay for the certain search terms given as arguments.
-- `texclear` -- Remove all `.tex` related build files. This is run by my vim when I stop editing any `.tex` file.
-- `transadd` -- The mimeapp default script for handling torrent magnet links. Starts `transmission-daemon` if not running and adds the link.
+- `compiler` -- Compiles markdown, R markdown or LaTeX with the right command; runs `make && sudo make install` in a suckless source directory. Bound to `<leader>c` in vim.
+- `dmenuhandler` -- Given a url, offers dmenu options for opening it. Used by newsboat as a link handler.
+- `dmenupass` -- The `$SUDO_ASKPASS` password prompt.
+- `ext` -- **(fork)** Extraction with options: `-c` extracts into the current directory rather than a new one.
+- `extract` -- Detects an archive's type and runs the matching extraction command.
+- `getbib` -- Finds a PDF's DOI via crossref.org and returns its bibtex entry.
+- `getkeys` -- Prints the keybinding cheat sheets in `~/.config/getkeys/`.
+- `ifinstalled` -- Checks that every named command exists, notifying and returning non-zero if any is missing. Used for optional dependencies: `ifinstalled ffmpeg sox || exit 1`.
+- `linkhandler` -- Opens video urls in mpv, images in feh, music with wget, everything else in the browser.
+- `lmc` -- Music/audio controller wrapping mpc and the mixer. The single place to change if you switch audio systems.
+- `opout` -- "Open output": opens the PDF matching a `.md`/`.tex`/`.rmd`, or an `.html` in the browser. Bound to `<leader>p` in vim.
+- `pauseallmpv` -- Pauses every running mpv instance over its IPC socket. Handles both socket layouts in use here: the `mpvSockets.lua` module's `/tmp/mpvSockets/<ppid>` and the older `/tmp/mpvsoc*` from the `mpv` alias in `aliasrc`.
+- `podentr` -- Watches the newsboat queue with `entr` and runs `queueandnotify` on change.
+- `qndl` -- Queues a download with taskspooler and notifies on completion.
+- `queueandnotify` -- Reads the newsboat queue and hands each url to `qndl`. Replaces podboat.
+- `remaps` -- Maps capslock to escape when tapped and super when held, and the menu key to super.
+- `remapd` -- **(fork, new)** Runs `remaps` again whenever a USB input device is hotplugged, so docking or attaching a keyboard does not silently lose the remap. Started from `xprofile`.
+- `rotdir` -- "Rotates" a directory listing around a chosen file so the image viewer can page through the rest of the directory in order.
+- `rssadd` -- Appends a feed url to `~/.config/newsboat/urls`, refusing duplicates.
+- `rssget` -- **(fork, new)** Discovers a site's RSS/Atom feed and passes it to `rssadd`. Knows the hidden feed urls for YouTube, Reddit, GitHub, GitLab and Medium; otherwise scrapes the page's `<link>` tags. Reads the clipboard when given no argument.
+- `sac` -- **(fork)** SSH alias creator. `sac <alias> [<user>@]<hostname> [-p <port>]` appends a Host block to `~/.ssh/config`.
+- `setbg` -- Sets the wallpaper, storing it at `~/.config/wall.png`.
+- `shortcuts` -- Regenerates the shell, ranger and vifm shortcut files from `~/.config/bmdirs` and `~/.config/bmfiles`. Run automatically by vim when those files are saved.
+- `texclear` -- Removes LaTeX build files. Run by vim on leaving a `.tex` file.
+- `transadd` -- Handles torrent magnet links, starting `transmission-daemon` if needed.
+- `vifmimg`, `vu` -- **(fork)** Ueberzug image previews for vifm.
 
-## `i3cmds`
+## `i3cmds/`
 
-These are scripts linked to bindings in i3. They typically perform
-user-interface actions or involve dmenu.
+Bound to keys in `~/.config/i3/config`; mostly dmenu interfaces.
 
-- `bottomleft` and `bottomright` -- Makes the currently selected window float in one of the bottom corners of the screen. `bottomleft` is bound to `mod+B` by default.
-- `camtoggle` -- Starts/kills /dev/video0 webcam. Placed in bottom right by default.
-- `ddspawn` -- This is the script called to create, show and hide the dropdown tmux terminal mapped to `mod+u`, but also the dropdown calculator mapped to `mod+a`. Give the script an argument that is a script the window will run. If a window does not already exist, `ddspawn` creates it, if it does, `ddspawn` will toggle its visibility. The the script itself for usage.
-- `displayselect` -- Select which displays to use. Bound to `mod+F3`.
-- `dmenumount` -- Gives a dmenu prompt for mounting USB drives or Android devices. Bound to `mod+F9`. Will do nothing if none are available.
-- `dmenurecord` -- Gives a list of recording commands: `audio`, `video` and `screencast` (both) in dmenu for selection. Bound to `mod+PrintScreen` by default. Should be killed by `killrecording`.
-- `dmenuumount` -- Unmount a mounted non-essential partition. Bound to `mod+F10`. Will do nothing if none are mounted. It will not try to unmount essential system partitions.
-- `dmenuunicode` -- Shows a searchable dmenu prompt of emoji characters. The selected emoji is copied to the system clipboard, while its character code is copied to primary selection (middle mouse button).
-- `dropdowncalc` -- The dropdown calculator script called by `ddspawn` and bound to `mod+a` by default. Will run an R calculator if installed, otherwise python.
-- `ducksearch` -- Show a dmenu prompt and search for the inputed text in DuckDuckGo. Can take bangtags as expected, i.e. typing in `!aw Arch Linux` will search the Arch Wiki for "Arch Linux" or `!yt Luke Smith` will search YouTube for "Luke Smith", etc.
-- `i3resize` -- A script that allows intuitive resizing of windows. Mapped to `mod+Y/U/I/O`.
-- `killrecording` -- End a recording started by `dmenurecord` the proper way without file trucation or lingering background processes, mapped to `mod+Delete` by default.
-- `lockscreen` -- The screen locker. Gives a confirm prompt and if user says yes, all audio will be paused and the screen will be distorted and locked and screen will soon time out. User must insert password to unlock. Mapped to `mod+x` by default.
-- `newspod` -- A silly line that has a script all to itself due to i3's idiosyncracies. Starts `newsboat`, if `newsboat` cannot open because of another instance being open, opens `podboat`.
-- `prompt` -- Gives a Yes/No prompt to a question given as an argument. Used by numerous bindings like `mod+shift+x`, `mod+shift+backspace` and `mod+shift+escape`.
-- `samedir` -- Opens a terminal window in the same directory as the window currently selection. Bound to `mod+shift+enter`.
-- `td-toggle` -- Gives a dmenu prompt to start `transmission-daemon` if not running, or the kill it if it is. Obviously you need `transmission-cli` installed for this to work.  Mapped to `mod+F7` by default.
-- `tmuxdd` -- The startup script for the dropdown terminal (toggleable with `mod+u`). Either attaches to an existing tmux session or begins a new one.
-- `toggletouchpad` -- As the name suggests, turns off TouchPad if on, and turns it on if off. Requires `xf86-input-synaptics`. If your laptop has a special button for this, it will be mapped by default.
-- `tutorialvids` -- A dmenu prompt that gives some options of tutorial videos to watch. Bound to `mod+shift+e`.
+- `cabl` -- **(fork)** The clipboard "plumber", `$mod+c`. Inspects the X selection, defines a shell function for each applicable handler, and offers them in dmenu. Because the menu is built from `declare -F`, adding a handler means adding a guarded `... && name() { script "$@" ;}` line and the function name is what the user sees.
+- `camtoggle` -- Starts or kills the webcam preview.
+- `ddspawn` -- Creates, shows and hides the dropdown terminal (`$mod+u`) and calculator (`$mod+a`).
+- `displayselect` -- Choose which displays to use. `$mod+F3`.
+- `dmenu-bluetooth` -- **(fork)** Bluetooth device picker. *Untracked by git.*
+- `dmenu-markdown` -- **(fork)** Opens any markdown file under `~/Documents` in the editor.
+- `dmenu-screenlayout` -- **(fork)** Applies a saved `~/.screenlayout` profile. `$mod+Shift+F3`.
+- `dmenumount` / `dmenuumount` -- The original mount helpers. Superseded by `mounter`/`unmounter` but kept and still callable by name.
+- `dmenumountcifs` -- **(fork, new)** Discovers SMB servers on the LAN with avahi and mounts a share under `/mnt`. `$mod+Shift+F9`. Needs `avahi`, `smbclient`, `cifs-utils`.
+- `dmenurecord` -- Audio, video or screencast recording. End with `killrecording`.
+- `dmenuunicode` -- Searchable emoji picker; copies the character to the clipboard.
+- `dropdowncalc` -- The dropdown calculator behind `$mod+a`.
+- `ducksearch` -- DuckDuckGo search prompt, bangtags included.
+- `hover` -- Floats the focused window into a bottom corner at a third of screen size.
+- `i3resize`, `winresize` -- Window resizing, mapped to `$mod+Y/U/I/O`.
+- `killrecording` -- Ends a recording cleanly. `$mod+Delete`.
+- `lockscreen` -- **(fork, new)** Screen locker behind `$mod+x`. Pauses mpd and every mpv instance, mutes, runs `slock`, then restores the previous mute state. Replaces an inline `xset ... && mpc pause && pauseallmpv && slock` chain in the i3 config, which left the screen unlocked whenever `mpc pause` failed.
+- `maconv` -- **(fork)** Converts a MAC address between Cisco, Windows and Unix notation. Reached through `cabl`.
+- `maimpick` -- Screenshot picker: area, window or full screen, to file or clipboard.
+- `mounter` -- **(fork, new)** Mounts USB drives, LUKS volumes and Android phones. `$mod+F9`. Supersedes `dmenumount`, which could not handle encrypted drives; also tries a bare `mount` first so fstab entries just work.
+- `mpv-hover` -- **(fork)** Plays a copied video url in a floating mpv window. Reached through `cabl`.
+- `openvpn` -- **(fork)** Picks a `.ovpn` profile from `~/.local/ovpn-config` and connects.
+- `oui-lookup` -- **(fork)** Looks up a MAC address vendor in the Wireshark `manuf` database, cached at `~/.local/share/manuf` and refreshed monthly. Reached through `cabl`.
+- `prompt` -- Yes/No confirmation prompt used by the destructive bindings.
+- `samedir` -- Opens a terminal in the focused window's directory. `$mod+Shift+Return`.
+- `showclip` -- Shows the clipboard and primary selection as notifications.
+- `sshmenu` -- **(fork)** Picks a host from `~/.ssh/config` and connects. `$mod+Ctrl+s`.
+- `sysact` -- **(fork, new)** Session and power menu: lock, leave/restart i3, sleep, hibernate, reboot, shutdown, display off. `$mod+BackSpace`.
+- `td-toggle` -- Starts or stops `transmission-daemon`. `$mod+F7`.
+- `tmuxdd` -- Startup script for the dropdown terminal.
+- `toggletouchpad` -- Toggles the touchpad.
+- `torwrap` -- Opens the transmission TUI, starting the daemon if needed.
+- `tutorialvids` -- Menu of tutorial videos. `$mod+Shift+e`.
+- `unmounter` -- **(fork, new)** Unmounts drives and phones, and re-locks LUKS volumes afterwards. `$mod+F10`. Supersedes `dmenuumount`.
