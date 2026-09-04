@@ -8,7 +8,7 @@
 !! fell back to config.h, whose "Nimbus Mono" is not an installed family.
 !! Use "!" for comments in this file, not "/*".
 !! *.font: monospace:size=16
-*.font:	Liberation Mono:pixelsize=18:antialias=true:autohint=true
+*.font:	Liberation Mono:pixelsize=26:antialias=true:autohint=true
 
 /* name		dark	light */
 /* black	0	8 */
