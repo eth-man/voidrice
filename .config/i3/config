@@ -168,6 +168,7 @@ bindsym $mod+Shift+c		exec --no-startup-id camtoggle
 
 bindsym $mod+v			exec --no-startup-id $term -e $EDITOR -c "VimwikiIndex"
 bindsym $mod+Shift+v            exec --no-startup-id dmenu-vpn-pritunl
+bindsym $mod+control+v          exec --no-startup-id wg-toggle
 #bindsym $mod+Shift+v            exec --no-startup-id dmenu-vpn-openvpn
 
 bindsym $mod+b			bar mode toggle

@@ -1,0 +1,48 @@
+#!/usr/bin/env sh
+
+# Bring a WireGuard tunnel up or down from dmenu.
+#
+# Tunnel configs live in /etc/wireguard, which is mode 700 root -- they contain
+# private keys -- so listing and toggling both go through sudo. SUDO_ASKPASS
+# (dmenupass) supplies the password prompt when there is no tty.
+
+ifinstalled wg wg-quick || exit 1
+
+WGDIR="/etc/wireguard"
+
+askpass() { sudo -n "$@" 2>/dev/null || sudo -A "$@" ;}
+refresh() { pkill -RTMIN+3 i3blocks ;}
+
+# `wg show interfaces` is readable without root and lists what is up.
+active="$(wg show interfaces 2>/dev/null)"
+
+if [ -n "$active" ]; then
+	# Something is up: offer to take it down, or switch to another tunnel.
+	choice="$(printf '󰦞 disconnect %s\n󰦝 switch tunnel' "$active" | dmenu -i -p "WireGuard:")" || exit 0
+	case "$choice" in
+		*disconnect*)
+			for i in $active; do askpass wg-quick down "$i"; done
+			notify-send "󰦞 WireGuard" "Disconnected from $active"
+			refresh; exit 0 ;;
+		*switch*)
+			for i in $active; do askpass wg-quick down "$i"; done ;;
+		*) exit 0 ;;
+	esac
+fi
+
+tunnels="$(askpass ls -1 "$WGDIR" 2>/dev/null | sed -n 's/\.conf$//p')"
+
+if [ -z "$tunnels" ]; then
+	notify-send "󰦞 WireGuard" "No tunnels found in $WGDIR"
+	exit 1
+fi
+
+chosen="$(echo "$tunnels" | dmenu -i -l 15 -p "Connect which tunnel?")" || exit 0
+[ -n "$chosen" ] || exit 0
+
+if askpass wg-quick up "$chosen"; then
+	notify-send "󰦝 WireGuard" "Connected to $chosen"
+else
+	notify-send "󰦞 WireGuard" "Failed to bring up $chosen"
+fi
+refresh
