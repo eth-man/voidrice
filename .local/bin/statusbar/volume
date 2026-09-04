@@ -1,37 +1,24 @@
 #!/usr/bin/env sh
+. "$HOME/.local/bin/statusbar/sb-theme"
 
 case $BLOCK_BUTTON in
-    1) setsid "$TERMINAL" -e pulsemixer &;;
-    2) pulsemixer --toggle-mute;;
-    4) pulsemixer --change-volume +5;;
-    5) pulsemixer --change-volume -5;;
-    3) pgrep -x dunst >/dev/null && notify-send " Volume module" "\- Shows volume ,󰝟 if muted.
-- Middle click to mute.
-- Scroll to change."
+	1) setsid -f "$TERMINAL" -e pulsemixer ;;
+	2) pulsemixer --toggle-mute ;;
+	3) pgrep -x dunst >/dev/null && notify-send "󰕾 Volume module" "\- 󰝟 muted, 󰕿 low, 󰖀 medium, 󰕾 high.
+- Middle click mutes.
+- Scroll changes volume." ;;
+	4) pulsemixer --change-volume +5 ;;
+	5) pulsemixer --change-volume -5 ;;
 esac
 
-# Set color based on mute status and volume level
-if [ "$(pulsemixer --get-mute)" = "1" ]; then
-    color="#FF0000"  # Red for muted
-    icon="󰝟"
-elif [ "$(pulsemixer --get-volume | awk '{print $1}')" -gt "70" ]; then
-    color="#D36060"  # Red for high volume
-    icon=""
-elif [ "$(pulsemixer --get-volume | awk '{print $1}')" -lt "40" ]; then
-    color="#C0C0C0"  # Light gray for normal volume
-    icon=""
-else
-    color="#ffffff"  # Light gray for normal volume
-    icon=""
+[ "$(pulsemixer --get-mute)" = "1" ] && sb "$C_DIM" "󰝟" && exit 0
+
+vol="$(pulsemixer --get-volume | awk '{print $1}')"
+[ -n "$vol" ] || exit 0
+
+if   [ "$vol" -gt 70 ]; then icon="󰕾"; color="$C_WARN"
+elif [ "$vol" -lt 40 ]; then icon="󰕿"; color="$C_NORM"
+else                         icon="󰖀"; color="$C_NORM"
 fi
 
-vol=$(pulsemixer --get-volume | awk '{print $1}')
-
-# Add mute/unmute status to the output
-mute_status=$(pulsemixer --get-mute)
-mute_text=""
-if [ "$mute_status" = "1" ]; then
-  mute_text=" (Muted)"
-fi
-
-printf "<span color='%s'>%s %s%% %s</span>\n" "$color" "$icon" "$vol" "$mute_text"
+sb "$color" "$icon $vol%"

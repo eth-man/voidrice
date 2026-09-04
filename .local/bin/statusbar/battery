@@ -17,7 +17,9 @@ if [ ! -d /sys/class/power_supply/"$battery_name" ]; then
 fi
 
 case $BLOCK_BUTTON in
-    3) pgrep -x dunst >/dev/null && notify-send "🔋 Battery module" ": discharging\n: not charging\n: stagnant charge\n: charging\n: charged\n❗: battery very low!\n- Text & icon color reflects charge left";;
+	3) pgrep -x dunst >/dev/null && notify-send " Battery module" " empty   low   half   high   full
+󰀦: battery very low
+- Text and icon colour reflect charge left." ;;
 esac
 
 capacity=$(cat /sys/class/power_supply/"$battery_name"/capacity) || exit
@@ -26,7 +28,7 @@ status=$(cat /sys/class/power_supply/"$battery_name"/status)
 prev_status="$("$cat_path" "$charging_state_file" 2>/dev/null)"
 current_brightness="$(bctl get)"
 
-icon="󰂑" # Default icon
+icon="" # Default icon
 warn=""
 
 # Color Gradient Function (using awk)
@@ -76,24 +78,24 @@ fi
 
 
 if [ "$capacity" -ge 90 ]; then
-    icon="󰂂"
+    icon=""
 elif [ "$capacity" -ge 70 ]; then
-    icon="󰂀"
+    icon=""
 elif [ "$capacity" -ge 50 ]; then
-    icon="󰁾"
+    icon=""
 elif [ "$capacity" -ge 30 ]; then
-    icon="󰁼"
+    icon=""
     bctl set 25% >/dev/null
 elif [ "$capacity" -ge 20 ]; then
-    icon="󰁻"
+    icon=""
     bctl set 15% >/dev/null
 elif [ "$capacity" -ge 15 ]; then
-    icon="󰁺"
-    warn="❗󰢟"
+    icon=""
+    warn=" 󰀦"
     bctl set 5% >/dev/null
 else
-    icon="󰁺"
-    warn="Connect charger❗󰢟"
+    icon=""
+    warn=" 󰀦 charge"
     bctl set 5% >/dev/null
 fi
 
@@ -119,7 +121,7 @@ elif [ "$status" = "Discharging" ]; then
         echo "$current_brightness" > "$brightness_file"
     fi
 elif [ "$status" = "Full" ]; then
-    icon="󰂅"
+    icon=""
     if [ "$prev_status" = "Charging" ] && [ "$capacity" -gt 15 ]; then
         echo "$current_brightness" > "$brightness_file"
     fi
