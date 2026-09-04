@@ -1,19 +1,22 @@
 #!/bin/sh
 
 # This file runs when a DM logs you into a graphical session.
-# If you use startx/xinit like a Chad, this file will also be sourced.
-#xcompmgr &		# xcompmgr for transparency
+# If you use startx/xinit, this file is sourced from ~/.xinitrc as well.
 
-mpd &			# music player daemon-you might prefer it as a service though
-remapd &		# runs `remaps` now and again whenever a USB input device is plugged in
+mpd &			# music player daemon; you may prefer it as a user service
+remapd &		# applies `remaps` now, and again whenever a USB input device appears
 setbg &			# set the background with the `setbg` script
-xrdb ${XDG_CONFIG_HOME:-$HOME/.config}/x11/xresources 	# Uncomment to use Xresources colors/settings on startup
+
+# Load colours, fonts and the st alpha value. This is active, not optional:
+# without it *.font and *.alpha are unset and st falls back to config.h.
+xrdb ${XDG_CONFIG_HOME:-$HOME/.config}/x11/xresources
+
 # Optional pywal colours. Note XDG_CACHE_HOME, not XDG_CONFIG_HOME: the cache
 # is where wal writes. Uncomment to use.
 #xrdb -merge ${XDG_CACHE_HOME:-$HOME/.cache}/wal/colors.xresources &
-#xcompmgr &		# xcompmgr for transparency (picom is used instead)
-picom & 		# picom for transparency
-dunst &			# dunst for notifications
-xset r rate 300 50 &	# Speed xrate up
-unclutter &		# Remove mouse when idle
-pipewire &		# start pipewire audio
+
+picom &			# compositor: transparency, shadows, the opacity rules
+dunst &			# notifications
+xset r rate 300 50 &	# faster key repeat
+unclutter &		# hide the mouse when idle
+pipewire &		# audio
