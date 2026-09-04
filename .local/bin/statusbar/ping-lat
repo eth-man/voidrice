@@ -1,40 +1,27 @@
-#!/bin/sh
-# by ETH-Man
-# script to notify on bad network latency , you can change the default alert numbers as you wish
+#!/usr/bin/env sh
+# Network latency monitor. Notifies when latency degrades.
 
-  latency="$(ping -c 1 8.8.8.8 | sed -ne '/.*time=/{;s///;s/\..*//;p;}')"
+. "$HOME/.local/bin/statusbar/sb-theme"
+
+latency="$(ping -c 1 -W 2 8.8.8.8 2>/dev/null | sed -ne '/.*time=/{s///;s/\..*//;p;}')"
 
 case $BLOCK_BUTTON in
-	1) $TERMINAL -e ping 8.8.8.8 ;;
-	2) notify-send "the latency is $latency" ;;
-	3) pgrep -x dunst >/dev/null && notify-send "Ping Latency module" "凌: notify on bad network latency
-- Left click to start ping
-- Middle click to show latnecy" ;;
+	1) setsid -f "$TERMINAL" -e ping 8.8.8.8 ;;
+	2) notify-send "󰓅 Latency" "${latency:-no reply} ms" ;;
+	3) notify-send "󰓅 Ping latency module" "\- Round trip to 8.8.8.8.
+- Colour: normal / high / very high, grey when there is no reply.
+- Left click runs a live ping.
+- Middle click shows the current latency." ;;
 esac
 
-
-
-  if [ "$latency" -gt 100 ]; then
-    #              critical
-    icon=
-    color="#DC143C"
-    notify-send -u low --hint=string:x-dunst-stack-tag:"凌Network latency" "凌 Network Latency is Critical! : $latency"
-   # notify-send -u normal "凌Network Latency is very High!...  ($latency)"
-  elif [ "$latency" -gt 90 ]; then
-    #                warning
-    icon=
-    color="#ffff00"
-    notify-send -u low --hint=string:x-dunst-stack-tag:"凌Network latency" "凌 Network Latency is High!     : $latency"
-    #notify-send -u low "凌Network Latency is above Normal...($latency)"
-  elif [ -z "$latency" ]; then
-    #                   no connection
-    icon=
-    color="#969993"
-  else
-    #                   normal
-    icon=
-    color="#ffffff"
-  fi
-
-
-printf "<span color='%s'>%s%s%s</span>\n" "$color" $icon""
+if [ -z "$latency" ]; then
+	sb "$C_DIM" "󰓅"
+elif [ "$latency" -gt 110 ]; then
+	notify-send -u normal --hint=string:x-dunst-stack-tag:"latency" "󰓅 Very high latency ($latency ms)"
+	sb "$C_ALERT" "󰓅 $latency"
+elif [ "$latency" -gt 80 ]; then
+	notify-send -u low --hint=string:x-dunst-stack-tag:"latency" "󰓅 High latency ($latency ms)"
+	sb "$C_WARN" "󰓅 $latency"
+else
+	sb "$C_NORM" "󰓅"
+fi

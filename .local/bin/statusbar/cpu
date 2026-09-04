@@ -1,12 +1,20 @@
 #!/usr/bin/env sh
+. "$HOME/.local/bin/statusbar/sb-theme"
 
 case $BLOCK_BUTTON in
-	1) notify-send "🖥 CPU hogs" "$(ps axch -o cmd:15,%cpu --sort=-%cpu | head)" ;;
-	3) notify-send "🖥 CPU module " "\- Shows CPU temperature.
-- Click to show intensive processes.
-- % is of single core." ;;
+	1) notify-send "󰻠 CPU hogs" "$(ps axch -o cmd:15,%cpu --sort=-%cpu | head)" ;;
+	2) setsid -f "$TERMINAL" -e htop ;;
+	3) notify-send "󰻠 CPU module" "\- Shows CPU temperature.
+- Colour tracks temperature: normal / warm / hot.
+- Left click shows the busiest processes.
+- Middle click opens htop." ;;
 esac
-temp=$(sensors | awk '/Core 0/ {print $3}' | cut -c2- |cut -c-2 )
-#sensors | awk '/Core 0/ {print $3}' | cut -c2- |cut -c-2
-#sensors | awk '/Core 0/ {print $3}'
-printf "%sC\n" "$temp"
+
+temp=$(sensors | awk '/Core 0/ {print $3}' | cut -c2- | cut -c-2)
+[ -n "$temp" ] || exit 0
+
+if   [ "$temp" -ge 80 ]; then color="$C_ALERT"
+elif [ "$temp" -ge 65 ]; then color="$C_WARN"
+else color="$C_NORM"; fi
+
+sb "$color" "󰻠 ${temp}C"

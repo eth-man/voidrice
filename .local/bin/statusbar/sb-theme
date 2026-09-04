@@ -1,0 +1,19 @@
+#!/usr/bin/env sh
+# Shared palette for i3blocks modules. Sourced, not executed:
+#
+#   . "$HOME/.local/bin/statusbar/sb-theme"
+#   sb "$C_WARN" "󰏔 3"
+#
+# Every module colours through these names so the whole bar can be
+# re-themed from one file instead of hunting hex codes in 20 scripts.
+
+C_NORM="#ffffff"    # normal / idle
+C_DIM="#969993"     # disabled, absent, powered off
+C_OK="#90EE90"      # healthy, connected, up to date
+C_INFO="#83a598"    # informational, action available
+C_WARN="#e8cb61"    # attention, but not urgent
+C_ALERT="#DC143C"   # urgent
+C_ACCENT="#d3869b"  # media / accent
+
+# sb COLOR TEXT -- emit one pango-marked status line.
+sb() { printf "<span color='%s'>%s</span>\n" "$1" "$2" ;}
