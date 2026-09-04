@@ -2,6 +2,10 @@ command=~/.local/bin/statusbar/$BLOCK_NAME
 separator_block_width=8
 markup=pango
 
+[failed]
+interval=60
+signal=15
+
 [record]
 command=cat /tmp/recordingicon
 interval=once
@@ -38,6 +42,10 @@ signal=6
 [pacpackages]
 interval=once
 signal=8
+
+[tasks]
+interval=10
+signal=16
 
 [torrent]
 interval=20

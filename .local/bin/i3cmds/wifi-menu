@@ -1,0 +1,66 @@
+#!/usr/bin/env sh
+
+# dmenu wifi picker. Lists visible networks with signal strength and security,
+# reuses a saved connection when there is one, and only asks for a password
+# when it actually needs it.
+#
+# nmtui is still there behind a click on the network module; this is for the
+# common case of "put me on that network" without a TUI.
+
+ifinstalled nmcli || exit 1
+
+refresh() { pkill -RTMIN+4 i3blocks 2>/dev/null; }
+
+# Radio off is a common cause of "no networks" -- offer to fix it rather than
+# showing an empty menu.
+if nmcli radio wifi | grep -q disabled; then
+	[ "$(printf 'No\nYes' | dmenu -i -p 'Wifi radio is off. Turn it on?')" = "Yes" ] || exit 0
+	nmcli radio wifi on && sleep 3
+fi
+
+notify-send -u low "󰖩 Scanning..." "Looking for networks"
+nmcli device wifi rescan >/dev/null 2>&1
+sleep 1
+
+# IN-USE, SSID, SIGNAL, SECURITY -- tab separated so SSIDs with spaces survive.
+list="$(nmcli -t -f IN-USE,SSID,SIGNAL,SECURITY device wifi list |
+	awk -F: '$2 != "" {
+		mark = ($1 == "*") ? "● " : "  "
+		sec  = ($4 == "" || $4 == "--") ? "open" : $4
+		printf "%s%s\t%s%%\t%s\n", mark, $2, $3, sec
+	}' | sort -u -t'	' -k1,1)"
+
+[ -n "$list" ] || { notify-send "󰖪 Wifi" "No networks found"; exit 1; }
+
+chosen="$(printf '%s\n' "$list" | column -t -s'	' | dmenu -i -l 15 -p "Wifi:")" || exit 0
+[ -n "$chosen" ] || exit 0
+
+# Strip the in-use marker and trailing signal/security columns back to the SSID.
+ssid="$(printf '%s' "$chosen" | sed 's/^● //; s/^  //; s/  *[0-9]*%  *.*$//')"
+[ -n "$ssid" ] || exit 0
+
+# A saved connection needs no password.
+if nmcli -t -f NAME connection show | grep -qxF "$ssid"; then
+	if nmcli connection up id "$ssid" >/dev/null 2>&1; then
+		notify-send "󰖩 Wifi" "Connected to $ssid"; refresh; exit 0
+	fi
+	notify-send "󰖪 Wifi" "Saved connection for $ssid failed; asking for the password"
+fi
+
+if printf '%s' "$chosen" | grep -q 'open$'; then
+	pass=""
+else
+	pass="$(dmenu -P -p "Password for $ssid:" </dev/null)" || exit 0
+fi
+
+if [ -n "$pass" ]; then
+	out="$(nmcli device wifi connect "$ssid" password "$pass" 2>&1)"
+else
+	out="$(nmcli device wifi connect "$ssid" 2>&1)"
+fi
+
+case "$out" in
+	*successfully*) notify-send "󰖩 Wifi" "Connected to $ssid" ;;
+	*) notify-send "󰖪 Wifi" "$(printf '%s' "$out" | tail -1)" ;;
+esac
+refresh

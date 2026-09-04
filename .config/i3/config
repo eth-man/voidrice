@@ -81,6 +81,7 @@ bindcode $mod+Shift+24		[con_id="__focused__" instance="^(?!dropdown_).*$"] exec
 
 #bindsym $mod+w			exec --no-startup-id $BROWSER
 bindcode $mod+25			exec --no-startup-id $BROWSER
+bindsym $mod+Shift+w		exec --no-startup-id wifi-menu
 #bindsym $mod+Shift+w		exec $term -e nmtui
 #bindcode $mod+Shift+25		exec $term -e nmtui
 
@@ -109,6 +110,7 @@ bindsym $mod+Shift+o		exec --no-startup-id i3resize right
 
 bindsym $mod+p			exec --no-startup-id mpc toggle
 bindsym $mod+Shift+p		exec --no-startup-id mpc pause
+bindsym $mod+control+p		exec --no-startup-id ports -d
 
 #bindsym $mod+a			exec --no-startup-id ddspawn dropdowncalc -f mono:pixelsize=24
 bindcode $mod+38			exec --no-startup-id ddspawn dropdowncalc -f mono:pixelsize=24

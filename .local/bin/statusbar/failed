@@ -1,0 +1,32 @@
+#!/usr/bin/env sh
+
+# i3blocks module: failed systemd units, system and user.
+#
+# Nothing is shown when everything is healthy, so the block costs no width
+# until it matters. A failed unit is otherwise invisible until you happen to
+# run systemctl, which on a machine you administer is exactly the wrong way
+# round.
+
+. "$HOME/.local/bin/statusbar/sb-theme"
+
+count() { systemctl "$@" --failed --no-legend 2>/dev/null | grep -c . ;}
+names() { systemctl "$@" --failed --no-legend --plain 2>/dev/null | awk '{print $1}' ;}
+
+sys=$(count); usr=$(count --user)
+total=$((sys + usr))
+
+case $BLOCK_BUTTON in
+	1) setsid -f "$TERMINAL" -e sh -c \
+	     'systemctl --failed; echo; systemctl --user --failed; echo "[enter]"; read -r _' ;;
+	2) pgrep -x dunst >/dev/null && notify-send "󰀦 Failed units" "$(
+	     { [ "$sys" -gt 0 ] && printf 'system:\n%s\n' "$(names)"
+	       [ "$usr" -gt 0 ] && printf 'user:\n%s\n'   "$(names --user)" ;} )" ;;
+	3) pgrep -x dunst >/dev/null && notify-send "󰀦 Failed units module" "\- Counts failed systemd units, system and user.
+- Hidden entirely when nothing has failed.
+- Left click lists them, middle click notifies.
+- Reset one with: systemctl reset-failed <unit>" ;;
+esac
+
+[ "$total" -gt 0 ] || exit 0
+
+sb "$C_ALERT" "󰀦 $total"

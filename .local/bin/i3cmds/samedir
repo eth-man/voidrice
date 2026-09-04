@@ -1,5 +1,42 @@
 #!/usr/bin/env sh
-PID=$(xprop -id "$(xprop -root | awk '/_NET_ACTIVE_WINDOW\(WINDOW\)/{print $NF}')" | grep -m 1 PID | cut -d " " -f 3)
-PID=$(echo "$(pstree -lpA "$PID" | tail -n 1)" | awk -F'---' '{print $NF}' | sed -re 's/[^0-9]//g')
-cd "$(readlink /proc/"$PID"/cwd)"
-"$TERMINAL"
+
+# Open a terminal in the working directory of the focused window.
+#
+# The old version took the last line of pstree and stripped it to digits, which
+# picks whichever process happens to sort last rather than the one that owns a
+# useful cwd -- so it landed in $HOME whenever the shell had a child running,
+# and broke outright when the terminal had several panes.
+#
+# This walks the process tree from the innermost outwards and takes the first
+# process with a cwd worth using, skipping the cases that lie about it.
+
+windowPID=$(xprop -id "$(xprop -root | sed -n '/_NET_ACTIVE_WINDOW/ s/^.*# // p')" |
+	sed -n '/PID/ s/^.*= // p')
+[ -n "$windowPID" ] || exec "$TERMINAL"
+
+PIDlist=$(pstree -lpATna "$windowPID" 2>/dev/null | sed -En 's/.*,([0-9]+).*/\1/p' | tac)
+
+for PID in $PIDlist; do
+	cmdline=$(ps -o args= -p "$PID" 2>/dev/null)
+	comm=$(ps -o comm= -p "$PID" 2>/dev/null)
+	group_leader=$(ps -o comm= -p "$(ps -o pgid= -p "$PID" 2>/dev/null | tr -d ' ')" 2>/dev/null)
+	cwd=$(readlink /proc/"$PID"/cwd 2>/dev/null)
+
+	# Match on comm, not args: `ps -o args=` yields "/bin/zsh" or "-zsh"
+	# depending on how the shell was started, so comparing it against the bare
+	# shell name never matched and this branch was dead.
+	case "$cmdline" in 'lf -server'|'ranger --server') continue ;; esac
+	case "$comm" in
+		"${SHELL##*/}"|sh|bash|zsh|fish|lf|ranger|vifm) break ;;
+	esac
+
+	# git and its helpers report the repository root, not the directory you are in.
+	[ "$group_leader" = 'git' ] || [ ! -d "$cwd" ] && continue
+
+	# Processes that report ~ or / are almost always reporting a default, not
+	# a real location; keep looking outward.
+	[ "$cwd" != "$HOME" ] && [ "$cwd" != '/' ] && break
+done
+
+[ -n "$cwd" ] && [ -d "$cwd" ] && cd "$cwd" 2>/dev/null
+exec "$TERMINAL"
