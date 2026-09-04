@@ -12,8 +12,8 @@ mpc pause >/dev/null 2>&1 &
 pauseallmpv &
 pulsemixer --mute >/dev/null 2>&1
 
-# Force the US layout first: the password cannot be typed on the Hebrew layout,
-# and slock gives no visual feedback to reveal what went wrong.
+# Force a Latin layout first: the password cannot be typed on a non-Latin
+# layout, and slock gives no visual feedback to reveal what went wrong.
 setxkbmap us
 
 slock

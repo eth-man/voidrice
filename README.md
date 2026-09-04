@@ -101,8 +101,9 @@ script is callable by name as soon as it is `chmod +x`.
 
 ## Notes
 
-Keys that must survive the `us`/`il` layout switch are bound with `bindcode`
-rather than `bindsym`, since keysyms move with the layout and keycodes do not.
+Keys that must keep working across a keyboard layout switch are bound with
+`bindcode` rather than `bindsym`, since keysyms move with the layout and
+keycodes do not.
 
 Terminal font comes from `*.font` in `.config/x11/xresources`, which this build
 of st reads at runtime — no rebuild needed to change it. Note `xrdb` passes that
