@@ -1,43 +1,27 @@
 #!/usr/bin/env sh
 
-# Function to ensure dunst is running before sending notifications
-send_notify() {
-    pgrep -x dunst >/dev/null && notify-send "$@"
-}
-
 case $BLOCK_BUTTON in
-    1) $TERMINAL -e nmtui ;;
-    2)
-        send_notify "Connection Strength:" "$(awk 'NR==3 {print int($3 * 100 / 70)"%"}' /proc/net/wireless)"
-        send_notify "SSID is:" "$(nmcli -t -f active,ssid dev wifi | grep '^yes' | cut -d\: -f2)"
-        ;;
-    3)
-        send_notify " Internet module" "\- Click to connect
-        : wifi darker color = greater signal
-        󰤮: no Internet
-        󰈀 : ethernet"
-        ;;
+	1) $TERMINAL -e nmtui ;;
+	3) pgrep -x dunst >/dev/null && notify-send "🌐 Internet module" "\- Click to connect
+睊 : no wifi connection
+  : wifi connection with quality
+  : no ethernet
+  : ethernet working
+" ;;
 esac
 
-# Signal Calculation using your initial command
-signal=$(awk 'NR==3 {print int($3 * 100 / 70)}' /proc/net/wireless)
-#signal=$(grep '^\s*w' /proc/net/wireless | awk '{ print int($3 * 100 / 70)}')
+case "$(cat /sys/class/net/w*/operstate 2>/dev/null)" in
+	down) wificon="󰖪" && wificolor="#969993";;
+	up) wificon="$(awk '/^\s*w/ { print "󰖩", int($3 * 100 / 70) "% " }' /proc/net/wireless)" && wificolor="#ffffff"
+esac
 
-# Condition Checks and Icon Assignment.
-if grep -q up /sys/class/net/e*/operstate; then
-    wifiicon="<span color='#90EE90'>󰈀</span>"
-elif [ "$(cat /sys/class/net/w*/operstate)" = "up" ]; then
-    case $signal in
-        [0-25]) wifiicon="<span color='#FF0000'></span>" ;;
-        [26-50]) wifiicon="<span color='#FFFF00'></span>" ;;
-        [51-75]) wifiicon="<span color='#076670'></span>" ;;
-        *) wifiicon="<span color='#008008'></span>" ;;
-    esac
-else
-    wifiicon="<span color='#8c8c83'>󰤮</span>"
-fi
+case "$(cat /sys/class/net/e*/operstate 2>/dev/null)" in
+	down) lanicon="" && lancolor="#969993";;
+	up) lanicon="󰈀" && lancolor="#ffffff" ;;
+esac
 
 
+[ -n "$wificon" ] && printf "<span color='%s'>%s</span>" "$wificolor" "$wificon"
+[ -n "$lanicon" ] && printf "<span color='%s'>%s</span>" "$lancolor" "$lanicon"
 
-
-printf "%s\n" "$wifiicon"
+printf "\n"

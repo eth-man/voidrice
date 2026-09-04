@@ -39,7 +39,7 @@ for_window [instance="dropdown_*"] move position center
 
 bar {
 #	font pango:DejaVu Sans Mono, NerdFonts 11
-	font pango:mono 16
+	font pango:mono 14
 	status_command i3blocks
 	i3bar_command i3bar --transparency
 	position top
