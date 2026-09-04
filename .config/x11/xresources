@@ -1,6 +1,11 @@
 !! Transparency (0-1):
 *.alpha: 0.8
 
+!! How much more transparent an UNFOCUSED terminal is: st computes
+!! alphaUnfocus = alpha - alphaOffset, so 0.8 - 0.15 = 0.65 when unfocused.
+!! Set to 0.0 to make focused and unfocused identical.
+*.alphaOffset: 0.15
+
 !! Set a default font and font size as below.
 !! NOTE: xrdb runs this file through cpp, so /* ... */ is a real comment and
 !! swallows everything until its closing */. A stray "/*" here previously ate
