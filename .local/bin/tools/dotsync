@@ -1,0 +1,83 @@
+#!/usr/bin/env sh
+
+# Sync tracked dotfiles between the live $HOME and the isolated git clone.
+#
+# $HOME is deliberately NOT a git work tree any more. The repository lives at
+# $DOTREPO and is the only place `git` ever runs, so a stray `git add -A` can
+# no longer reach ~/.ssh, browser profiles or wallet data.
+#
+# The file list is always `git ls-files` from the repo. Nothing outside that
+# manifest is ever copied in either direction, so an untracked private file
+# cannot enter the repo by accident.
+#
+#   dotsync status    show tracked files that differ between $HOME and the repo
+#   dotsync diff [f]  full diff of those files ($HOME as "live", repo as "repo")
+#   dotsync capture   copy live $HOME edits INTO the repo, ready to commit
+#   dotsync deploy    copy repo state OUT to $HOME
+#
+# capture and deploy do nothing until confirmed with -y.
+
+DOTREPO="${DOTREPO:-$HOME/voidrice-repo}"
+
+[ -d "$DOTREPO/.git" ] || { echo "dotsync: no git repo at $DOTREPO" >&2; exit 1 ;}
+
+manifest() { git -C "$DOTREPO" ls-files ;}
+
+# Tracked paths that differ. A gitlink (submodule) is a directory here, skip it.
+changed() {
+	manifest | while IFS= read -r p; do
+		[ -d "$DOTREPO/$p" ] && continue
+		if [ -L "$DOTREPO/$p" ] || [ -L "$HOME/$p" ]; then
+			[ "$(readlink "$DOTREPO/$p" 2>/dev/null)" = "$(readlink "$HOME/$p" 2>/dev/null)" ] || echo "$p"
+		elif [ ! -e "$HOME/$p" ]; then
+			echo "$p"
+		elif ! cmp -s "$DOTREPO/$p" "$HOME/$p"; then
+			echo "$p"
+		fi
+	done
+}
+
+copy() { # copy $1/$3 -> $2/$3 preserving symlinks and modes
+	src="$1/$3"; dst="$2/$3"
+	mkdir -p "$(dirname "$dst")"
+	rm -f "$dst"
+	cp -a "$src" "$dst"
+}
+
+case "$1" in
+	status)
+		n=0
+		changed | while IFS= read -r p; do
+			if   [ ! -e "$HOME/$p" ];    then s="missing in \$HOME"
+			elif [ ! -e "$DOTREPO/$p" ]; then s="missing in repo"
+			else s="differs"; fi
+			printf "  %-52s %s\n" "$p" "$s"
+			n=1
+		done
+		[ -z "$(changed)" ] && echo "  in sync"
+		;;
+	diff)
+		if [ -n "$2" ]; then set -- "$2"; else set -- $(changed); fi
+		for p in "$@"; do
+			[ -n "$p" ] || continue
+			echo "=== $p ==="
+			diff -u "$DOTREPO/$p" "$HOME/$p" 2>/dev/null
+		done
+		;;
+	capture|deploy)
+		[ "$1" = capture ] && from="$HOME" && to="$DOTREPO" && dir="\$HOME -> repo"
+		[ "$1" = deploy  ] && from="$DOTREPO" && to="$HOME" && dir="repo -> \$HOME"
+		list="$(changed)"
+		[ -z "$list" ] && echo "  nothing to do; already in sync" && exit 0
+		echo "would copy $dir:"
+		echo "$list" | sed 's/^/  /'
+		[ "$2" = "-y" ] || { echo; echo "re-run with -y to apply"; exit 0 ;}
+		echo "$list" | while IFS= read -r p; do
+			[ -e "$from/$p" ] || { echo "  skip (absent in source): $p"; continue ;}
+			copy "$from" "$to" "$p" && echo "  ok: $p"
+		done
+		;;
+	*)
+		sed -n '3,22p' "$0" | sed 's/^# \{0,1\}//'
+		;;
+esac
