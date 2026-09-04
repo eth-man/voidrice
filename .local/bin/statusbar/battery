@@ -67,12 +67,13 @@ elif [ "$status" = "Full" ]; then
   color="#00FF00" # Green
 fi
 
-# Low Battery Warning (flashing)
-if [ "$capacity" -le 15 ]; then
-  if (( EPOCHSECONDS % 2 )); then
+# Low battery warning (flashing). Only while actually discharging: on the
+# charger a low percentage is being fixed, so it is not an alert state.
+if [ "$capacity" -le 15 ] && [ "$status" = "Discharging" ]; then
+  if [ $(( $(date +%s) % 2 )) -eq 1 ]; then
     color="#FF0000" # Red
   else
-    color="#000000" # Black (or your background color)
+    color="#000000" # Black (blinks against the bar)
   fi
 fi
 
@@ -85,19 +86,20 @@ elif [ "$capacity" -ge 50 ]; then
     icon=""
 elif [ "$capacity" -ge 30 ]; then
     icon=""
-    bctl set 25% >/dev/null
+    [ "$status" = "Discharging" ] && bctl set 25% >/dev/null
 elif [ "$capacity" -ge 20 ]; then
     icon=""
-    bctl set 15% >/dev/null
+    [ "$status" = "Discharging" ] && bctl set 15% >/dev/null
 elif [ "$capacity" -ge 15 ]; then
     icon=""
-    warn=" 󰀦"
-    bctl set 5% >/dev/null
+    if [ "$status" = "Discharging" ]; then warn=" 󰀦"; bctl set 5% >/dev/null; fi
 else
     icon=""
-    warn=" 󰀦 charge"
-    bctl set 5% >/dev/null
+    if [ "$status" = "Discharging" ]; then warn=" 󰀦 charge"; bctl set 5% >/dev/null; fi
 fi
+
+# Show that power is coming in, whatever the charge level.
+[ "$status" = "Charging" ] && icon="$icon"
 
 
 if [ "$status" = "Charging" ]; then
