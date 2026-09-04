@@ -44,7 +44,7 @@ on demand by `pkill -RTMIN+N i3blocks`.
 - `popupgrade` -- Spawns a `yay` upgrade, then refreshes `pacpackages`.
 - `gitcheck` -- **(fork)** State of this dotfiles repository: a tick when clean and level with origin, a down arrow and count when updates are waiting to pull, an up arrow when commits are unpushed, a warning sign when there are uncommitted changes. Fetches at most once every 15 minutes and runs with `GIT_TERMINAL_PROMPT=0` so it can never block the bar on a credential prompt. Signal 14.
 - `sb-theme` -- **(fork)** Not a module: a palette (`C_NORM`, `C_DIM`, `C_OK`, `C_INFO`, `C_WARN`, `C_ALERT`, `C_ACCENT`) plus an `sb()` helper, sourced by the others so the whole bar can be recoloured from one file.
-- `sb-bluetooth` -- **(fork)** Bluetooth adapter state.
+- `sb-bluetooth` -- **(fork)** Bluetooth state. Distinguishes off, blocked by rfkill, scanning, and connected; when a device is connected it shows an icon matching the device class (headset, phone, mouse, keyboard) plus that device's own battery when it reports one, turning amber below 20%. Left click opens the device menu, middle click toggles adapter power. Signal 17.
 - `sb-price` -- **(fork)** Cryptocurrency ticker. Signal 29.
 - `screen-timeout` -- **(fork)** Toggles and displays the DPMS screen timeout.
 - `spotifyControls`, `spotifyPlay` -- **(fork)** Spotify transport controls and now-playing. Signal 32.

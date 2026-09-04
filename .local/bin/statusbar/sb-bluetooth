@@ -1,20 +1,97 @@
 #!/usr/bin/env sh
+
+# i3blocks module: bluetooth adapter and what is connected to it.
+#
+#   󰂲  off, or blocked by rfkill (dim)
+#   󰂯  on, nothing connected
+#   󰂰  scanning for devices
+#   󰂱  connected -- shows the device, and its battery when the device reports one
+#
+# The previous version only ever reported the adapter's own power state, so a
+# connected headset and an idle adapter looked exactly the same.
+#
 # Requires bluez and bluez-utils.
 
 . "$HOME/.local/bin/statusbar/sb-theme"
 
+bt() { bluetoothctl "$@" 2>/dev/null ;}
+
+# Names can contain spaces, so read them a line at a time rather than by word.
+connected_macs() { bt devices Connected | awk '/^Device /{print $2}' ;}
+
+device_name() { bt info "$1" | sed -n 's/^\s*Name: //p' | head -1 ;}
+
+# Battery Percentage is reported by newer bluez as "0x50 (80)"; take the decimal.
+device_battery() { bt info "$1" | sed -n 's/.*Battery Percentage:.*(\([0-9]\+\)).*/\1/p' | head -1 ;}
+
+# Pick an icon suiting the device class, so a headset and a phone differ.
+device_icon() {
+	case "$(bt info "$1" | sed -n 's/^\s*Icon: //p' | head -1)" in
+		*audio*|*headset*|*headphone*) echo "󰋋" ;;
+		phone)                         echo "󰏲" ;;
+		input-mouse)                   echo "󰍽" ;;
+		input-keyboard)                echo "󰌌" ;;
+		*)                             echo "󰂱" ;;
+	esac
+}
+
+show="$(bt show)"
+
 case $BLOCK_BUTTON in
 	1) dmenu-bluetooth ;;
-	2) setsid -f "$TERMINAL" -e bluetoothctl >/dev/null 2>&1 ;;
-	3) notify-send "󰂯 Bluetooth module" "\- 󰂯 powered, 󰂲 off, 󰂰 discovering.
-- Left click manages devices with dmenu.
-- Middle click opens bluetoothctl." ;;
+	2) case "$show" in
+	       *"Powered: yes"*) bt power off >/dev/null; notify-send "󰂲 Bluetooth" "Powered off" ;;
+	       *)                bt power on  >/dev/null; notify-send "󰂯 Bluetooth" "Powered on" ;;
+	   esac
+	   pkill -RTMIN+17 i3blocks ;;
+	3) info=""
+	   for m in $(connected_macs); do
+	       b="$(device_battery "$m")"
+	       info="$info$(device_name "$m")${b:+  ${b}%}
+"
+	   done
+	   pgrep -x dunst >/dev/null && notify-send "󰂯 Bluetooth module" "${info:-Nothing connected}
+- 󰂲 off  󰂯 on  󰂰 scanning  󰂱 connected
+- Left click manages devices.
+- Middle click toggles power." ;;
 esac
 
-show="$(bluetoothctl show 2>/dev/null)"
+# rfkill outranks everything: the adapter cannot be used while blocked, and
+# "powered off" would be a misleading way to describe that.
+if rfkill list bluetooth 2>/dev/null | grep -q 'blocked: yes'; then
+	sb "$C_DIM" "󰂲"
+	exit 0
+fi
+
+case "$show" in
+	*"Powered: yes"*) ;;
+	*) sb "$C_DIM" "󰂲"; exit 0 ;;
+esac
+
+macs="$(connected_macs)"
+
+if [ -n "$macs" ]; then
+	count=$(printf '%s\n' "$macs" | grep -c .)
+	first=$(printf '%s\n' "$macs" | head -1)
+	icon="$(device_icon "$first")"
+	batt="$(device_battery "$first")"
+
+	if [ "$count" -gt 1 ]; then
+		label="$icon $count"
+	else
+		label="$icon${batt:+ ${batt}%}"
+	fi
+
+	# Warn when the connected device's own battery is getting low.
+	if [ -n "$batt" ] && [ "$batt" -le 20 ]; then
+		sb "$C_WARN" "$label"
+	else
+		sb "$C_OK" "$label"
+	fi
+	exit 0
+fi
 
 case "$show" in
 	*"Discovering: yes"*) sb "$C_INFO" "󰂰" ;;
-	*"Powered: yes"*)     sb "$C_NORM" "󰂯" ;;
-	*)                    sb "$C_DIM"  "󰂲" ;;
+	*)                    sb "$C_NORM" "󰂯" ;;
 esac
