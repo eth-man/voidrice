@@ -4,33 +4,55 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this repository is
 
-`voidrice` — a fork of Luke Smith's LARBS dotfiles (`eth-man/voidrice`, branch `archi3`), adapted for
+`voidrice` — a fork of Luke Smith's LARBS dotfiles (`eth-man/voidrice`, default branch `main`), adapted for
 sysadmin daily use on Arch Linux + i3-gaps + i3blocks. There is no build system, no test suite, and no
 compiled code: everything here is either a config file or a POSIX-sh/bash script. "Testing" a change
 means running the script or reloading the program it configures.
 
-## Critical: the work tree is `$HOME`
+## Critical: the repo is NOT your $HOME
 
-The git work tree is **`/home/ran`**, not a project subdirectory. `/home/ran/voidrice-repo` is an empty
-directory that exists only as a working-directory anchor — all real files live at paths like
-`~/.config/i3/config` and `~/.local/bin/...`.
+The repository lives at **`~/voidrice-repo`** and `$HOME` is not a git work tree at all. Run `git` only
+inside the repo. This is deliberate: the work tree used to be `$HOME`, where a single `git add -A` would
+have committed `~/.ssh`, `~/.gnupg`, 2.7GB of browser profile with saved passwords and cookies, Ledger
+Live wallet data and filezilla credentials to a public repository.
 
-Consequences that matter every session:
+The old repo is kept, disabled, at `~/.git.disabled-20260904`. It holds nothing the clone does not —
+every ref, including a 2021 stash preserved as branch `archive/stash-2021-07-25`, was transferred first.
+Restore it with `mv ~/.git.disabled-* ~/.git` only if you have a reason to.
 
-- There is **no `.gitignore`**, so `git status` lists the entire home directory as untracked
-  (browser profiles, caches, keys, `~/.claude/`, …). This is expected, not a problem to fix.
-- **Never run `git add -A`, `git add .`, or `git commit -a`.** Stage only explicit paths:
-  `git -C ~ add .local/bin/statusbar/foo`. A blanket add would commit private data to a public repo.
-- `git ls-files` is the authoritative list of what belongs to the project (~159 files). Before editing
-  a file, it is worth confirming it is tracked — several scripts referenced by configs
-  (`statusbar/sb-bluetooth`, `statusbar/screen-timeout`, `i3cmds/dmenu-bluetooth`) are **untracked**,
-  so the checked-in i3blocks config references modules that are not in the repo.
+**Files therefore exist in two places** and must be kept in step with `dotsync`
+(`.local/bin/tools/dotsync`):
+
+```
+dotsync status     tracked files that differ between $HOME and the repo
+dotsync diff [f]   full diff
+dotsync capture    copy live $HOME edits INTO the repo, to commit   (-y to apply)
+dotsync deploy     copy repo state OUT to $HOME                     (-y to apply)
+```
+
+The manifest is always `git ls-files` from the repo, so only already-tracked paths are ever copied and an
+untracked private file has no route into the repository. Both directions are dry-run until `-y`.
+
+The practical loop: edit in `$HOME` so the change is live, `dotsync capture -y`, then commit in the repo.
+Or edit in the repo and `dotsync deploy -y`. Either way run `dotsync status` before committing, or you
+will commit a half-synced tree.
+
+Other things that matter every session:
+
+- `.gitignore` exists now and blocks credentials, wallets, browser profiles and caches. It is a second
+  line of defence, not the first — the first is that those files are not in the repo directory at all.
+  Ignoring does not untrack: nothing sensitive is tracked or anywhere in history, and it must stay that way.
+- Still prefer explicit paths over `git add -A`. The blast radius is now small, but the habit is cheap.
+- `git ls-files` is the authoritative list of what belongs to the project (~176 files on `main`).
 - Some `$HOME` entries are symlinks into `.config` and must stay that way: `.vimrc` → `.config/nvim/init.vim`,
   `.vim` → `.config/nvim/`, `.xprofile` → `.config/x11/xprofile`, `.bash_profile`/`.zprofile` → `.profile`.
-  Edit the target, not the link.
+  Edit the target, not the link. `dotsync` preserves symlinks rather than dereferencing them.
 - `.profile` is shared by bash *and* zsh (via the `.zprofile` symlink), so it must stay POSIX and must not
   unconditionally source `.bashrc` — zsh has no `shopt`. The `[ -n "$BASH_VERSION" ]` guard at the end is
   load-bearing.
+- `.config/mpv/script_modules/mpvSockets` is a git submodule. A fresh clone needs
+  `git submodule update --init --recursive`, or mpv IPC sockets never appear and `pauseallmpv` and
+  `mpv-hover` fail silently.
 
 ## Layout and how the pieces connect
 
@@ -72,21 +94,22 @@ Every `statusbar/` script follows the same shape, and new modules should too:
    modules colorize with `printf "<span color='%s'>%s</span>\n" "$color" "$icon"`. The repo's dynamic-color
    palette: `#ffffff` normal, `#969993` disabled/greyed, `#ffff00` warning, `#DC143C`/`#e8cb61` alert.
 3. Icons are **Nerd Fonts glyphs** (not emoji, despite what `SCRIPTS.md` still says) — the bar font is
-   `pango:mono 16`. Copy an existing glyph rather than typing one; they are literal UTF-8 in the source.
+   `pango:mono 14` with `separator_block_width=8` (both tuned down to stop the rightmost block
+   being clipped). Copy an existing glyph rather than typing one; they are literal UTF-8 in the source.
 
 **Refreshing a module is signal-based.** A block declares `signal=N` in `.config/i3blocks/config`, and
 anything that changes its state ends with `pkill -RTMIN+N i3blocks`. Registered signals in this fork:
 
 | N | block | N | block |
 |---|---|---|---|
-| 4 | stocks (`stocks-toggle`; no block registered) | 10 | volume |
-| 13 | brightness | | |
-| 5 | weather | 11 | music (via the `mpdupdate` daemon) |
-| 6 | news | 12 | mailbox |
-| 7 | torrent | 29 | sb-price (`[btcprice]`, commented out) |
-| 8 | pacpackages | 30 | i3-keyboard-layout |
-| 9 | recording | 31 | ping-lat |
-| | | 32 | spotifyControls |
+| 3 | vpn | 12 | mailbox |
+| 5 | weather | 13 | brightness |
+| 6 | news | 29 | sb-price (`[btcprice]`, disabled) |
+| 7 | torrent | 30 | i3-keyboard-layout |
+| 8 | pacpackages | 31 | ping-lat |
+| 9 | recording | 32 | spotifyControls |
+| 10 | volume | 4 | stocks (`stocks-toggle`; no block registered) |
+| 11 | music (via the `mpdupdate` daemon) | | |
 
 Adding a module means: write `statusbar/<name>`, `chmod +x`, add a `[<name>]` section with `interval`
 (and `signal` if it is event-driven) to `.config/i3blocks/config`, then restart the bar. i3blocks reads
@@ -94,6 +117,9 @@ its config only at startup, so a *config* change needs `i3-msg restart` (`mod+Sh
 script's output alone is picked up by `pkill -SIGUSR1 i3blocks`, which re-runs every block.
 
 ## Applying changes without logging out
+
+Reloading reads from `$HOME`, never from the repo. If you edited in the repo, `dotsync deploy -y` first
+or you will reload the old file and conclude, wrongly, that your change did nothing.
 
 | Changed | Reload with |
 |---|---|
@@ -141,3 +167,34 @@ deliberately keeps i3/i3blocks, ranger and the sub-directory layout. Port indivi
 the X selection, defines a shell function per applicable handler, and offers them in dmenu. To make a new
 script reachable from it, add a guarded `... && funcname() { yourscript "$@" ;}` line — the dmenu list is
 built from `declare -F`, so the function name is what the user sees.
+
+## Multiple machines
+
+This fork is used on several ThinkPads and they drift. `main` on GitHub is canonical; a local clone can be
+far behind, so `git fetch` and check `git status -sb` before assuming a script is missing or a bug is new.
+When the same script has been edited on two machines, prefer the newer committed version and re-apply the
+local tweak on top, rather than reverting wholesale.
+
+Two merge hazards seen in practice, both worth checking after any sync:
+
+- **Duplicate i3blocks entries.** The same `[block]` added in different positions on two machines merges
+  cleanly into *two* blocks and shows a doubled icon. Git reports no conflict. Check with
+  `grep '^\[' .config/i3blocks/config | sort | uniq -d`.
+- **Silently reverted preferences.** Resolving a conflict by taking one side wholesale can flip a setting
+  the other machine deliberately changed (a commented-out block becoming enabled, for instance). Read the
+  resolved hunks rather than trusting the merge.
+
+The related LARBS installer lives in its own repo, `eth-man/larbs` — `larbs.sh` and `progs.csv`. If a new
+dependency is introduced here (a status module needing `brightnessctl`, say), it belongs in that repo's
+`progs.csv`, not this one.
+
+## Known-broken things worth not re-breaking
+
+- `statusbar/battery` was dead for a while: `[[ "$prev_status"!= "Charging" ]]` is missing the space
+  before `!=`, which is a syntax error, and unguarded `"$brightnessctl_path"` calls expand to `""` when
+  brightnessctl is absent. Debug `echo`s in a statusbar module print *into the bar* — send them to stderr.
+- `statusbar/internet` exists in two designs across machines. The single-icon rewrite has a live bug:
+  `case $signal in [0-25])` is a glob matching one character, so any two-digit signal skips every
+  threshold and lands on the default branch.
+- `i3cmds/oui-lookup` pins wireshark's `release-4.0` deliberately — newer branches no longer publish
+  `manuf`. Do not "fix" it to `master`.
