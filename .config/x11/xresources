@@ -1,9 +1,11 @@
 !! Transparency (0-1):
-*.alpha: 0.8
+*.alpha: 0.92
 
 !! How much more transparent an UNFOCUSED terminal is: st computes
-!! alphaUnfocus = alpha - alphaOffset, so 0.8 - 0.15 = 0.65 when unfocused.
+!! alphaUnfocus = alpha - alphaOffset, so 0.92 - 0.15 = 0.77 when unfocused.
 !! Set to 0.0 to make focused and unfocused identical.
+!! Alt+a / Alt+s adjust the focused window live, to find a value before
+!! committing it here.
 *.alphaOffset: 0.15
 
 !! Set a default font and font size as below.
