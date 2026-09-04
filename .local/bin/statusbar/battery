@@ -4,8 +4,12 @@ battery_name="$1"
 brightness_file="$HOME/.brightness"
 charging_state_file="$HOME/.charging_state"
 
-brightnessctl_path=$(which brightnessctl)
-cat_path=$(which cat)
+brightnessctl_path=$(command -v brightnessctl)
+cat_path=$(command -v cat)
+
+# brightnessctl is optional; without this guard an empty $brightnessctl_path
+# expands to "" and the shell reports "command not found" into the status bar.
+bctl() { [ -n "$brightnessctl_path" ] || return 0; "$brightnessctl_path" "$@" 2>/dev/null ;}
 
 if [ ! -d /sys/class/power_supply/"$battery_name" ]; then
     echo "Battery '$battery_name' not found!" >&2
@@ -20,7 +24,7 @@ capacity=$(cat /sys/class/power_supply/"$battery_name"/capacity) || exit
 status=$(cat /sys/class/power_supply/"$battery_name"/status)
 
 prev_status="$("$cat_path" "$charging_state_file" 2>/dev/null)"
-current_brightness="$("$brightnessctl_path" get 2>/dev/null)"
+current_brightness="$(bctl get)"
 
 icon="󰂑" # Default icon
 warn=""
@@ -79,33 +83,33 @@ elif [ "$capacity" -ge 50 ]; then
     icon="󰁾"
 elif [ "$capacity" -ge 30 ]; then
     icon="󰁼"
-    "$brightnessctl_path" set 25% >/dev/null
+    bctl set 25% >/dev/null
 elif [ "$capacity" -ge 20 ]; then
     icon="󰁻"
-    "$brightnessctl_path" set 15% >/dev/null
+    bctl set 15% >/dev/null
 elif [ "$capacity" -ge 15 ]; then
     icon="󰁺"
     warn="❗󰢟"
-    "$brightnessctl_path" set 5% >/dev/null
+    bctl set 5% >/dev/null
 else
     icon="󰁺"
     warn="Connect charger❗󰢟"
-    "$brightnessctl_path" set 5% >/dev/null
+    bctl set 5% >/dev/null
 fi
 
 
 if [ "$status" = "Charging" ]; then
     #...
 
-    if [[ "$prev_status"!= "Charging" ]]; then
-        if [[ -f "$brightness_file" ]]; then
+    if [ "$prev_status" != "Charging" ]; then
+        if [ -f "$brightness_file" ]; then
             brightness_value="$("$cat_path" "$brightness_file")"
-            echo "Restoring brightness to: $brightness_value"
-            "$brightnessctl_path" set "$brightness_value" >/dev/null
+            echo "Restoring brightness to: $brightness_value" >&2
+            bctl set "$brightness_value" >/dev/null
             restored=$?
-            echo "brightnessctl exit code: $restored"
-            if [[ $restored -ne 0 ]]; then
-                echo "Error restoring brightness"
+            echo "brightnessctl exit code: $restored" >&2
+            if [ "$restored" -ne 0 ]; then
+                echo "Error restoring brightness" >&2
             fi
         fi
     fi
