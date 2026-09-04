@@ -1,38 +1,26 @@
-#!/bin/sh
+#!/usr/bin/env sh
+. "$HOME/.local/bin/statusbar/sb-theme"
 
+OPENVPN_CONNECTION=$(pgrep -a 'openvpn$' | head -n 1 | awk '{print $NF}' |
+	sed 's|/etc/openvpn/client/||g; s/\.conf//g')
 
-  OPENVPN_CONNECTION=$(pgrep -a openvpn$ | head -n 1 | awk '{print $NF }' | sed 's/\/etc\/openvpn\/client\///g' | sed 's/.conf//g')
-  #OPENVPN_CONNECTION=$(pgrep -a openvpn$ | head -n 1 | grep -oP '(?<=config)(\s+)?\K([^ ]*)')
-
-
-  if [[ ! -z ${OPENVPN_CONNECTION} ]]; then
-    color="#e8cb61"
-    status=" "
-    info="$OPENVPN_CONNECTION"
-    info_server=$(awk '$1 == "remote"{print $2}' $OPENVPN_CONNECTION)
-    info_port=$(awk '$1 == "remote"{print $3}' $OPENVPN_CONNECTION)
-    info_proto=$(awk '$1 == "proto"{print $2}' $OPENVPN_CONNECTION)
-    info_cipher=$(awk '$1 == "cipher"{print $2}' $OPENVPN_CONNECTION)
-    info_auth=$(awk '$1 == "auth"{print $2}' $OPENVPN_CONNECTION)
-information="- Config:   ${info}
-- Server:   ${info_server}
-- Port:     ${info_port}
-- Protocol: ${info_proto}
-- Cipher:   ${info_cipher}
-- Auth:     ${info_auth}"
-
+if [ -n "$OPENVPN_CONNECTION" ]; then
+	color="$C_OK"; icon="󰦝"
+	information="- Config:   $OPENVPN_CONNECTION
+- Server:   $(awk '$1 == "remote"{print $2}' "$OPENVPN_CONNECTION" 2>/dev/null)
+- Port:     $(awk '$1 == "remote"{print $3}' "$OPENVPN_CONNECTION" 2>/dev/null)
+- Protocol: $(awk '$1 == "proto"{print $2}' "$OPENVPN_CONNECTION" 2>/dev/null)
+- Cipher:   $(awk '$1 == "cipher"{print $2}' "$OPENVPN_CONNECTION" 2>/dev/null)
+- Auth:     $(awk '$1 == "auth"{print $2}' "$OPENVPN_CONNECTION" 2>/dev/null)"
 else
-	color="#969993"
-	status=" "
-        information="Disconnected"
-  fi
-
-printf "<span color='%s'>%s%s%s</span>\n" "$color" $status""
-
+	color="$C_DIM"; icon="󰦞"
+	information="Disconnected"
+fi
 
 case $BLOCK_BUTTON in
-	1) notify-send "🔐VPN Status:" "
-${information}" ;;
-	3) notify-send "🔐VPN module" "\- Shows OPENVPN connection status.
-- Left Click to show OpenVpn info." ;;
+	1) notify-send "󰦝 VPN status" "$information" ;;
+	3) notify-send "󰦝 VPN module" "\- 󰦝 connected, 󰦞 disconnected.
+- Left click shows connection details." ;;
 esac
+
+sb "$color" "$icon"

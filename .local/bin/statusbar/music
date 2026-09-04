@@ -1,18 +1,32 @@
 #!/usr/bin/env sh
 
+# i3blocks mpd module. Song title, greyed and italic when paused.
+
+. "$HOME/.local/bin/statusbar/sb-theme"
+
 filter() {
-	sed "/^volume:/d" | tac | sed -e "s/\\&/&amp;/g;s/\\[paused\\].*/<span color=\"gray\" font_style=\"italic\">/g;s/\\[playing\\].*/<span>/g" | tr -d '\n' | sed -e "s/$/<\\/span>\n/g"
-	}
+	sed "/^volume:/d" | tac |
+	sed -e "s/\\&/\&amp;/g;s/\\[paused\\].*/<span color=\"gray\" font_style=\"italic\">/g;s/\\[playing\\].*/<span>/g" |
+	tr -d '\n' | sed -e "s/$/<\\/span>\n/g"
+}
 
 case $BLOCK_BUTTON in
-    1) mpc status | filter && setsid "$TERMINAL" -e ncmpcpp & ;;  # right click, pause/unpause
-    2) mpc toggle | filter ;;  # right click, pause/unpause
-    3) mpc status | filter && pgrep -x dunst >/dev/null && notify-send "🎵 Music module" "\- Shows mpd song playing.
-- Italic when paused.
+	1) setsid -f "$TERMINAL" -e ncmpcpp ;;
+	2) mpc toggle >/dev/null ;;
+	3) pgrep -x dunst >/dev/null && notify-send "󰎈 Music module" "\- Shows the mpd song playing.
+- Italic and grey when paused.
 - Left click opens ncmpcpp.
 - Middle click pauses.
-- Scroll changes track.";;  # right click, pause/unpause
-    4) mpc prev   | filter ;;  # scroll up, previous
-    5) mpc next   | filter ;;  # scroll down, next
-    *) mpc status | filter ;;
-esac; exit
+- Scroll changes track." ;;
+	4) mpc prev >/dev/null ;;
+	5) mpc next >/dev/null ;;
+esac
+
+song="$(mpc status 2>/dev/null | filter)"
+
+# mpc emits an empty wrapper when nothing is loaded.
+case "$song" in
+	''|'</span>'|'<span></span>') exit 0 ;;
+esac
+
+printf "<span color='%s'>󰎈 </span>%s\n" "$C_ACCENT" "$song"

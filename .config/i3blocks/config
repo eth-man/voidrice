@@ -19,7 +19,6 @@ interval=1
 interval=10
 
 [music]
-label=🎼
 interval=once
 signal=11
 
@@ -30,7 +29,6 @@ signal=11
 #signal=29
 
 [news]
-label=󰎕
 interval=once
 signal=6
 
@@ -50,7 +48,6 @@ interval=18000
 signal=5
 
 [mailbox]
-label=󰺻
 interval=180
 signal=12
 
@@ -60,7 +57,6 @@ signal=12
 
 [cpu]
 interval=15
-label=
 
 [volume]
 interval=once
@@ -79,8 +75,11 @@ command=battery BAT0
 interval=5
 
 [clock]
-label=
 interval=30
+
+[gitcheck]
+interval=300
+signal=14
 
 [sb-bluetooth]
 interval=5
