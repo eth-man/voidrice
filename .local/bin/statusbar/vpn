@@ -1,26 +1,50 @@
 #!/usr/bin/env sh
+
+# VPN status: WireGuard and OpenVPN.
+#
+#   󰦝 tunnel up (shows the interface / config name)
+#   󰦞 nothing connected
+#
+# WireGuard state comes from `wg show interfaces`, which is readable without
+# root; bringing tunnels up or down needs sudo and is delegated to wg-toggle.
+
 . "$HOME/.local/bin/statusbar/sb-theme"
 
-OPENVPN_CONNECTION=$(pgrep -a 'openvpn$' | head -n 1 | awk '{print $NF}' |
-	sed 's|/etc/openvpn/client/||g; s/\.conf//g')
+wg_iface="$(wg show interfaces 2>/dev/null)"
 
-if [ -n "$OPENVPN_CONNECTION" ]; then
-	color="$C_OK"; icon="󰦝"
-	information="- Config:   $OPENVPN_CONNECTION
-- Server:   $(awk '$1 == "remote"{print $2}' "$OPENVPN_CONNECTION" 2>/dev/null)
-- Port:     $(awk '$1 == "remote"{print $3}' "$OPENVPN_CONNECTION" 2>/dev/null)
-- Protocol: $(awk '$1 == "proto"{print $2}' "$OPENVPN_CONNECTION" 2>/dev/null)
-- Cipher:   $(awk '$1 == "cipher"{print $2}' "$OPENVPN_CONNECTION" 2>/dev/null)
-- Auth:     $(awk '$1 == "auth"{print $2}' "$OPENVPN_CONNECTION" 2>/dev/null)"
-else
-	color="$C_DIM"; icon="󰦞"
-	information="Disconnected"
+ovpn="$(pgrep -a 'openvpn$' 2>/dev/null | head -n 1 | awk '{print $NF}' |
+	sed 's|/etc/openvpn/client/||g; s/\.conf//g')"
+
+if [ -n "$wg_iface" ]; then
+	kind="WireGuard"; name="$wg_iface"
+	details="$(wg show "$wg_iface" 2>/dev/null | sed -n '1,12p')"
+	[ -n "$details" ] || details="- Interface: $wg_iface
+- Address:   $(ip -br -4 addr show "$wg_iface" 2>/dev/null | awk '{print $3}')
+(run as root for peer details)"
+elif [ -n "$ovpn" ]; then
+	kind="OpenVPN"; name="$ovpn"
+	details="- Config:   $ovpn
+- Server:   $(awk '$1 == "remote"{print $2}' "$ovpn" 2>/dev/null)
+- Port:     $(awk '$1 == "remote"{print $3}' "$ovpn" 2>/dev/null)
+- Protocol: $(awk '$1 == "proto"{print $2}' "$ovpn" 2>/dev/null)
+- Cipher:   $(awk '$1 == "cipher"{print $2}' "$ovpn" 2>/dev/null)"
 fi
 
 case $BLOCK_BUTTON in
-	1) notify-send "󰦝 VPN status" "$information" ;;
+	1) wg-toggle ;;
+	2) if [ -n "$kind" ]; then
+	       notify-send "󰦝 $kind: $name" "$details"
+	   else
+	       notify-send "󰦞 VPN" "Not connected"
+	   fi ;;
 	3) notify-send "󰦝 VPN module" "\- 󰦝 connected, 󰦞 disconnected.
-- Left click shows connection details." ;;
+- Covers WireGuard and OpenVPN.
+- Left click connects, disconnects or switches tunnel.
+- Middle click shows connection details." ;;
 esac
 
-sb "$color" "$icon"
+if [ -n "$kind" ]; then
+	sb "$C_OK" "󰦝 $name"
+else
+	sb "$C_DIM" "󰦞"
+fi
