@@ -1,0 +1,136 @@
+#!/usr/bin/env bash
+
+# Self-check for this dotfiles setup. Finds the classes of breakage that are
+# otherwise silent: a script that is not executable is simply unreachable, a
+# module that errors just shows an empty block, a glyph the font lacks is
+# quietly drawn by a different font, and a config that references a command
+# that was never installed fails only when you press the key.
+#
+#   voidrice-doctor          run every check
+#   voidrice-doctor -q       only report problems
+#
+# Exit status is the number of failures, so it is usable in CI or a hook.
+
+REPO="${DOTREPO:-$HOME/voidrice-repo}"
+BIN="$REPO/.local/bin"
+quiet=0; [ "$1" = "-q" ] && quiet=1
+fails=0; warns=0
+
+red=$'\033[31m'; yel=$'\033[33m'; grn=$'\033[32m'; dim=$'\033[2m'; off=$'\033[0m'
+sec()  { [ $quiet -eq 1 ] || printf '\n%s== %s ==%s\n' "$dim" "$1" "$off" ;}
+ok()   { [ $quiet -eq 1 ] || printf '  %sok%s   %s\n' "$grn" "$off" "$1" ;}
+warn() { printf '  %swarn%s %s\n' "$yel" "$off" "$1"; warns=$((warns+1)) ;}
+fail() { printf '  %sFAIL%s %s\n' "$red" "$off" "$1"; fails=$((fails+1)) ;}
+
+[ -d "$REPO/.git" ] || { echo "no repo at $REPO"; exit 1 ;}
+
+# ---------------------------------------------------------------- scripts ---
+sec "scripts"
+n=0; bad=0
+while IFS= read -r f; do
+	p="$REPO/$f"; [ -f "$p" ] || continue
+	case "$f" in *.md|*.kmap|*.png|*.mom) continue;; esac
+	head -c2 "$p" | grep -q '#!' || continue
+	n=$((n+1))
+	# Only files under .local/bin are executed; .bashrc, aliasrc and .xinitrc
+	# are sourced and legitimately have no executable bit.
+	case "$f" in .local/bin/*)
+		[ -x "$p" ] || { fail "not executable, so unreachable on \$PATH: $f"; bad=1; } ;;
+	esac
+	shebang=$(head -1 "$p")
+	case "$shebang" in
+		*bash) bash -n "$p" 2>/dev/null || { fail "bash syntax error: $f"; bad=1; } ;;
+		*sh)   sh -n "$p" 2>/dev/null   || { fail "sh syntax error: $f"; bad=1; }
+		       # bash-only constructs under a POSIX shebang: works only because
+		       # /bin/sh is bash here, breaks anywhere sh is dash.
+		       if grep -qP '\[\[|(?<!\$)\(\(|\bRANDOM\b|EPOCHSECONDS|\$\{[A-Za-z_]+\^\^|(?<!\$)<\(' "$p"; then
+		           warn "bashism under '$shebang': $f"
+		       fi ;;
+	esac
+done < <(cd "$REPO" && git ls-files)
+[ $bad -eq 0 ] && ok "$n scripts: shebang, executable bit and syntax all good"
+
+# -------------------------------------------------------------- i3blocks ---
+sec "i3blocks"
+cfg="$REPO/.config/i3blocks/config"
+if [ -f "$cfg" ]; then
+	dup=$(grep '^\[' "$cfg" | sort | uniq -d)
+	[ -n "$dup" ] && fail "duplicate block(s) -- these render twice: $(echo $dup)" || ok "no duplicate blocks"
+	dups=$(grep '^signal=' "$cfg" | sort | uniq -d)
+	[ -n "$dups" ] && fail "two blocks share a refresh signal: $(echo $dups)" || ok "no signal collisions"
+	miss=0
+	for b in $(grep '^\[' "$cfg" | tr -d '[]'); do
+		cmd=$(awk -v b="[$b]" '$0==b{f=1;next} /^\[/{f=0} f&&/^command=/{sub(/^command=/,"");print;exit}' "$cfg")
+		[ -n "$cmd" ] && continue          # explicit command= overrides the name
+		[ -f "$BIN/statusbar/$b" ] || { fail "block [$b] has no script at statusbar/$b"; miss=1; }
+	done
+	[ $miss -eq 0 ] && ok "every block resolves to a script"
+fi
+
+# --------------------------------------------------------------- i3 config ---
+sec "i3"
+i3cfg="$REPO/.config/i3/config"
+if [ -f "$i3cfg" ]; then
+	i3 -C -c "$i3cfg" >/dev/null 2>&1 && ok "config parses" || fail "i3 -C rejects the config"
+	dup=$(grep -oP '^bindsym \K\S+' "$i3cfg" | sort | uniq -d)
+	[ -n "$dup" ] && fail "duplicate binding(s), the later one wins: $(echo $dup)" || ok "no duplicate bindings"
+	PATH="$BIN/statusbar:$BIN/tools:$BIN/i3cmds:$BIN/cron:$PATH"
+	grep -v '^\s*#' "$i3cfg" | grep -ohE 'exec (--no-startup-id )?[a-z0-9._-]+' |
+	awk '{print $NF}' | sort -u | while read -r c; do
+		[ "$c" = "--no-startup-id" ] && continue
+		command -v "$c" >/dev/null 2>&1 || echo "$c"
+	done > /tmp/vd-missing.$$
+	if [ -s /tmp/vd-missing.$$ ]; then
+		while read -r c; do
+			if [ -f "$BIN/i3cmds/$c" ] || [ -f "$BIN/tools/$c" ]; then
+				fail "bound to $c, which is in the repo but not executable"
+			else
+				warn "bound to '$c', which is not installed"
+			fi
+		done < /tmp/vd-missing.$$
+	else ok "every bound command resolves"; fi
+	rm -f /tmp/vd-missing.$$
+fi
+
+# ------------------------------------------------------------------ fonts ---
+sec "fonts"
+if command -v fc-list >/dev/null; then
+	glyphs=$(cat "$BIN"/statusbar/* 2>/dev/null | python3 -c '
+import sys,re
+t=sys.stdin.read()
+print("\n".join(sorted(set(re.findall(r"[\ue000-\uf8ff\U000f0000-\U000ffffd]", t)))))' 2>/dev/null)
+	missing=""
+	for g in $glyphs; do
+		cp=$(printf '%s' "$g" | python3 -c 'import sys;print("%x"%ord(sys.stdin.read(1)))' 2>/dev/null)
+		[ -n "$cp" ] || continue
+		fc-list ":charset=$cp" family 2>/dev/null | grep -qi "Nerd Font" || missing="$missing U+${cp^^}($g)"
+	done
+	[ -n "$missing" ] && warn "glyph(s) not in a Nerd Font, so another font is substituted:$missing" \
+	                  || ok "every status bar glyph is in an installed Nerd Font"
+fi
+
+# ------------------------------------------------------------------- paths ---
+sec "paths referenced by .profile"
+prof="$REPO/.profile"
+if [ -f "$prof" ]; then
+	miss=0
+	while IFS= read -r line; do
+		val=$(echo "$line" | sed 's/.*="//; s/"$//')
+		case "$val" in *'$'*) val=$(eval echo "$val");; esac
+		case "$val" in /*|"$HOME"*) [ -e "$val" ] || { warn "$(echo "$line" | grep -oP '^export \K[A-Z_]+') points at a missing path: $val"; miss=1; };; esac
+	done < <(grep -E '^export (INPUTRC|WGETRC|SUDO_ASKPASS|GTK2_RC_FILES|NOTMUCH_CONFIG)=' "$prof")
+	[ $miss -eq 0 ] && ok "every path exported by .profile exists"
+fi
+
+# ------------------------------------------------------------------ dotsync ---
+sec "sync"
+if command -v dotsync >/dev/null 2>&1 || [ -x "$BIN/tools/dotsync" ]; then
+	drift=$("$BIN/tools/dotsync" status 2>/dev/null | grep -v 'in sync' | grep -c .)
+	[ "$drift" -gt 0 ] && warn "$drift tracked file(s) differ between \$HOME and the repo (dotsync status)" \
+	                   || ok "\$HOME and the repo are in sync"
+fi
+[ -d "$HOME/.git" ] && fail "\$HOME is a git work tree again -- that is what dotsync exists to avoid"
+
+# ------------------------------------------------------------------ summary ---
+printf '\n  %d failure(s), %d warning(s)\n' "$fails" "$warns"
+exit "$fails"

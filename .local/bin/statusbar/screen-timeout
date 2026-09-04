@@ -65,11 +65,11 @@ dpms_enabled=$(xset q | grep "DPMS is" | awk '{print $3}')
 remaining_minutes=$minutes
 
 # Determine icon and color
-if [[ "$dpms_enabled" == "Disabled" ]]; then
+if [ "$dpms_enabled" = "Disabled" ]; then
   icon="󱎫"
   color="#ffffff" # White
   output="$icon off"
-elif [[ $remaining_minutes -le 1 ]]; then
+elif [ "$remaining_minutes" -le 1 ]; then
   icon="󱎫"
   color="#ff0000" # Red
   output="$icon"
