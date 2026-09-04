@@ -1,5 +1,12 @@
 name: Sync sac from ssh-alias-creator
 
+# Keeps .local/bin/tools/sac in step with its own repository.
+#
+# The branch is not hardcoded: this workflow broke silently for 61 runs after
+# the default branch was renamed from archi3 to main, because checkout asked
+# for a branch that no longer existed. Deriving it from the repository means a
+# future rename cannot do the same.
+
 on:
   schedule:
     - cron: '0 6 * * *'
@@ -14,21 +21,30 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          ref: archi3
 
       - name: Fetch latest sac
-        run: curl -fsSL https://raw.githubusercontent.com/eth-man/ssh-alias-creator/main/sac -o .local/bin/tools/sac
+        run: |
+          set -euo pipefail
+          curl -fsSL --retry 3 --retry-delay 5 --max-time 60 \
+            https://raw.githubusercontent.com/eth-man/ssh-alias-creator/main/sac \
+            -o sac.new
+          # Refuse to commit an error page or a truncated download.
+          test -s sac.new
+          head -1 sac.new | grep -q '^#!' || { echo "fetched file is not a script"; exit 1; }
+          mv sac.new .local/bin/tools/sac
+          chmod +x .local/bin/tools/sac
 
       - name: Commit and push if changed
         run: |
-          chmod +x .local/bin/tools/sac
+          set -euo pipefail
           if git diff --quiet -- .local/bin/tools/sac; then
             echo "sac is already up to date"
             exit 0
           fi
-          git config user.name "github-actions[bot]"
+          git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add .local/bin/tools/sac
           git commit -m "Sync sac from ssh-alias-creator"
-          git push origin HEAD:archi3
+          git push origin "HEAD:${DEFAULT_BRANCH}"
+        env:
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
