@@ -1,0 +1,37 @@
+#!/usr/bin/env sh
+
+# i3blocks module showing network throughput since the last run. With
+# `interval=1` in the i3blocks config this reads as bytes per second.
+# Complements `ping-lat` (latency) and `internet` (link state).
+
+case $BLOCK_BUTTON in
+	1) setsid -f "$TERMINAL" -e "$(command -v bmon || command -v iftop || echo nload)" >/dev/null 2>&1 ;;
+	3) pgrep -x dunst >/dev/null && notify-send "󰇚󰕒 Network traffic module" "󰇚: received
+󰕒: transmitted
+- Left click for a live traffic monitor." ;;
+esac
+
+update() {
+	sum=0
+	for arg; do
+		read -r i < "$arg"
+		sum=$((sum + i))
+	done
+	cache="/tmp/${1##*/}"
+	if [ -f "$cache" ]; then read -r old < "$cache"; else old=0; fi
+	printf "%d\n" "$sum" > "$cache"
+	printf "%d\n" "$((sum - old))"
+}
+
+rx="$(update /sys/class/net/[ew]*/statistics/rx_bytes)"
+tx="$(update /sys/class/net/[ew]*/statistics/tx_bytes)"
+
+# Highlight when the link is genuinely busy (>1 MiB in the interval).
+if [ "$rx" -gt 1048576 ] || [ "$tx" -gt 1048576 ]; then
+	color="#e8cb61"
+else
+	color="#ffffff"
+fi
+
+# shellcheck disable=SC2046
+printf "<span color='%s'>󰇚%4sB 󰕒%4sB</span>\n" "$color" $(numfmt --to=iec "$rx" "$tx")

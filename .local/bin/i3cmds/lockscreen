@@ -1,0 +1,23 @@
+#!/usr/bin/env sh
+
+# Screen locker, bound to XF86ScreenSaver and XF86Suspend in the i3 config.
+# Pauses all audio before locking and restores the previous mute state after,
+# so locking never leaves music playing to an empty room.
+
+ifinstalled slock || exit 1
+
+was_muted="$(pulsemixer --get-mute 2>/dev/null)"
+
+mpc pause >/dev/null 2>&1 &
+pauseallmpv &
+pulsemixer --mute >/dev/null 2>&1
+
+# Force the US layout first: the password cannot be typed on the Hebrew layout,
+# and slock gives no visual feedback to reveal what went wrong.
+setxkbmap us
+
+slock
+
+# Only unmute if we were the ones who muted it.
+[ "$was_muted" = "0" ] && pulsemixer --unmute >/dev/null 2>&1
+pkill -RTMIN+10 i3blocks

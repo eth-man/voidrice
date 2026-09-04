@@ -1,0 +1,100 @@
+#!/usr/bin/env bash
+
+# Mounts USB drives (encrypted or not) and Android phones via dmenu.
+# Supersedes `dmenumount`, which could not handle LUKS volumes.
+# Requires: simple-mtpfs, cryptsetup. Uses $SUDO_ASKPASS (dmenupass).
+
+IFS='
+'
+escape(){ echo "$@" | iconv -cf UTF-8 -t ASCII//TRANSLIT | tr -d '[:punct:]' | tr '[:upper:]' '[:lower:]' | tr ' ' '-' | sed "s/-\+/-/g;s/\(^-\|-\$\)//g" ;}
+
+# Phones that are visible but not already mounted.
+phones="$(simple-mtpfs -l 2>/dev/null | sed "s/^/📱/")"
+mountedphones="$(grep "simple-mtpfs" /etc/mtab)"
+[ -n "$mountedphones" ] && phones="$(for phone in $phones; do
+	for mounted in $mountedphones; do
+		escphone="$(escape "$phone")"
+		[[ "$mounted" =~ $escphone ]] && break 1
+	done && continue 1
+	echo "$phone"
+done)"
+
+lsblkoutput="$(lsblk -rpo "uuid,name,type,size,label,mountpoint,fstype")"
+allluks="$(echo "$lsblkoutput" | grep crypto_LUKS)"
+decrypted="$(find /dev/disk/by-id/dm-uuid-CRYPT-LUKS2-* 2>/dev/null | sed "s|.*LUKS2-||;s|-.*||")"
+filter() { sed "s/ /:/g" | awk -F':' '$7==""{printf "%s%s (%s) %s\n",$1,$3,$5,$6}' ; }
+
+# LUKS volumes that are not yet decrypted.
+unopenedluks="$(for drive in $allluks; do
+	uuid="${drive%% *}"
+	uuid="${uuid//-}"
+	[ -n "$decrypted" ] && for open in $decrypted; do
+		[ "$uuid" = "$open" ] && break 1
+	done && continue 1
+	echo "🔒 $drive"
+done | filter)"
+
+# Plain partitions that are not mounted.
+normalparts="$(echo "$lsblkoutput" | grep -v crypto_LUKS | grep 'part\|rom\|crypt' | sed "s/^/💾 /" | filter)"
+
+alldrives="$(echo "$phones
+$unopenedluks
+$normalparts" | sed "/^$/d;s/ *$//")"
+
+set -e
+test -n "$alldrives"
+
+chosen="$(echo "$alldrives" | dmenu -p "Mount which drive?" -i)"
+
+getmount(){
+	mp="$(find /mnt /media /mount /home -maxdepth 1 -type d 2>/dev/null | dmenu -i -p "Mount this drive where?")"
+	test -n "$mp"
+	if [ ! -d "$mp" ]; then
+		mkdiryn=$(printf "No\\nYes" | dmenu -i -p "$mp does not exist. Create it?")
+		[ "$mkdiryn" = "Yes" ] && (mkdir -p "$mp" || sudo -A mkdir -p "$mp")
+	fi
+}
+
+attemptmount(){
+	# Try a bare mount first, in case the drive is already in fstab.
+	sudo -A mount "$chosen" || return 1
+	notify-send "💾 Drive mounted." "$chosen mounted."
+	exit
+}
+
+case "$chosen" in
+	💾*)
+		chosen="${chosen%% *}"; chosen="${chosen:1}"
+		parttype="$(echo "$lsblkoutput" | grep "$chosen")"
+		attemptmount || getmount
+		case "${parttype##* }" in
+			vfat) sudo -A mount -t vfat "$chosen" "$mp" -o rw,umask=0000 ;;
+			ext4|btrfs) sudo -A mount "$chosen" "$mp" ;;
+			*) sudo -A mount "$chosen" "$mp" -o uid="$(id -u)",gid="$(id -g)" ;;
+		esac
+		notify-send "💾 Drive mounted." "$chosen mounted to $mp."
+		;;
+	🔒*)
+		chosen="${chosen%% *}"; chosen="${chosen:1}"
+		while true; do
+			[ -e "/dev/mapper/usb$num" ] || break
+			num="$(printf "%02d" "$((num + 1))")"
+		done
+		"${TERMINAL:-st}" -n floatterm -g 60x1 -e sudo cryptsetup open "$chosen" "usb$num"
+		test -b "/dev/mapper/usb$num"
+		attemptmount || getmount
+		case "$(lsblk -no FSTYPE "/dev/mapper/usb$num")" in
+			vfat) sudo -A mount -t vfat "/dev/mapper/usb$num" "$mp" -o rw,umask=0000 ;;
+			ext4|btrfs) sudo -A mount "/dev/mapper/usb$num" "$mp" ;;
+			*) sudo -A mount "/dev/mapper/usb$num" "$mp" -o uid="$(id -u)",gid="$(id -g)" ;;
+		esac
+		notify-send "🔓 Decrypted drive mounted." "$chosen decrypted and mounted to $mp."
+		;;
+	📱*)
+		notify-send "❗ Note" "Remember to allow file access on your phone now."
+		getmount
+		number="${chosen:1}"; number="${number%%:*}"
+		sudo -A simple-mtpfs -o allow_other -o fsname="simple-mtpfs-$(escape "$chosen")" --device "$number" "$mp"
+		notify-send "🤖 Android mounted." "Android device mounted to $mp."
+		;;
+esac

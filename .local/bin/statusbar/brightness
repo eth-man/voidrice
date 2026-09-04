@@ -1,0 +1,30 @@
+#!/usr/bin/env sh
+
+# i3blocks module showing backlight brightness. Requires `brightnessctl` for
+# the click/scroll actions; the readout itself only needs sysfs.
+
+case $BLOCK_BUTTON in
+	4) brightnessctl set +5% >/dev/null 2>&1 && pkill -RTMIN+13 i3blocks ;;
+	5) brightnessctl set 5%- >/dev/null 2>&1 && pkill -RTMIN+13 i3blocks ;;
+	3) pgrep -x dunst >/dev/null && notify-send "󰃠 Brightness module" "󰃠: current backlight level.
+- Scroll to change brightness." ;;
+esac
+
+set -- /sys/class/backlight/*/
+[ -d "$1" ] || exit
+
+read -r curr < "${1%/}/brightness"
+read -r max < "${1%/}/max_brightness"
+[ "$max" -gt 0 ] || exit
+
+percent=$((100 * curr / max))
+
+if [ "$percent" -le 20 ]; then
+	icon="󰃞"
+elif [ "$percent" -le 60 ]; then
+	icon="󰃟"
+else
+	icon="󰃠"
+fi
+
+printf "%s%d%%\n" "$icon" "$percent"

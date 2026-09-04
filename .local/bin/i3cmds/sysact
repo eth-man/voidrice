@@ -1,0 +1,24 @@
+#!/usr/bin/env sh
+
+# A dmenu wrapper for session and power actions. Adapted from LARBS upstream,
+# which signals the dwm process directly; under i3 we go through i3-msg.
+
+case "$(readlink -f /sbin/init)" in
+	*systemd*) ctl="systemctl" ;;
+	*) ctl="loginctl" ;;
+esac
+
+choice="$(printf '󰌾 lock\n󰗽 leave i3\n󰑐 restart i3\n󰤄 sleep\n󰋊 hibernate\n󰜉 reboot\n󰐥 shutdown\n󰶐 display off' |
+	dmenu -i -p 'Action: ')" || exit 1
+
+case "$choice" in
+	*lock)		lockscreen ;;
+	*'leave i3')	i3-msg exit ;;
+	*'restart i3')	i3-msg restart ;;
+	*sleep)		lockscreen & sleep 1 ; $ctl suspend ;;
+	*hibernate)	lockscreen & sleep 1 ; $ctl hibernate ;;
+	*reboot)	$ctl reboot ;;
+	*shutdown)	$ctl poweroff ;;
+	*'display off')	xset dpms force off ;;
+	*) exit 1 ;;
+esac
