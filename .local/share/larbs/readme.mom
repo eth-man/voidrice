@@ -3,8 +3,8 @@
 .SHIFT_LIST 10p
 ..
 .PARA_SPACE 1m
-.TITLE "\s+(10A Friendly Guide to LARBS!\s0"
-.AUTHOR "\s+5Luke Smith\s0"
+.TITLE "\s+(10A Guide to This System\s0"
+.AUTHOR "\s+5eth-man\s0"
 .DOCTYPE    DEFAULT
 .COPYSTYLE  FINAL
 .PRINTSTYLE TYPESET
@@ -24,20 +24,23 @@ Pressing \f(CWs\fP will fit it to window width (\f(CWa\fP to revert).
 By \f(CWMod\fP I mean the Super Key, usually known as "the Windows Key."
 .LIST OFF
 .PP
-Questions or suggestions? Email me at
-.PDF_WWW_LINK "mailto:luke@lukesmith.xyz" "luke@lukesmith.xyz"
+Questions or suggestions? Open an issue on the repository.
 .LI
 .ITEM
-LARBS website:
-.PDF_WWW_LINK "https://larbs.xyz"
+This fork:
+.PDF_WWW_LINK "https://github.com/eth-man/voidrice" "github.com/eth-man/voidrice"
 .ITEM
-My website:
-.PDF_WWW_LINK "https://lukesmith.xyz"
+The installer:
+.PDF_WWW_LINK "https://github.com/eth-man/larbs" "github.com/eth-man/larbs"
 .ITEM
-Donate:
-.PDF_WWW_LINK "https://lukesmith.xyz/donate" "https://lukesmith.xyz/donate"
+Upstream this was forked from:
+.PDF_WWW_LINK "https://github.com/LukeSmithxyz/voidrice" "Luke Smith's voidrice"
 .LIST OFF
 FAQs are at the end of this document.
+.PP
+This is a fork of Luke Smith's LARBS, kept on i3 and i3blocks rather than
+following upstream to dwm, and adapted for day-to-day sysadmin work.
+Anything below marked \fBfork\fP does not exist upstream.
 .HEADING 1 "Welcome!"
 .HEADING 2 "Basic goals and principles of this system:"
 .LI
@@ -85,8 +88,13 @@ I'm sure you can figure it out.
 Several modules will be click-sensitive, although if you're using my system as indented, you probably won't be doing much clicking.
 Still, you can right click on a module to get some information about what exactly it means.\c
 .FOOTNOTE
-The statusbar icons are merely emojis and you can change them by changing your emoji font.
-If you just want black and white icons, you should actually just be able to uninstall \f(CWttf-emojione\fP and the font will fall back on a black and white font.
+The statusbar icons are Nerd Fonts glyphs, not emojis, and every module colours
+itself: white is normal, grey means off or absent, amber wants attention and red
+is urgent. The palette lives in one place, \f(CW~/.local/bin/statusbar/sb-theme\fP,
+so the whole bar can be recoloured by editing that file rather than each module.
+Note that Symbols Nerd Font does not cover the whole Material range: if a glyph
+suddenly renders in a different weight, it has fallen back to another font and
+should be swapped for one the font actually has.
 .FOOTNOTE END
 .PP
 The i3blocks config is \f(CW~/.config/i3blocks/config\fP, which you can access by the
@@ -338,6 +346,63 @@ Each key sequence you pair with a file will become an alias to edit it in either
 Whenever you edit and save one of the bookmark files, vim will automatically rerun the shortcut script, thus updating the shortcuts that will be used in new instances of bash and vifm.
 It just werks.
 Note that it is your responsibility to ensure that none of the bindings you add conflict with another necessary function or command.
+.HEADING 1 "What This Fork Adds"
+.PP
+Everything here is \fBfork\fP, i.e. not in upstream LARBS. Upstream moved to dwm
+and dwmblocks; this keeps i3, i3blocks and ranger.
+.HEADING 2 "Networking and sysadmin"
+.LI
+.ITEM
+\f(CWMod+Ctrl+s\fP \(en pick a host from \f(CW~/.ssh/config\fP and ssh to it.
+.ITEM
+\f(CWsac\fP \(en ssh alias creator: \f(CWsac <alias> [<user>@]<host> [-p <port>]\fP appends a
+Host block to \f(CW~/.ssh/config\fP, which \f(CWMod+Ctrl+s\fP then offers.
+.ITEM
+\f(CWMod+Ctrl+v\fP \(en WireGuard: connect, disconnect or switch tunnel. The VPN
+module in the status bar names the interface while a tunnel is up and dims when
+nothing is connected; middle click it for endpoint, handshake age and transfer
+counters. Tunnels are read from
+\f(CW/etc/wireguard\fP, which is root-only because the configs hold private keys, so
+you will be asked for your password.
+.ITEM
+\f(CWMod+Shift+v\fP \(en Pritunl profile selection.
+.ITEM
+\f(CWMod+Shift+F3\fP \(en apply a saved screen layout from \f(CW~/.screenlayout\fP, for docking.
+.LIST OFF
+.HEADING 2 "The clipboard plumber"
+.PP
+\f(CWMod+c\fP takes whatever is in the selection and offers what can be done with it,
+based on what it looks like. A URL can be opened or played; a MAC address can be
+converted between Cisco, Windows and Unix notation, or looked up against the IEEE
+vendor database; a video link can be played in a floating mpv window; text can be
+turned into a QR code. To add your own handler, edit \f(CWcabl\fP and add a guarded
+line defining a shell function \(en the menu is built from the function names, so
+the name you choose is what you will see.
+.HEADING 2 "Status bar modules"
+.LI
+.ITEM
+\fBRepo\fP \(en the state of this dotfiles repository: a tick when clean and level with
+origin, a down arrow and count when updates are waiting to be pulled, an up arrow
+when commits have not been pushed, a warning sign when there are uncommitted
+changes. Click to fetch and see what is
+incoming. It fetches at most once every fifteen minutes.
+.ITEM
+\fBLatency\fP \(en round-trip time, which changes colour and warns as it degrades.
+.ITEM
+\fBVPN\fP \(en covers both WireGuard and OpenVPN, and names the active tunnel.
+.ITEM
+\fBPackages\fP \(en how many upgrades are pending; click to run them.
+.ITEM
+\fBScreen timeout\fP \(en the current blank timeout; right click to change it.
+.ITEM
+Weather is colour-coded by temperature, and the network icons grey out when a
+link is down.
+.LIST OFF
+.HEADING 2 "Keeping the dotfiles safe"
+.PP
+See \fIHow do I update or commit my dotfiles?\fP below. The short version is that
+the repository is \f(CW~/voidrice-repo\fP, not your home directory, and \f(CWdotsync\fP
+moves files between the two.
 .HEADING 1 "Frequently Asked Questions (FAQs)"
 .HEADING 2 "My keyboard isn't working as expected!"
 .PP
@@ -378,31 +443,66 @@ By default, mpd, the music daemon assumes that \f(CW~/Music\fP is your music dir
 This can be changed in \f(CW~/.config/mpd/mpd.conf\fP.
 When you add music to your music folder, you may have to run \f(CWmpc up\fP in the terminal to update the database.
 mpd is controlled by ncmpcpp, which is accessible by \f(CWMod+m\fP.
-.HEADING 2 "How do I update LARBS?"
+.HEADING 2 "How do I update or commit my dotfiles?"
 .PP
-LARBS is deployed as a git repository in your home directory.
-You can use it as such to fetch, diff and merge changes from the remote repository.
-If you don't want to do that or don't know how to use git, you can actually just rerun the script (as root) and reinstall LARBS and it will automatically update an existing install if you select the same username.
-This will overwrite the original config files though, including changes you made for them, but this is an easier brute force approach that will also install any new dependencies.
-.HEADING 2 "Where are the build files for st or AUR programs?"
+\fBfork:\fP the repository is \fBnot\fP your home directory. It lives in
+\f(CW~/voidrice-repo\fP and \f(CW$HOME\fP is not a git work tree at all. It used to
+be, but that meant a single \f(CWgit add -A\fP could commit \f(CW~/.ssh\fP, browser
+profiles with saved passwords, and wallet data to a public repository.
 .PP
-They are only created in \f(CW/tmp/\fP and thus are likely deleted after installation as they are not necessary.
-If you want to recompile a program, you will have to clone again.
-.HEADING 1 "Contact"
+Because the files therefore exist in two places, \f(CWdotsync\fP keeps them in step:
 .LI
 .ITEM
-.PDF_WWW_LINK "mailto:luke@lukesmith.xyz" "luke@lukesmith.xyz"
-\(en For questions!
+\f(CWdotsync status\fP \(en which tracked files differ between \f(CW$HOME\fP and the repo
 .ITEM
-.PDF_WWW_LINK "http://lukesmith.xyz" "https://lukesmith.xyz"
-\(en For stalking!
+\f(CWdotsync diff\fP \(en show those differences
 .ITEM
-.PDF_WWW_LINK "https://lukesmith.xyz/donate" "https://lukesmith.xyz/donate"
-\(en To incentivize more development of LARBS!
+\f(CWdotsync capture\fP \(en copy live \f(CW$HOME\fP edits into the repo, ready to commit
 .ITEM
-.PDF_WWW_LINK "https://github.com/LukeSmithxyz" "My Github Page"
-\(en For the code behind it!
+\f(CWdotsync deploy\fP \(en copy the repo back out to \f(CW$HOME\fP
+.LIST OFF
+.PP
+Both directions are a dry run until you add \f(CW-y\fP. The file list always comes
+from \f(CWgit ls-files\fP, so only already-tracked files move and an untracked
+private file has no way into the repository.
+.PP
+The usual loop is: edit in \f(CW$HOME\fP so the change is live, \f(CWdotsync capture -y\fP,
+then commit in \f(CW~/voidrice-repo\fP. The \fBrepo\fP module in the status bar shows when the
+repo is behind, ahead or dirty; click it to fetch and see what is waiting.
+.PP
+Reloading always reads from \f(CW$HOME\fP, never the repo, so if you edited in the
+repo run \f(CWdotsync deploy -y\fP first or you will reload the old file.
+.HEADING 2 "Where are the build files for st or AUR programs?"
+.PP
+\fBfork:\fP they are kept, not discarded \(en \f(CWst\fP and \f(CWdmenu\fP are cloned under
+\f(CW~/.local/src/\fP, so you can edit \f(CWconfig.h\fP and run \f(CWsudo make install\fP
+to rebuild in place.
+.PP
+For the terminal font you usually do \fBnot\fP need to rebuild: this build of st reads
+X resources, so \f(CW*.font\fP in \f(CW~/.config/x11/xresources\fP wins over
+\f(CWconfig.h\fP. Change the \f(CWpixelsize\fP there, run \f(CWxrdb ~/.config/x11/xresources\fP,
+and open a new terminal; existing windows keep the old font.
+.PP
+Beware that \f(CWxrdb\fP passes that file through \f(CWcpp\fP, so \f(CW/*\fP starts a real
+comment that runs until its closing \f(CW*/\fP. Comment lines with \f(CW!\fP instead \(en a
+stray \f(CW/*\fP silently swallowed the font line for a long time, which is why the
+font was small.
+.HEADING 1 "Contact and credit"
+.LI
 .ITEM
-.PDF_WWW_LINK "http://lukesmith.xyz/rss.xml" "RSS"
-\(en For updates!
+.PDF_WWW_LINK "https://github.com/eth-man/voidrice" "github.com/eth-man/voidrice"
+\(en these dotfiles.
+.ITEM
+.PDF_WWW_LINK "https://github.com/eth-man/larbs" "github.com/eth-man/larbs"
+\(en the installer and package list.
+.LIST OFF
+.PP
+The original LARBS is Luke Smith's work and this fork keeps his structure and
+most of his scripts. Credit for the foundation is his; the mistakes in the parts
+marked \fBfork\fP are mine.
+.LI
+.ITEM
+.PDF_WWW_LINK "https://github.com/LukeSmithxyz/voidrice" "Upstream voidrice"
+.ITEM
+.PDF_WWW_LINK "https://larbs.xyz" "larbs.xyz"
 .LIST OFF
