@@ -41,13 +41,15 @@ on demand by `pkill -RTMIN+N i3blocks`.
 - `pacpackages` -- **(fork, reworked)** Count of upgradable packages via `yay`. Only meaningful if a cronjob syncs repositories. Signal 8.
 - `ping-lat` -- **(fork)** Network latency monitor. Colours by threshold and raises a dunst notification above 80ms/110ms. Signal 31.
 - `popupgrade` -- Spawns a `yay` upgrade, then refreshes `pacpackages`.
-- `sb-bluetooth` -- **(fork)** Bluetooth adapter state. *Untracked by git.*
+- `gitcheck` -- **(fork)** State of this dotfiles repository: a tick when clean and level with origin, a down arrow and count when updates are waiting to pull, an up arrow when commits are unpushed, a warning sign when there are uncommitted changes. Fetches at most once every 15 minutes and runs with `GIT_TERMINAL_PROMPT=0` so it can never block the bar on a credential prompt. Signal 14.
+- `sb-theme` -- **(fork)** Not a module: a palette (`C_NORM`, `C_DIM`, `C_OK`, `C_INFO`, `C_WARN`, `C_ALERT`, `C_ACCENT`) plus an `sb()` helper, sourced by the others so the whole bar can be recoloured from one file.
+- `sb-bluetooth` -- **(fork)** Bluetooth adapter state.
 - `sb-price` -- **(fork)** Cryptocurrency ticker. Signal 29.
-- `screen-timeout` -- **(fork)** Toggles and displays the DPMS screen timeout. *Untracked by git.*
+- `screen-timeout` -- **(fork)** Toggles and displays the DPMS screen timeout.
 - `spotifyControls`, `spotifyPlay` -- **(fork)** Spotify transport controls and now-playing. Signal 32.
 - `torrent` -- Torrents idle, downloading or seeding. Signal 7.
 - `volume` -- Volume percentage or a mute glyph. Middle click mutes, scroll changes. Signal 10.
-- `vpn` -- **(fork)** VPN connection state.
+- `vpn` -- **(fork)** VPN state for both WireGuard and OpenVPN, naming the active tunnel. Left click hands off to `wg-toggle`; middle click shows endpoint, handshake age and transfer counters.
 - `weather` -- **(fork, reworked)** Forecast from wttr.in, with the temperature colour-coded by threshold. Signal 5.
 
 ## `cron/`
@@ -81,6 +83,8 @@ Run manually or bound from within vim and other programs.
 - `qndl` -- Queues a download with taskspooler and notifies on completion.
 - `queueandnotify` -- Reads the newsboat queue and hands each url to `qndl`. Replaces podboat.
 - `remaps` -- Maps capslock to escape when tapped and super when held, and the menu key to super.
+- `dotsync` -- **(fork)** Moves tracked files between `$HOME` and the repository at `~/voidrice-repo`, since `$HOME` is deliberately not a git work tree. `status`, `diff`, `capture` (into the repo), `deploy` (out to `$HOME`); the last two are a dry run until `-y`. The file list is always `git ls-files`, so only tracked paths move and an untracked private file cannot enter the repo.
+- `voidrice-doctor` -- **(fork)** Self-check for the whole setup, bound to `Mod+Shift+F1`. Catches the failures that are otherwise silent: a script missing its executable bit is simply unreachable, a module that errors just shows an empty block, a glyph the Nerd Font lacks is quietly drawn by a substitute font, and a binding to an uninstalled command fails only when the key is pressed. Also flags bash-only syntax under a `sh` shebang, duplicate i3blocks entries and signal collisions. Exits with the number of failures.
 - `remapd` -- **(fork, new)** Runs `remaps` again whenever a USB input device is hotplugged, so docking or attaching a keyboard does not silently lose the remap. Started from `xprofile`.
 - `rotdir` -- "Rotates" a directory listing around a chosen file so the image viewer can page through the rest of the directory in order.
 - `rssadd` -- Appends a feed url to `~/.config/newsboat/urls`, refusing duplicates.

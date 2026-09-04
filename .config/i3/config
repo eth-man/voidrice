@@ -269,7 +269,7 @@ bindsym $mod+Shift+F9	exec --no-startup-id dmenumountcifs
 bindsym $mod+F10	exec --no-startup-id unmounter
 bindsym $mod+F11	exec --no-startup-id ducksearch
 bindsym $mod+F12	exec $term -e nmtui
-bindsym $mod+Shift+F1	exec --no-startup-id toggle-welcome
+bindsym $mod+Shift+F1	exec --no-startup-id $term -e sh -c "voidrice-doctor; read -r _"
 
 # #---Arrow Keys---# #
 bindsym $mod+Left		focus left

@@ -18,7 +18,7 @@ case $BLOCK_BUTTON in
         ;;
 esac
 
-echo "<span font_desc='NerdFont 10'></span>"
+echo "<span font_desc='NerdFont 10'>󰝚</span>"
 # if spotify is started
 if [ "$(pidof spotify)" ]; then
     # status can be: Playing, Paused or Stopped
@@ -42,7 +42,7 @@ elif [ "$status" == Stopped ]; then
 else
 	#color="#D36060"
 	statusicon=""
-#	statusicon=""
+#	statusicon="󰝚"
 fi
 
  pkill -RTMIN+32 "${STATUSBAR}"
