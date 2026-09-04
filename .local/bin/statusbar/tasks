@@ -1,0 +1,40 @@
+#!/usr/bin/env sh
+
+# i3blocks module: background downloads queued with task spooler.
+#
+# `qndl` and `queueandnotify` hand work to tsp, which otherwise runs entirely
+# invisibly -- this shows how much is still outstanding. Hidden when the queue
+# is empty, so it costs no bar width the rest of the time.
+#
+#   󰇚 3(1)   three jobs, one of them still queued rather than running
+
+. "$HOME/.local/bin/statusbar/sb-theme"
+
+command -v tsp >/dev/null 2>&1 || exit 0
+
+case $BLOCK_BUTTON in
+	1) setsid -f "$TERMINAL" -e sh -c 'tsp -l; echo "[enter]"; read -r _' ;;
+	2) pgrep -x dunst >/dev/null && notify-send "󰇚 Task queue" "$(tsp -l 2>/dev/null | head -20)" ;;
+	3) pgrep -x dunst >/dev/null && notify-send "󰇚 Tasks module" "\- Background jobs queued with task spooler.
+- Shown as total(queued); hidden when the queue is empty.
+- Left click lists the queue, middle click notifies it.
+- Clear finished entries with: tsp -C" ;;
+esac
+
+run=0; queue=0
+while read -r line; do
+	case "$line" in
+		*running*) run=$((run + 1)) ;;
+		*queued*)  queue=$((queue + 1)) ;;
+	esac
+done <<TSPEOF
+$(tsp -l 2>/dev/null)
+TSPEOF
+
+total=$((run + queue))
+[ "$total" -gt 0 ] || exit 0
+
+# Still waiting to start is worth flagging; actively running is just progress.
+if [ "$queue" -gt 0 ]; then color="$C_WARN"; else color="$C_INFO"; fi
+
+sb "$color" "󰇚 $total($queue)"

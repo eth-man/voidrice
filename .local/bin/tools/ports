@@ -1,0 +1,69 @@
+#!/usr/bin/env sh
+
+# What is listening on this machine, and what owns it.
+#
+#   ports           table of listening sockets
+#   ports -d        same, but pick one in dmenu to inspect or kill
+#   ports 8080      only sockets on that port
+#
+# Process names for sockets owned by other users need root; without it those
+# rows show the socket but no process, which is noted rather than silently
+# left blank.
+
+ifinstalled ss || exit 1
+
+dmenu_mode=0
+[ "$1" = "-d" ] && { dmenu_mode=1; shift; }
+filter="$1"
+
+# -H omits the header so we can print our own; -n keeps ports numeric.
+raw="$(ss -tulpnH 2>/dev/null)"
+[ -n "$raw" ] || { echo "nothing listening" >&2; exit 0; }
+
+rows="$(printf '%s\n' "$raw" | awk -v want="$filter" '
+{
+    proto = $1
+    local = $5
+    # split host:port from the right, so IPv6 addresses survive
+    n = split(local, a, ":")
+    port = a[n]
+    host = substr(local, 1, length(local) - length(port) - 1)
+    if (host == "*" || host == "0.0.0.0" || host == "[::]") scope = "world"
+    else if (host ~ /^127\./ || host == "[::1]") scope = "local"
+    else scope = host
+
+    proc = "-"
+    if (match($0, /users:\(\(/)) {
+        proc = substr($0, RSTART)
+        gsub(/users:\(\("/, "", proc)
+        sub(/",.*/, "", proc)
+    }
+    if (want == "" || port == want)
+        printf "%s\t%s\t%s\t%s\n", port, proto, scope, proc
+}' | sort -n -u)"
+
+[ -n "$rows" ] || { echo "no match" >&2; exit 1; }
+
+if [ "$dmenu_mode" -eq 1 ]; then
+    chosen="$(printf 'PORT\tPROTO\tSCOPE\tPROCESS\n%s\n' "$rows" | column -t -s'	' | tail -n +2 |
+              dmenu -i -l 20 -p "Listening:")" || exit 0
+    [ -n "$chosen" ] || exit 0
+    port="${chosen%% *}"
+    act="$(printf 'show details\ncopy port\nkill owning process' | dmenu -i -p "Port $port:")" || exit 0
+    case "$act" in
+        "show details") notify-send "Port $port" "$(ss -tulpn 2>/dev/null | grep ":$port ")" ;;
+        "copy port")    printf '%s' "$port" | xclip -selection clipboard ;;
+        "kill owning process")
+            pid="$(ss -tulpnH 2>/dev/null | grep ":$port " | grep -o 'pid=[0-9]*' | head -1 | cut -d= -f2)"
+            [ -n "$pid" ] || { notify-send "Port $port" "No owning pid visible; try as root"; exit 1; }
+            [ "$(printf 'No\nYes' | dmenu -i -p "Kill pid $pid ($(ps -o comm= -p "$pid"))?")" = "Yes" ] &&
+                kill "$pid" && notify-send "Port $port" "Killed pid $pid" ;;
+    esac
+    exit 0
+fi
+
+printf 'PORT\tPROTO\tSCOPE\tPROCESS\n%s\n' "$rows" | column -t -s'	'
+
+printf '%s\n' "$rows" | grep -q '	-$' &&
+    printf '\n(processes shown as - belong to another user; rerun with sudo to see them)\n' >&2
+exit 0

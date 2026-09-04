@@ -28,6 +28,7 @@ on demand by `pkill -RTMIN+N i3blocks`.
 - `clock` -- Time and date. Click for a calendar or upcoming calcurse events.
 - `cpu` -- CPU temperature. Click for the most processor-intensive processes.
 - `disk` -- Disk usage for the mountpoint given as an argument.
+- `failed` -- **(fork)** Count of failed systemd units, system and user. Hidden entirely when nothing has failed, so it costs no bar width until it matters; a failed unit is otherwise invisible until you happen to run `systemctl`. Left click lists them. Signal 15.
 - `help` -- A question mark that opens the readme when clicked.
 - `i3-keyboard-layout` -- **(fork)** Current keyboard layout; cycled by `$mod+control+space`. Signal 30.
 - `internet` -- **(fork, reworked)** Wifi and ethernet state. Icons grey out (`#969993`) when a link is down. Click for `nmtui`.
@@ -47,6 +48,7 @@ on demand by `pkill -RTMIN+N i3blocks`.
 - `sb-price` -- **(fork)** Cryptocurrency ticker. Signal 29.
 - `screen-timeout` -- **(fork)** Toggles and displays the DPMS screen timeout.
 - `spotifyControls`, `spotifyPlay` -- **(fork)** Spotify transport controls and now-playing. Signal 32.
+- `tasks` -- **(fork)** Outstanding background jobs queued with task spooler by `qndl`/`queueandnotify`, shown as total(queued). Hidden when the queue is empty. Signal 16.
 - `torrent` -- Torrents idle, downloading or seeding. Signal 7.
 - `volume` -- Volume percentage or a mute glyph. Middle click mutes, scroll changes. Signal 10.
 - `vpn` -- **(fork)** VPN state for both WireGuard and OpenVPN, naming the active tunnel. Left click hands off to `wg-toggle`; middle click shows endpoint, handshake age and transfer counters.
@@ -79,6 +81,7 @@ Run manually or bound from within vim and other programs.
 - `lmc` -- Music/audio controller wrapping mpc and the mixer. The single place to change if you switch audio systems.
 - `opout` -- "Open output": opens the PDF matching a `.md`/`.tex`/`.rmd`, or an `.html` in the browser. Bound to `<leader>p` in vim.
 - `pauseallmpv` -- Pauses every running mpv instance over its IPC socket. Handles both socket layouts in use here: the `mpvSockets.lua` module's `/tmp/mpvSockets/<ppid>` and the older `/tmp/mpvsoc*` from the `mpv` alias in `aliasrc`.
+- `ports` -- **(fork)** What is listening on this machine and what owns it, as a table of port/protocol/scope/process. `ports 8080` filters to a port; `ports -d` (`Mod+Ctrl+p`) picks one in dmenu to inspect, copy or kill. Sockets owned by other users need root to show a process and are marked rather than left blank.
 - `podentr` -- Watches the newsboat queue with `entr` and runs `queueandnotify` on change.
 - `qndl` -- Queues a download with taskspooler and notifies on completion.
 - `queueandnotify` -- Reads the newsboat queue and hands each url to `qndl`. Replaces podboat.
@@ -124,7 +127,7 @@ Bound to keys in `~/.config/i3/config`; mostly dmenu interfaces.
 - `openvpn` -- **(fork)** Picks a `.ovpn` profile from `~/.local/ovpn-config` and connects.
 - `oui-lookup` -- **(fork)** Looks up a MAC address vendor in the Wireshark `manuf` database, cached at `~/.local/share/manuf` and refreshed monthly. Reached through `cabl`.
 - `prompt` -- Yes/No confirmation prompt used by the destructive bindings.
-- `samedir` -- Opens a terminal in the focused window's directory. `$mod+Shift+Return`.
+- `samedir` -- Opens a terminal in the focused window's directory. `Mod+Shift+Return`. Walks the process tree outward and takes the first process with a usable cwd; the previous version took whichever process sorted last in `pstree`, which landed in `$HOME` whenever the shell had a child running.
 - `showclip` -- Shows the clipboard and primary selection as notifications.
 - `sshmenu` -- **(fork)** Picks a host from `~/.ssh/config` and connects. `$mod+Ctrl+s`.
 - `sysact` -- **(fork, new)** Session and power menu: lock, leave/restart i3, sleep, hibernate, reboot, shutdown, display off. `$mod+BackSpace`.
