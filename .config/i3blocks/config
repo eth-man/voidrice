@@ -95,6 +95,7 @@ signal=14
 
 [sb-bluetooth]
 interval=5
+signal=17
 
 [nettraf]
 interval=2
