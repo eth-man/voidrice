@@ -19,4 +19,3 @@ picom &			# compositor: transparency, shadows, the opacity rules
 dunst &			# notifications
 xset r rate 300 50 &	# faster key repeat
 unclutter &		# hide the mouse when idle
-pipewire &		# audio
