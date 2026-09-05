@@ -23,7 +23,7 @@ globally. Modules handle clicks through `$BLOCK_BUTTON` and, because
 are Nerd Fonts glyphs, not emoji. A module with a `signal=N` line is refreshed
 on demand by `pkill -RTMIN+N i3blocks`.
 
-- `battery` -- Power remaining, with the icon and colour tracking charge level. Takes the battery name as an argument (`battery BAT0`).
+- `battery` -- Power remaining, with the icon and colour tracking charge level. Takes the battery name as an argument (`battery BAT0`). Below 10% while discharging it raises a critical dunst notification that stays on screen and is re-raised on the next 5s refresh if dismissed, and at 5% it suspends the machine after a 10s grace period which plugging in cancels. It will not suspend again for 5 minutes, so waking a still-critical machine does not drop straight back to sleep; connecting the charger re-arms it. Thresholds are the `warn_capacity` and `suspend_capacity` variables at the top of the low-battery section.
 - `brightness` -- **(fork)** Backlight level from sysfs, icon shifting with brightness. Scroll to change (needs `brightnessctl`). Signal 13.
 - `clock` -- Time and date. Click for a calendar or upcoming calcurse events.
 - `cpu` -- CPU temperature. Click for the most processor-intensive processes.
@@ -61,7 +61,7 @@ environment exports a cronjob needs before it can raise notifications.
 
 - `bgcron` -- **(fork)** Rotates the desktop wallpaper from `~/Wallpapers`.
 - `checkup` -- Syncs package repositories and downloads (but does not install) updates.
-- `cronbat` -- Warns via dunst when the battery drops below 25%.
+- `cronbat` -- Warns via dunst when the battery drops below 25%. Superseded by the `battery` status module, which does this without cron; it is also broken as written, hardcoding `/run/user/1001/bus` for a UID 1000 user.
 - `crontog` -- Not a cronjob itself; toggles all user cronjobs on and off.
 - `newsup` -- Refreshes newsboat feeds and updates the `news` block.
 
