@@ -17,7 +17,7 @@ if [ ! -d /sys/class/power_supply/"$battery_name" ]; then
 fi
 
 case $BLOCK_BUTTON in
-	3) pgrep -x dunst >/dev/null && notify-send " Battery module" " empty   low   half   high   full
+	3) pgrep -x dunst >/dev/null && notify-send " Battery module" " empty   low   half   high   full
 󰀦: battery very low
 - Text and icon colour reflect charge left." ;;
 esac
@@ -67,14 +67,12 @@ elif [ "$status" = "Full" ]; then
   color="#00FF00" # Green
 fi
 
-# Low battery warning (flashing). Only while actually discharging: on the
-# charger a low percentage is being fixed, so it is not an alert state.
+# Low battery. Only while actually discharging: on the charger a low
+# percentage is being fixed, so it is not an alert state. Steady red rather
+# than flashing - the block is re-run every 5s, so a time-based blink is
+# unreadable and just drags the eye to the corner of the screen.
 if [ "$capacity" -le 15 ] && [ "$status" = "Discharging" ]; then
-  if [ $(( $(date +%s) % 2 )) -eq 1 ]; then
-    color="#FF0000" # Red
-  else
-    color="#000000" # Black (blinks against the bar)
-  fi
+  color="#FF0000" # Red
 fi
 
 
@@ -127,6 +125,58 @@ elif [ "$status" = "Full" ]; then
     if [ "$prev_status" = "Charging" ] && [ "$capacity" -gt 15 ]; then
         echo "$current_brightness" > "$brightness_file"
     fi
+fi
+
+# --- Low battery: persistent warning, then unattended suspend --------------
+# Mirrors the Windows critical-battery behaviour: a warning that stays on
+# screen from $warn_capacity down, and an automatic suspend at
+# $suspend_capacity so the machine sleeps instead of dying mid-write.
+warn_capacity=10
+suspend_capacity=5
+warn_flag="$HOME/.battery_warned"
+suspend_stamp="$HOME/.battery_suspend_stamp"
+suspend_cooldown=300 # seconds; stops a wake/suspend loop if left unplugged
+
+if [ "$status" = "Discharging" ] && [ "$capacity" -le "$warn_capacity" ]; then
+    # urgency_critical sets timeout=0 in dunstrc, so this never expires on its
+    # own. The stack tag makes each 5s run replace the previous notification
+    # rather than stack a new one - and re-raises it if it was dismissed,
+    # which is what keeps the warning on screen until the charger goes in.
+    pgrep -x dunst >/dev/null && notify-send -u critical \
+        -h string:x-dunst-stack-tag:battery-critical \
+        " Battery critically low: $capacity%" \
+        "Connect the charger.
+The system suspends automatically at $suspend_capacity%." >/dev/null 2>&1
+    : > "$warn_flag"
+elif [ -f "$warn_flag" ]; then
+    # Recovered. Replace the sticky warning through the same stack tag with a
+    # short-lived one, which is the only way to retire it without
+    # dunstctl close-all taking unrelated notifications with it.
+    pgrep -x dunst >/dev/null && notify-send -u low -t 4000 \
+        -h string:x-dunst-stack-tag:battery-critical \
+        " Battery OK: $capacity%" "Charger connected." >/dev/null 2>&1
+    rm -f "$warn_flag"
+fi
+
+if [ "$status" = "Discharging" ] && [ "$capacity" -le "$suspend_capacity" ]; then
+    last_suspend="$("$cat_path" "$suspend_stamp" 2>/dev/null)"
+    : "${last_suspend:=0}"
+    if [ "$(( $(date +%s) - last_suspend ))" -ge "$suspend_cooldown" ]; then
+        date +%s > "$suspend_stamp"
+        pgrep -x dunst >/dev/null && notify-send -u critical \
+            -h string:x-dunst-stack-tag:battery-critical \
+            " Suspending in 10s" \
+            "Battery at $capacity%. Connect the charger to cancel." >/dev/null 2>&1
+        # Detached so the bar is not blocked for the grace period, and the
+        # charge is re-read at the end of it so plugging in actually cancels.
+        setsid sh -c "sleep 10
+            [ \"\$(cat /sys/class/power_supply/$battery_name/status)\" = Discharging ] || exit 0
+            sync
+            systemctl suspend" >/dev/null 2>&1 &
+    fi
+else
+    # On the charger or recovered: re-arm for the next discharge.
+    rm -f "$suspend_stamp"
 fi
 
 echo "$status" > "$charging_state_file"
