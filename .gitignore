@@ -36,6 +36,20 @@ id_ed25519*
 *_history
 .*_history
 known_hosts*
+*.jks
+*.keystore
+.env
+.env.*
+!.env.example
+!.env.sample
+.envrc
+.password-store/
+.local/share/keyrings/
+.config/keepassxc/
+.config/Bitwarden/
+.config/sops/
+.config/gcloud/
+.subversion/auth/
 
 # --- Wallets and finance ----------------------------------------------------
 .config/Ledger Live/
@@ -43,6 +57,10 @@ known_hosts*
 .ethereum/
 .bitcoin/
 .monero/
+wallet.dat
+*.wallet
+.config/Exodus/
+.config/Trezor Suite/
 
 # --- Browser profiles (saved passwords, cookies, session tokens) ------------
 .mozilla/
@@ -51,6 +69,12 @@ known_hosts*
 .config/BraveSoftware/
 .config/opera/
 .config/vivaldi/
+
+# --- Messaging and mail (session tokens, local message stores) --------------
+.config/Signal/
+.config/Element/
+.config/discord/
+.thunderbird/
 
 # --- Agent / tooling state --------------------------------------------------
 .claude/
