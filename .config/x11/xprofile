@@ -3,6 +3,16 @@
 # This file runs when a DM logs you into a graphical session.
 # If you use startx/xinit, this file is sourced from ~/.xinitrc as well.
 
+# Hand the display to the systemd user manager and the D-Bus activation
+# environment. Both are already running by the time X starts here (xinitrc
+# execs i3 from a tty login), so without this any GUI service they activate
+# dies with "cannot open display". That is what broke saving downloads in
+# Chrome: it asks xdg-desktop-portal for the file chooser, and the GTK backend
+# behind it could never start, so no dialog appeared at all.
+systemctl --user import-environment DISPLAY XAUTHORITY
+command -v dbus-update-activation-environment >/dev/null &&
+	dbus-update-activation-environment --systemd DISPLAY XAUTHORITY
+
 mpd &			# music player daemon; you may prefer it as a user service
 remapd &		# applies `remaps` now, and again whenever a USB input device appears
 setbg &			# set the background with the `setbg` script
