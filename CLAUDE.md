@@ -16,9 +16,8 @@ inside the repo. This is deliberate: the work tree used to be `$HOME`, where a s
 have committed `~/.ssh`, `~/.gnupg`, 2.7GB of browser profile with saved passwords and cookies, Ledger
 Live wallet data and filezilla credentials to a public repository.
 
-The old repo is kept, disabled, at `~/.git.disabled-20260904`. It holds nothing the clone does not —
-every ref, including a 2021 stash preserved as branch `archive/stash-2021-07-25`, was transferred first.
-Restore it with `mv ~/.git.disabled-* ~/.git` only if you have a reason to.
+The old `$HOME` repo has been deleted. Every ref was transferred to the clone first, including a 2021
+stash preserved as branch `archive/stash-2021-07-25`.
 
 **Files therefore exist in two places** and must be kept in step with `dotsync`
 (`.local/bin/tools/dotsync`):
