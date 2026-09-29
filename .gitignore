@@ -113,3 +113,7 @@ VirtualBox VMs/
 *.swp
 *.swo
 *~
+
+# Machine-specific, kept out of the public repo
+.config/i3/config.local
+.config/newsboat/urls

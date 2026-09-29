@@ -131,7 +131,8 @@ bindcode $mod+40			exec --no-startup-id dmenu_run
 #bindsym $mod+Shift+d		gaps inner current set 0; gaps outer current set 0
 bindcode $mod+Shift+40		gaps inner current set 0; gaps outer current set 0
 
-bindsym $mod+control+space exec i3-keyboard-layout cycle us
+# Machine-specific bindings (keyboard layouts etc.); untracked, optional.
+include ~/.config/i3/config.local
 
 set $freeze Distraction-free mode (super+shift+f to reactivate bindings)
 mode "$freeze" { bindsym $mod+Shift+f mode "default"
