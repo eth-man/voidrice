@@ -114,7 +114,7 @@ if [ "$status" = "Discharging" ] && [ "$capacity" -le "$warn_capacity" ]; then
     # which is what keeps the warning on screen until the charger goes in.
     pgrep -x dunst >/dev/null && notify-send -u critical \
         -h string:x-dunst-stack-tag:battery-critical \
-        "􀀌 Battery critically low: $capacity%" \
+        "􀀽 Battery critically low: $capacity%" \
         "Connect the charger.
 The system suspends automatically at $suspend_capacity%." >/dev/null 2>&1
     : > "$warn_flag"
@@ -135,7 +135,7 @@ if [ "$status" = "Discharging" ] && [ "$capacity" -le "$suspend_capacity" ]; the
         date +%s > "$suspend_stamp"
         pgrep -x dunst >/dev/null && notify-send -u critical \
             -h string:x-dunst-stack-tag:battery-critical \
-            "􀀌 Suspending in 10s" \
+            "􀀽 Suspending in 10s" \
             "Battery at $capacity%. Connect the charger to cancel." >/dev/null 2>&1
         # Detached so the bar is not blocked for the grace period, and the
         # charge is re-read at the end of it so plugging in actually cancels.

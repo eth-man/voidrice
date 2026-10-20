@@ -145,7 +145,8 @@ or you will reload the old file and conclude, wrongly, that your change did noth
 | a `statusbar/` script | `sigbar` (all blocks); single block: `sigbar <signal>` |
 | `.config/i3blocks/config` | `i3-msg restart` — i3blocks only parses its config at startup |
 | `.config/x11/xresources` | `xrdb ~/.config/x11/xresources` (nvim does this automatically on write) |
-| `.config/dunst/dunstrc` | `pkill dunst` (it respawns on next notification) |
+| `.config/dunst/dunstrc` | `pkill dunst; setsid -f dunst` — modules only notify when `pgrep -x dunst` finds it, so a killed dunst is never respawned by them |
+| a new font (e.g. suckless icons) | restart what draws with it: `i3-msg restart` for the bar, dunst as above. Long-running programs load the font list once and show a missing-glyph box until then |
 | `.config/x11/xprofile` | requires restarting X |
 | `.config/bmdirs` / `.config/bmfiles` | `shortcuts` (nvim runs it automatically on write) |
 
