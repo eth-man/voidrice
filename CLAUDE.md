@@ -103,7 +103,7 @@ Registered signals in this fork:
 
 | N | block | N | block |
 |---|---|---|---|
-| 3 | vpn | 13 | brightness |
+| 3 | vpn (via the `vpnupdate` daemon) | 13 | brightness |
 | 4 | stocks (`stocks-toggle`; no block registered) | 14 | gitcheck |
 | 5 | weather | 15 | failed |
 | 6 | news | 16 | tasks |

@@ -1,0 +1,38 @@
+#!/usr/bin/env sh
+# Whenever a network interface appears or disappears, update the vpn i3 module.
+#
+# The vpn module is signal-driven (signal=3 in .config/i3blocks/config) and
+# wg-toggle signals it, but nothing does when a tunnel is raised by hand:
+# `sudo wg-quick up x1-spare` in a terminal knows nothing about the bar, so the
+# icon stayed stale until the 60s interval came round. `ip monitor link` reports
+# the tunnel interface being created and deleted, so the bar now follows the
+# tunnel however it was raised -- wg-toggle, wg-quick, openvpn or systemd.
+#
+# Started from .config/x11/xprofile. Needs no root; link events are readable by
+# anyone.
+
+PIDFILE="/tmp/vpnupdate"
+
+# Only one daemon at a time. Note the pid is checked digit by digit before
+# kill -0 sees it: bash's kill builtin *succeeds* on an empty argument, so the
+# shorter `kill -0 "$(cat $PIDFILE)" && exit` idiom exits on a fresh start,
+# when there is no pidfile at all, and the daemon never comes up.
+if [ -r "$PIDFILE" ]; then
+	pid="$(cat "$PIDFILE")"
+	case "$pid" in
+		'' | *[!0-9]*) ;;
+		*) kill -0 "$pid" 2>/dev/null && exit 0 ;;
+	esac
+fi
+echo $$ > "$PIDFILE"
+
+# Outer loop so the daemon survives `ip monitor` dying, as mpdupdate does.
+while : ; do
+	ip monitor link | while read -r _; do
+		sigbar 3
+		# One `wg-quick up` emits several events (link add, then up); this
+		# caps the burst at one refresh a second instead of four at once.
+		sleep 1
+	done
+	sleep 5
+done

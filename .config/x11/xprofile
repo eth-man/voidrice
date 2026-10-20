@@ -16,6 +16,7 @@ command -v dbus-update-activation-environment >/dev/null &&
 mpd &			# music player daemon; you may prefer it as a user service
 remapd &		# applies `remaps` now, and again whenever a USB input device appears
 setbg &			# set the background with the `setbg` script
+vpnupdate &		# refresh the vpn block the moment a tunnel interface appears
 
 # Load colours, fonts and the st alpha value. This is active, not optional:
 # without it *.font and *.alpha are unset and st falls back to config.h.

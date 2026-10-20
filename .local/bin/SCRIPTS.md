@@ -51,7 +51,8 @@ on demand by `sigbar N`.
 - `tasks` -- **(fork)** Outstanding background jobs queued with task spooler by `qndl`/`queueandnotify`, shown as total(queued). Hidden when the queue is empty. Signal 16.
 - `torrent` -- Torrents idle, downloading or seeding. Signal 7.
 - `volume` -- Volume percentage or a mute glyph. Middle click mutes, scroll changes. Signal 10.
-- `vpn` -- **(fork)** VPN state for both WireGuard and OpenVPN, naming the active tunnel. Left click hands off to `wg-toggle`; middle click shows endpoint, handshake age and transfer counters.
+- `vpn` -- **(fork)** VPN state for both WireGuard and OpenVPN, naming the active tunnel. Left click hands off to `wg-toggle`; middle click shows endpoint, handshake age and transfer counters. Signal 3.
+- `vpnupdate` -- **(fork)** Daemon that refreshes the `vpn` block whenever a network interface appears or disappears, so a tunnel raised by hand with `wg-quick` updates the bar as fast as one raised by `wg-toggle`. Started from `xprofile`. Signal 3.
 - `weather` -- **(fork, reworked)** Forecast from wttr.in, with the temperature colour-coded by threshold. Signal 5.
 
 ## `cron/`
