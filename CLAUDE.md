@@ -5,7 +5,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## What this repository is
 
 `voidrice` — a fork of Luke Smith's LARBS dotfiles (`eth-man/voidrice`, default branch `main`), adapted for
-sysadmin daily use on Arch Linux + i3-gaps + i3blocks. There is no build system, no test suite, and no
+sysadmin daily use on Arch Linux + i3-gaps + ablocks (this fork's i3blocks replacement). There is no build system, no test suite, and no
 compiled code: everything here is either a config file or a POSIX-sh/bash script. "Testing" a change
 means running the script or reloading the program it configures.
 
@@ -58,10 +58,10 @@ Other things that matter every session:
 ```
 .profile            login env; everything downstream depends on it (also .bash_profile/.zprofile)
 .config/x11/        xinitrc -> execs i3; xprofile -> daemons (mpd, dunst, picom, remaps, setbg); xresources
-.config/i3/config   keybindings; the bar's status_command is i3blocks
-.config/i3blocks/config   maps each [block] to ~/.local/bin/statusbar/$BLOCK_NAME
+.config/i3/config   keybindings; the bar's status_command is ablocks (eth-man/ablocks, its blocks in config.h)
+.config/i3blocks/config   the same blocks for i3blocks, kept in step as a fallback bar
 .local/bin/         all user scripts, added to $PATH wholesale (see below)
-  statusbar/        i3blocks modules
+  statusbar/        bar modules (i3blocks-compatible)
   i3cmds/           scripts bound to i3 keys (mostly dmenu UIs)
   tools/            manually-run or editor-bound helpers
   cron/             cronjob scripts (none enabled by default)
@@ -75,7 +75,7 @@ choice is organizational only.
 
 **Env vars are the indirection layer.** Scripts call `$TERMINAL`, `$EDITOR`, `$BROWSER`, `$READER`,
 `$FILE`, `$STATUSBAR` rather than hardcoding programs. Keep that convention in new scripts; the values
-live in `.profile` (`st`, `nvim`, `google-chrome-stable`, `zathura`, `ranger`, `i3blocks`).
+live in `.profile` (`st`, `nvim`, `google-chrome-stable`, `zathura`, `ranger`, `ablocks`).
 
 ## i3blocks module conventions
 
@@ -129,10 +129,12 @@ Registered signals in this fork:
 `pkill` rejects it. ping-lat and spotifyControls sat on 31 and 32 for years and were never refreshed by
 signal. Pick a free number from 1–2 or 21–28.
 
-Adding a module means: write `statusbar/<name>`, `chmod +x`, add a `[<name>]` section with `interval`
-(and `signal` if it is event-driven) to `.config/i3blocks/config`, then restart the bar. i3blocks reads
-its config only at startup, so a *config* change needs `i3-msg restart` (`mod+Shift+r`); a change to a
-script's output alone is picked up by a bare `sigbar`, which re-runs every block.
+Adding a module means: write `statusbar/<name>`, `chmod +x`, then register it in **two** places. The bar
+is ablocks, whose blocks are compiled in: add a line to `blocks[]` in `~/ablocks/config.def.h` (name,
+command, interval, signal), copy it to `config.h`, `make PREFIX=$HOME/.local install`, and
+`i3-msg restart`. Mirror it as a `[<name>]` section in `.config/i3blocks/config` so the fallback bar
+stays complete. A change to a script's output alone needs no rebuild: a bare `sigbar` re-runs every
+block.
 
 ## Applying changes without logging out
 
@@ -143,7 +145,8 @@ or you will reload the old file and conclude, wrongly, that your change did noth
 |---|---|
 | `.config/i3/config` | `i3-msg reload`, or `mod+Shift+r` to restart in place |
 | a `statusbar/` script | `sigbar` (all blocks); single block: `sigbar <signal>` |
-| `.config/i3blocks/config` | `i3-msg restart` — i3blocks only parses its config at startup |
+| ablocks `config.h` | `make PREFIX=$HOME/.local install` in `~/ablocks`, then `i3-msg restart` |
+| `.config/i3blocks/config` | only matters for the fallback bar, which reads it at startup |
 | `.config/x11/xresources` | `xrdb ~/.config/x11/xresources` (nvim does this automatically on write) |
 | `.config/dunst/dunstrc` | `pkill dunst; setsid -f dunst` — modules only notify when `pgrep -x dunst` finds it, so a killed dunst is never respawned by them |
 | a new font (e.g. suckless icons) | restart what draws with it: `i3-msg restart` for the bar, dunst as above. Long-running programs load the font list once and show a missing-glyph box until then |

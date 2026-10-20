@@ -18,7 +18,8 @@ export TERMINAL="st"
 export BROWSER="google-chrome-stable"
 export READER="zathura"
 export FILE="ranger"
-export STATUSBAR="${LARBSWM}blocks"
+# The i3 bar is ablocks (eth-man/ablocks); dwm keeps LARBS dwmblocks.
+[ "$LARBSWM" = "dwm" ] && export STATUSBAR="dwmblocks" || export STATUSBAR="ablocks"
 
 # ~/ Clean-up:
 #export XAUTHORITY="$XDG_RUNTIME_DIR/Xauthority" # This line will break some DMs.
