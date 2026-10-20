@@ -41,6 +41,8 @@ if [ -n "$ABLOCKS" ]; then
 	if [ "$wifi" = down ] && { [ "$last" = up ] || [ "$lancolor" != "#ffffff" ]; }; then
 		echo "@wifidown 0 $lan"
 	elif [ "$wifi" = up ] && [ "$last" = down ]; then
-		echo "@wifiup 0 $lan"
+		# Everything after the icon, so the animation's last frame is the
+		# block's real output and the strength counts up into place.
+		echo "@wifiup 0 ${wificon#* }$lan"
 	fi
 fi
