@@ -1,0 +1,12 @@
+#!/usr/bin/env sh
+
+# Refresh status bar blocks: `sigbar N` re-runs the blocks registered on
+# signal N, a bare `sigbar` re-runs every block. Matches i3blocks and ablocks
+# alike, so callers keep working whichever bar is running, and switching bars
+# needs no re-login to update $STATUSBAR in the session environment.
+
+if [ -n "$1" ]; then
+	pkill -RTMIN+"$1" -x 'i3blocks|ablocks'
+else
+	pkill -USR1 -x 'i3blocks|ablocks'
+fi

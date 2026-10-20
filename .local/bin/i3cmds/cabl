@@ -9,7 +9,7 @@ PID=$(xprop -id "$(xprop -root | awk '/_NET_ACTIVE_WINDOW\(WINDOW\)/{print $NF}'
 PID=$(echo "$(pstree -lpA "$PID" | tail -n 1)" | awk -F'---' '{print $NF}' | sed -re 's/[^0-9]//g')
 cd "$(readlink /proc/"$PID"/cwd)"
 [ -f "$prim" ] && xdg-open "$prim" && exit
-[ -d "$prim" ] && "$TERMINAL" "$prim" && exit
+[ -d "$prim" ] && "$TERMINAL" -e "$FILE" "$prim" && exit
 
 websearch() { "$BROWSER" "https://duckduckgo.com/?q=$@" ;}
 wikipedia() { "$BROWSER" "https://en.wikipedia.org/wiki/$@" ;}
@@ -19,12 +19,10 @@ ebay() { "$BROWSER" "https://www.ebay.com/sch/$@" ;}
 
 echo "$prim" | grep "^.*\.[A-Za-z]\+.*" >/dev/null && gotourl() { "$BROWSER" "$@" ;}
 echo "$prim" | grep "^.*@.*\.[A-Za-z]\+$" >/dev/null && email() { xdg-email "$@" ;}
-echo "$prim" | grep -i "[0-9A-F]\{2\}\(:[0-9A-F]\{2\}\)\{5\}" >/dev/null && 󰈀_mac-converter() { "maconv" "$@" ;}
-echo "$prim" | grep -i "[0-9A-F]\{2\}\(-[0-9A-F]\{2\}\)\{5\}" >/dev/null && 󰈀_mac-converter() { "maconv" "$@" ;}
-echo "$prim" | grep -i "[0-9A-F]\{4\}\(.[0-9A-F]\{4\}\)\{2\}" >/dev/null && 󰈀_mac-converter() { "maconv" "$@" ;}
-echo "$prim" | grep -i "[0-9A-F]\{2\}\(:[0-9A-F]\{2\}\)\{5\}" >/dev/null && mac-vendor-lookup() { "oui-lookup" "$@" ;}
-echo "$prim" | grep -i "[0-9A-F]\{2\}\(-[0-9A-F]\{2\}\)\{5\}" >/dev/null && mac-vendor-lookup() { "oui-lookup" "$@" ;}
-echo "$prim" | grep -i "[0-9A-F]\{4\}\(.[0-9A-F]\{4\}\)\{2\}" >/dev/null && mac-vendor-lookup() { "oui-lookup" "$@" ;}
+echo "$prim" | grep -iE "[0-9A-F]{2}([:-][0-9A-F]{2}){5}|[0-9A-F]{4}(\.[0-9A-F]{4}){2}" >/dev/null && {
+	󰈀_mac-converter() { "maconv" "$@" ;}
+	mac-vendor-lookup() { "oui-lookup" "$@" ;}
+}
 echo "$prim" | grep -i 'youtube.\|youtu.\|twitter.com\|twitch.tv\|fb.watch\|vimeo.com\|instagram.com\|tiktok.com' >/dev/null && _mpv-hover_() { "mpv-hover" "$@" ;}
 command -v qrencode >/dev/null && qrcode() { qrencode "$@" -s 10 -o /tmp/qr.png && xdg-open /tmp/qr.png ;}
 man -k "^$prim$" >/dev/null && manual() { man -Tpdf "$prim" | zathura - ;}
