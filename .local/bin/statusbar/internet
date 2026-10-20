@@ -21,7 +21,26 @@ case "$(cat /sys/class/net/e*/operstate 2>/dev/null)" in
 esac
 
 
-[ -n "$wificon" ] && printf "<span color='%s'>%s</span>" "$wificolor" "$wificon"
-[ -n "$lanicon" ] && printf "<span color='%s'>%s</span>" "$lancolor" "$lanicon"
+[ -n "$lanicon" ] && lan="$(printf "<span color='%s'>%s</span>" "$lancolor" "$lanicon")"
 
-printf "\n"
+[ -n "$wificon" ] && printf "<span color='%s'>%s</span>" "$wificolor" "$wificon"
+printf "%s\n" "$lan"
+
+# Under ablocks, animate the wifi icon when its state changes: the bars
+# drain on a disconnect, and keep doing so every 30s while the LAN is down
+# too, i.e. while offline; they fill once on a reconnect. The LAN icon is
+# the argument so it stays on screen through the animation. vpnupdate
+# signals this block on every link change, so it lands within a second.
+if [ -n "$ABLOCKS" ]; then
+	state="${XDG_RUNTIME_DIR:-/tmp}/sb-internet.wifi"
+	wifi="$(cat /sys/class/net/w*/operstate 2>/dev/null)"
+	last="$(cat "$state" 2>/dev/null)"
+	# Not "dormant", which a reconnect passes through while associating:
+	# recorded, it would hide the down -> up change this is looking for.
+	case "$wifi" in up|down) echo "$wifi" > "$state" ;; esac
+	if [ "$wifi" = down ] && { [ "$last" = up ] || [ "$lancolor" != "#ffffff" ]; }; then
+		echo "@wifidown 0 $lan"
+	elif [ "$wifi" = up ] && [ "$last" = down ]; then
+		echo "@wifiup 0 $lan"
+	fi
+fi

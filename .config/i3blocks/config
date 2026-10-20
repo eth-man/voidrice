@@ -110,6 +110,7 @@ signal=3
 
 [internet]
 interval=10
+signal=20
 
 [i3-keyboardlayout]
 interval=10

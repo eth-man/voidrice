@@ -43,6 +43,20 @@ case $BLOCK_BUTTON in
 - Middle click shows connection details." ;;
 esac
 
+# Under ablocks, animate a change of state: bounce when a tunnel comes up,
+# blink when it drops. Both are one-shots, so they play out even though
+# vpnupdate re-runs this block several times as the interface settles.
+if [ -n "$ABLOCKS" ]; then
+	state="${XDG_RUNTIME_DIR:-/tmp}/sb-vpn.state"
+	last="$(cat "$state" 2>/dev/null)"
+	echo "${kind:+up}" > "$state"
+	if [ -n "$kind" ] && [ "$last" != up ]; then
+		echo "@bounce"
+	elif [ -z "$kind" ] && [ "$last" = up ]; then
+		echo "@blink"
+	fi
+fi
+
 if [ -n "$kind" ]; then
 	sb "$C_OK" "󰦝 $name"
 else

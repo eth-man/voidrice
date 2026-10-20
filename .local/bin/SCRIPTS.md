@@ -31,9 +31,9 @@ on demand by `sigbar N`.
 - `failed` -- **(fork)** Count of failed systemd units, system and user. Hidden entirely when nothing has failed, so it costs no bar width until it matters; a failed unit is otherwise invisible until you happen to run `systemctl`. Left click lists them. Signal 15.
 - `help` -- A question mark that opens the readme when clicked.
 - `i3-keyboard-layout` -- **(fork)** Current keyboard layout; cycled by `$mod+control+space`. Signal 30.
-- `internet` -- **(fork, reworked)** Wifi and ethernet state. Icons grey out (`#969993`) when a link is down. Click for `nmtui`.
+- `internet` -- **(fork, reworked)** Wifi and ethernet state. Icons grey out (`#969993`) when a link is down. Click for `nmtui`. Signal 20. Under ablocks the wifi icon animates on a change of state: red bars draining on a disconnect, repeated every 30s while offline, green bars filling once on a reconnect.
 - `iplocate` -- Geolocation of the current public IP. Needs `geoiplookup`.
-- `mailbox` -- Unread mail count, for use with mutt-wizard. Signal 12.
+- `mailbox` -- Unread mail count, for use with mutt-wizard. Signal 12. Under ablocks the icon bounces when the unread count goes up.
 - `memory` -- Memory usage. Click for the most memory-intensive processes.
 - `mpdupdate` -- Daemon that refreshes the `music` block whenever mpd changes. Signal 11.
 - `music` -- Current song; greyed and italic when paused.
@@ -51,8 +51,8 @@ on demand by `sigbar N`.
 - `tasks` -- **(fork)** Outstanding background jobs queued with task spooler by `qndl`/`queueandnotify`, shown as total(queued). Hidden when the queue is empty. Signal 16.
 - `torrent` -- Torrents idle, downloading or seeding. Signal 7.
 - `volume` -- Volume percentage or a mute glyph. Middle click mutes, scroll changes. Signal 10.
-- `vpn` -- **(fork)** VPN state for both WireGuard and OpenVPN, naming the active tunnel. Left click hands off to `wg-toggle`; middle click shows endpoint, handshake age and transfer counters. Signal 3.
-- `vpnupdate` -- **(fork)** Daemon that refreshes the `vpn` block whenever a network interface appears or disappears, so a tunnel raised by hand with `wg-quick` updates the bar as fast as one raised by `wg-toggle`. Started from `xprofile`. Signal 3.
+- `vpn` -- **(fork)** VPN state for both WireGuard and OpenVPN, naming the active tunnel. Left click hands off to `wg-toggle`; middle click shows endpoint, handshake age and transfer counters. Signal 3. Under ablocks the icon bounces when a tunnel comes up and blinks when it drops.
+- `vpnupdate` -- **(fork)** Daemon that refreshes the `vpn` block whenever a network interface appears or disappears, so a tunnel raised by hand with `wg-quick` updates the bar as fast as one raised by `wg-toggle`. Started from `xprofile`. Signal 3. Also refreshes `internet` (signal 20), so wifi changes show within a second.
 - `weather` -- **(fork, reworked)** Forecast from wttr.in, with the temperature colour-coded by threshold. Signal 5.
 
 ## `cron/`

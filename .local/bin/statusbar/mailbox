@@ -15,6 +15,20 @@ esac
 [ -f "/tmp/imapsyncicon_$USER" ] && sb "$C_INFO" "󰑐" && exit 0
 
 unread="$(du -a ~/.local/share/mail/*/INBOX/new/* 2>/dev/null | sed -n '$=')"
+
+# Under ablocks, bounce the icon when the unread count goes up: new mail,
+# not mail being read. Recorded before the exit below so reading down to
+# zero is remembered too. The count is the argument, so two arrivals in a
+# row bounce twice.
+if [ -n "$ABLOCKS" ]; then
+	state="${XDG_RUNTIME_DIR:-/tmp}/sb-mailbox.unread"
+	last="$(cat "$state" 2>/dev/null)"
+	echo "${unread:-0}" > "$state"
+	if [ "${unread:-0}" -gt "${last:-0}" ]; then
+		echo "@bounce 0 $unread"
+	fi
+fi
+
 [ -n "$unread" ] || exit 0
 
 sb "$C_INFO" "󰺻 $unread"

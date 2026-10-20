@@ -1,5 +1,9 @@
 #!/usr/bin/env sh
-# Whenever a network interface appears or disappears, update the vpn i3 module.
+# Whenever a network interface appears, disappears or changes state, update the
+# vpn and internet modules.
+#
+# internet (signal 20) gets the same treatment so a wifi drop or reconnect shows
+# within a second rather than on its next 10s run.
 #
 # The vpn module is signal-driven (signal=3 in .config/i3blocks/config) and
 # wg-toggle signals it, but nothing does when a tunnel is raised by hand:
@@ -30,6 +34,7 @@ echo $$ > "$PIDFILE"
 while : ; do
 	ip monitor link | while read -r _; do
 		sigbar 3
+		sigbar 20
 		# One `wg-quick up` emits several events (link add, then up); this
 		# caps the burst at one refresh a second instead of four at once.
 		sleep 1

@@ -116,11 +116,11 @@ Registered signals in this fork:
 | 9 | recording | 19 | spotifyControls |
 | 10 | volume | 29 | sb-price (`[btcprice]`, disabled) |
 | 11 | music (via the `mpdupdate` daemon) | 30 | i3-keyboard-layout |
-| 12 | mailbox | | |
+| 12 | mailbox | 20 | internet (via the `vpnupdate` daemon) |
 
 **30 is the ceiling.** On Linux `SIGRTMIN` is 34 and `SIGRTMAX` 64, so `RTMIN+31` does not exist and
 `pkill` rejects it. ping-lat and spotifyControls sat on 31 and 32 for years and were never refreshed by
-signal. Pick a free number from 1–2 or 20–28.
+signal. Pick a free number from 1–2 or 21–28.
 
 Adding a module means: write `statusbar/<name>`, `chmod +x`, add a `[<name>]` section with `interval`
 (and `signal` if it is event-driven) to `.config/i3blocks/config`, then restart the bar. i3blocks reads
