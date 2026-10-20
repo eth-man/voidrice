@@ -158,10 +158,18 @@ printf "<span color='%s'>%s %s</span>\n" "$color" "$icon" "$capacity%"
 # $alert_capacity a red battery fills up every 30s ("lowbat"). Guarded
 # because i3blocks would show the line as the block's short text, and an if
 # rather than && so a false test is not the script's exit status.
-if [ -n "$ABLOCKS" ] && [ "$status" = "Discharging" ]; then
-    if [ "$capacity" -le "$warn_capacity" ]; then
-        echo "@batcrit 0 $capacity%"
-    elif [ "$capacity" -le "$alert_capacity" ]; then
-        echo "@lowbat 0 $capacity%"
+# The moment the charger goes in (Charging, Full or "Not charging" after
+# Discharging) the battery fills and the bolt pulses in purple, once
+# ("plugin"); powerupdate refreshes this block on the udev event, so it
+# plays as the plug goes in rather than on the next 5s run.
+if [ -n "$ABLOCKS" ]; then
+    if [ "$status" = "Discharging" ]; then
+        if [ "$capacity" -le "$warn_capacity" ]; then
+            echo "@batcrit 0 $capacity%"
+        elif [ "$capacity" -le "$alert_capacity" ]; then
+            echo "@lowbat 0 $capacity%"
+        fi
+    elif [ "$prev_status" = "Discharging" ]; then
+        echo "@plugin 0 $capacity%"
     fi
 fi

@@ -23,7 +23,7 @@ globally. Modules handle clicks through `$BLOCK_BUTTON` and, because
 are Nerd Fonts glyphs, not emoji. A module with a `signal=N` line is refreshed
 on demand by `sigbar N`.
 
-- `battery` -- Power remaining, with the icon and colour tracking charge level. Takes the battery name as an argument (`battery BAT0`). Below 10% while discharging it raises a critical dunst notification that stays on screen and is re-raised on the next 5s refresh if dismissed, and at 5% it suspends the machine after a 10s grace period which plugging in cancels. It will not suspend again for 5 minutes, so waking a still-critical machine does not drop straight back to sleep; connecting the charger re-arms it. Thresholds are the `warn_capacity` and `suspend_capacity` variables at the top of the low-battery section. Under ablocks it also asks for the `lowbat` animation at or below `anim_capacity` (20%) while discharging: a red battery filling up, three times every 30s.
+- `battery` -- Power remaining, with the icon and colour tracking charge level. Takes the battery name as an argument (`battery BAT0`). Below 10% while discharging it raises a critical dunst notification that stays on screen and is re-raised on the next 5s refresh if dismissed, and at 5% it suspends the machine after a 10s grace period which plugging in cancels. It will not suspend again for 5 minutes, so waking a still-critical machine does not drop straight back to sleep; connecting the charger re-arms it. Thresholds are the `warn_capacity` and `suspend_capacity` variables at the top of the low-battery section. Under ablocks it also asks for the `lowbat` animation at or below `anim_capacity` (20%) while discharging: a red battery filling up, three times every 30s. Plugging the charger in plays a purple animation once: the battery fills and the bolt pulses.
 - `brightness` -- **(fork)** Backlight level from sysfs, icon shifting with brightness. Scroll to change (needs `brightnessctl`). Signal 13.
 - `clock` -- Time and date. Click for a calendar or upcoming calcurse events.
 - `cpu` -- CPU temperature. Click for the most processor-intensive processes.
@@ -49,6 +49,7 @@ on demand by `sigbar N`.
 - `screen-timeout` -- **(fork)** Toggles and displays the DPMS screen timeout.
 - `spotifyControls`, `spotifyPlay` -- **(fork)** Spotify transport controls and now-playing. Signal 32.
 - `tasks` -- **(fork)** Outstanding background jobs queued with task spooler by `qndl`/`queueandnotify`, shown as total(queued). Hidden when the queue is empty. Signal 16.
+- `powerupdate` -- **(fork)** Daemon that refreshes the `battery` block (signal 21) whenever udev reports a power_supply change, so plugging the charger in shows at once, with the purple plug-in animation under ablocks. Started from `xprofile`, like `vpnupdate`.
 - `torrent` -- Torrents idle, downloading or seeding. Signal 7.
 - `volume` -- Volume percentage or a mute glyph. Middle click mutes, scroll changes. Signal 10.
 - `vpn` -- **(fork)** VPN state for both WireGuard and OpenVPN, naming the active tunnel. Left click hands off to `wg-toggle`; middle click shows endpoint, handshake age and transfer counters. Signal 3. Under ablocks the icon bounces when a tunnel comes up and blinks when it drops.

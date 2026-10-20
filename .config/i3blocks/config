@@ -86,6 +86,7 @@ signal=13
 [battery]
 command=battery BAT0
 interval=5
+signal=21
 
 [clock]
 interval=30

@@ -124,10 +124,11 @@ Registered signals in this fork:
 | 10 | volume | 29 | sb-price (`[btcprice]`, disabled) |
 | 11 | music (via the `mpdupdate` daemon) | 30 | i3-keyboard-layout |
 | 12 | mailbox | 20 | internet (via the `vpnupdate` daemon) |
+| | | 21 | battery (via the `powerupdate` daemon) |
 
 **30 is the ceiling.** On Linux `SIGRTMIN` is 34 and `SIGRTMAX` 64, so `RTMIN+31` does not exist and
 `pkill` rejects it. ping-lat and spotifyControls sat on 31 and 32 for years and were never refreshed by
-signal. Pick a free number from 1–2 or 21–28.
+signal. Pick a free number from 1–2 or 22–28.
 
 Adding a module means: write `statusbar/<name>`, `chmod +x`, then register it in **two** places. The bar
 is ablocks, whose blocks are compiled in: add a line to `blocks[]` in `~/ablocks/config.def.h` (name,

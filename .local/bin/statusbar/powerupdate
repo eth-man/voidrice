@@ -1,0 +1,30 @@
+#!/usr/bin/env sh
+# Whenever the charger is plugged in or out, update the battery module.
+#
+# The battery block re-runs every 5s, so a plug-in showed up to 5s late and
+# its purple "plugin" animation played after the fact. `udevadm monitor`
+# reports power_supply changes as they happen, and needs no root.
+#
+# Started from .config/x11/xprofile. Built like vpnupdate.
+
+PIDFILE="/tmp/powerupdate"
+
+# Only one daemon at a time; see vpnupdate for why the pid is checked
+# digit by digit before kill -0 sees it.
+if [ -r "$PIDFILE" ]; then
+	pid="$(cat "$PIDFILE")"
+	case "$pid" in
+		'' | *[!0-9]*) ;;
+		*) kill -0 "$pid" 2>/dev/null && exit 0 ;;
+	esac
+fi
+echo $$ > "$PIDFILE"
+
+# Outer loop so the daemon survives `udevadm monitor` dying.
+while : ; do
+	udevadm monitor --udev --subsystem-match=power_supply | while read -r line; do
+		# Only the events themselves, not udevadm's banner lines.
+		case "$line" in UDEV*) sigbar 21 ;; esac
+	done
+	sleep 5
+done
