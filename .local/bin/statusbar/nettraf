@@ -1,4 +1,5 @@
 #!/usr/bin/env sh
+. "$HOME/.local/bin/statusbar/sb-theme"
 
 # i3blocks module showing network throughput since the last run. With
 # `interval=1` in the i3blocks config this reads as bytes per second.
@@ -28,9 +29,9 @@ tx="$(update /sys/class/net/[ew]*/statistics/tx_bytes)"
 
 # Highlight when the link is genuinely busy (>1 MiB in the interval).
 if [ "$rx" -gt 1048576 ] || [ "$tx" -gt 1048576 ]; then
-	color="#e8cb61"
+	color="$C_WARN"
 else
-	color="#ffffff"
+	color="$C_NORM"
 fi
 
 # shellcheck disable=SC2046

@@ -1,6 +1,8 @@
 #!/usr/bin/env sh
 
 battery_name="$1"
+
+. "$HOME/.local/bin/statusbar/sb-theme"
 brightness_file="$HOME/.brightness"
 charging_state_file="$HOME/.charging_state"
 
@@ -18,8 +20,7 @@ fi
 
 case $BLOCK_BUTTON in
 	3) pgrep -x dunst >/dev/null && notify-send "󰁹 Battery module" "󰂎 empty  󰁻 low  󰁾 half  󰂀 high  󰁹 full  󰂄 charging
-󰀦: battery very low
-- Text and icon colour reflect charge left." ;;
+- Red at 20% or less while discharging, with a fill-up animation under ablocks." ;;
 esac
 
 capacity=$(cat /sys/class/power_supply/"$battery_name"/capacity) || exit
@@ -28,50 +29,14 @@ status=$(cat /sys/class/power_supply/"$battery_name"/status)
 prev_status="$("$cat_path" "$charging_state_file" 2>/dev/null)"
 current_brightness="$(bctl get)"
 
-warn=""
 
-# Color Gradient Function (using awk)
-color_gradient() {
-  local level=$1
-  local r g b
-
-  if [ "$level" -ge 75 ]; then    # Green for 75% and above
-    r=0
-    g=255
-    b=0
-  elif [ "$level" -ge 50 ]; then  # Yellow for 50% to 74%
-    r=$(( (75 - $level) * 255 / 25 ))
-    g=255
-    b=0
-  elif [ "$level" -ge 25 ]; then  # Orange for 25% to 49%
-    r=255
-    g=$(( ($level - 25) * 255 / 25 ))
-    b=0
-  else                          # Red for below 25%
-    r=255
-    g=0
-    b=0
-  fi
-
-  printf "#%02x%02x%02x" $r $g $b
-}
-
-# Assign colors based on battery level
-color=$(color_gradient "$capacity")
-
-# Charging and Full states
-if [ "$status" = "Charging" ]; then
-  color="#A9E2F3" # Light blue
-elif [ "$status" = "Full" ]; then
-  color="#00FF00" # Green
-fi
-
-# Low battery. Only while actually discharging: on the charger a low
-# percentage is being fixed, so it is not an alert state. Steady red rather
-# than flashing - the block is re-run every 5s, so a time-based blink is
-# unreadable and just drags the eye to the corner of the screen.
-if [ "$capacity" -le 15 ] && [ "$status" = "Discharging" ]; then
-  color="#FF0000" # Red
+# Calm by default, red only while discharging at or below $alert_capacity,
+# the point where the lowbat animation starts too. On the charger a low
+# percentage is being fixed, so it is not an alert state.
+alert_capacity=20
+color="$C_NORM"
+if [ "$capacity" -le "$alert_capacity" ] && [ "$status" = "Discharging" ]; then
+  color="$C_ALERT"
 fi
 
 
@@ -83,9 +48,9 @@ elif [ "$capacity" -ge 30 ]; then
 elif [ "$capacity" -ge 20 ]; then
     [ "$status" = "Discharging" ] && bctl set 15% >/dev/null
 elif [ "$capacity" -ge 15 ]; then
-    if [ "$status" = "Discharging" ]; then warn=" 󰀦"; bctl set 5% >/dev/null; fi
+    [ "$status" = "Discharging" ] && bctl set 5% >/dev/null
 else
-    if [ "$status" = "Discharging" ]; then warn=" 󰀦 charge"; bctl set 5% >/dev/null; fi
+    [ "$status" = "Discharging" ] && bctl set 5% >/dev/null
 fi
 
 # Material Design battery icons, like the rest of the bar: one per 10%, and
@@ -180,13 +145,13 @@ fi
 
 echo "$status" > "$charging_state_file"
 
-printf "<span color='%s'>%s%s %s</span>\n" "$color" "$icon" "$warn" "$capacity%"
+printf "<span color='%s'>%s %s</span>\n" "$color" "$icon" "$capacity%"
 
 # Under ablocks, ask for the "lowbat" animation (a red battery filling up,
 # replayed every 30s) while discharging at or below $anim_capacity. Guarded
 # because i3blocks would show the line as the block's short text, and an if
 # rather than && so a false test is not the script's exit status.
-anim_capacity=20
+anim_capacity="$alert_capacity"
 if [ -n "$ABLOCKS" ] && [ "$status" = "Discharging" ] && [ "$capacity" -le "$anim_capacity" ]; then
     echo "@lowbat 0 $capacity%"
 fi

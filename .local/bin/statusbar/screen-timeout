@@ -1,4 +1,5 @@
 #!/usr/bin/env sh
+. "$HOME/.local/bin/statusbar/sb-theme"
 
 # Function to set timeout and display message
 set_timeout() {
@@ -67,15 +68,15 @@ remaining_minutes=$minutes
 # Determine icon and color
 if [ "$dpms_enabled" = "Disabled" ]; then
   icon="󱎫"
-  color="#ffffff" # White
+  color="$C_NORM"
   output="$icon off"
 elif [ "$remaining_minutes" -le 1 ]; then
   icon="󱎫"
-  color="#ff0000" # Red
+  color="$C_ALERT"
   output="$icon"
 else
   icon="󱎫"
-  color="#ffffff" # White
+  color="$C_NORM"
   output="$icon"
 fi
 

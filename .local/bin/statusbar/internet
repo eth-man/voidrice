@@ -1,4 +1,5 @@
 #!/usr/bin/env sh
+. "$HOME/.local/bin/statusbar/sb-theme"
 
 case $BLOCK_BUTTON in
 	# In the background, so the block can answer the click with an animation
@@ -14,13 +15,13 @@ Grey means the link is down.
 esac
 
 case "$(cat /sys/class/net/w*/operstate 2>/dev/null)" in
-	down) wificon="󰖪" && wificolor="#969993";;
-	up) wificon="$(awk '/^\s*w/ { print "󰖩", int($3 * 100 / 70) "%" }' /proc/net/wireless)" && wificolor="#ffffff"
+	down) wificon="󰖪" && wificolor="$C_DIM";;
+	up) wificon="$(awk '/^\s*w/ { print "󰖩", int($3 * 100 / 70) "%" }' /proc/net/wireless)" && wificolor="$C_NORM"
 esac
 
 case "$(cat /sys/class/net/e*/operstate 2>/dev/null)" in
-	down) lanicon="" && lancolor="#969993";;
-	up) lanicon="󰈀" && lancolor="#ffffff" ;;
+	down) lanicon="" && lancolor="$C_DIM";;
+	up) lanicon="󰈀" && lancolor="$C_NORM" ;;
 esac
 
 
@@ -48,7 +49,7 @@ if [ -n "$ABLOCKS" ]; then
 			*" "*) echo "@wifiscan 0 <span color='$wificolor'> ${wificon#* }</span>$lan" ;;
 			*) echo "@wifiscan 0 $lan" ;;
 		esac
-	elif [ "$wifi" = down ] && { [ "$last" = up ] || [ "$lancolor" != "#ffffff" ]; }; then
+	elif [ "$wifi" = down ] && { [ "$last" = up ] || [ "$lancolor" != "$C_NORM" ]; }; then
 		echo "@wifidown 0 $lan"
 	elif [ "$wifi" = up ] && [ "$last" = down ]; then
 		# Everything after the icon, so the animation's last frame is the

@@ -46,7 +46,10 @@ bar {
 	mode dock
 	modifier None
 	colors {
-		background #00000999
+		# Mostly solid, so the text sits on a calm strip rather than the
+		# wallpaper; statusline is the text colour of sb-theme's C_NORM.
+		background #000009d9
+		statusline #d8dee9
 		}
 }
 

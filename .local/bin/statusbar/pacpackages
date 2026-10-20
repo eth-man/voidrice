@@ -1,4 +1,5 @@
 #!/usr/bin/env sh
+. "$HOME/.local/bin/statusbar/sb-theme"
 
 # i3blocks module for pacman upgrades.
 # Displays number of upgradeable packages.
@@ -16,7 +17,7 @@ esac
 pacpackages=$(yay -Qu | grep -v "\[ignored\]" | wc -l | sed -e "s/^0$//g")
   if [ -n "$pacpackages" ]; then
     icon="󰏗"
-    color="#e8cb61"
+    color="$C_INFO"
 printf "<span color='%s'>%s%s%s</span>\n" "$color" $icon""
 else
     icon="󰏗"

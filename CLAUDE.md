@@ -90,11 +90,12 @@ Every `statusbar/` script follows the same shape, and new modules should too:
    esac
    ```
 2. Print one line to stdout. `markup=pango` is set globally in `.config/i3blocks/config`, so this fork's
-   modules colorize with `printf "<span color='%s'>%s</span>\n" "$color" "$icon"`. The repo's dynamic-color
-   palette: `#ffffff` normal, `#969993` disabled/greyed, `#ffff00` warning, `#DC143C`/`#e8cb61` alert.
+   modules colorize with `printf "<span color='%s'>%s</span>\n" "$color" "$icon"`. Take colours from
+   `statusbar/sb-theme` by meaning (`$C_OK`, `$C_WARN`, `$C_ALERT`, `$C_DIM`, ...), never as hex. The
+   palette is deliberately calm: only `C_ALERT` (red) and `C_DIM` (grey) differ from the text colour,
+   so a red block is always the one that needs you. Retheming is one file.
 3. Icons are **Nerd Fonts glyphs** (not emoji, despite what `SCRIPTS.md` still says) — the bar font is
-   `pango:mono 14` with `separator_block_width=8` (both tuned down to stop the rightmost block
-   being clipped). Copy an existing glyph rather than typing one; they are literal UTF-8 in the source.
+   `pango:mono 14`, with 24px gaps and no separator lines between blocks. Copy an existing glyph rather than typing one; they are literal UTF-8 in the source.
    Use **Material Design** icons only (`nf-md`, U+F0001 and up) and light line shapes over filled boxes:
    other families sit on different grids and the Mono icon font squeezes them unevenly. Write
    **icon, one space, value**, with no trailing space; a block that must keep a fixed width pads its

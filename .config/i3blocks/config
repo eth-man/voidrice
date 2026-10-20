@@ -1,5 +1,6 @@
 command=~/.local/bin/statusbar/$BLOCK_NAME
-separator_block_width=8
+separator_block_width=24
+separator=false
 markup=pango
 
 [failed]

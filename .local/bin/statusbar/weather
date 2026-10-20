@@ -1,4 +1,5 @@
 #!/usr/bin/env sh
+. "$HOME/.local/bin/statusbar/sb-theme"
 
 # when to change icon color
 rain_gt=50 # rain % greater
@@ -18,28 +19,28 @@ high=$(sed '13q;d' "$HOME/.local/share/weatherreport" | grep -o "m\\(-\\)*[0-9]\
 
 
 if [ "$rain" -gt "$rain_gt" ]; then
-	color1="#3498db"
+	color1="$C_INFO"
 	rainicon="󰖌 $rain%"
 else
-	color1="#ffffff"
+	color1="$C_NORM"
 	rainicon="󰖌 $rain%"
 fi
 
 
 if [ "$low" -lt "$temp_lt" ]; then
-	color2="#3498db"
+	color2="$C_INFO"
 	lowicon="󰜗 $low"
 else
-	color2="#ffffff"
+	color2="$C_NORM"
 	lowicon="󰜗 $low"
 fi
 
 
 if [ "$high" -ge "$temp_gt" ]; then
-	color3="#ca7201"
+	color3="$C_WARN"
 	highicon="󰖨 $high"
 else
-	color3="#ffffff"
+	color3="$C_NORM"
 	highicon="󰖨 $high"
 fi
 

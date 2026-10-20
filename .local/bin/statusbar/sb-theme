@@ -7,13 +7,19 @@
 # Every module colours through these names so the whole bar can be
 # re-themed from one file instead of hunting hex codes in 20 scripts.
 
-C_NORM="#ffffff"    # normal / idle
+# Calm palette: colour is kept for what needs attention now (C_ALERT) and
+# what is switched off (C_DIM). Every other state shares the text colour,
+# so the one red block on the bar is the one that matters. The names stay
+# semantic, so a livelier theme only needs them given their own values
+# again, as they once were: C_OK="#90EE90" C_INFO="#83a598"
+# C_WARN="#e8cb61" C_ACCENT="#d3869b".
+C_NORM="#d8dee9"    # normal / idle: the text colour
 C_DIM="#969993"     # disabled, absent, powered off
-C_OK="#90EE90"      # healthy, connected, up to date
-C_INFO="#83a598"    # informational, action available
-C_WARN="#e8cb61"    # attention, but not urgent
+C_OK="$C_NORM"      # healthy, connected, up to date
+C_INFO="$C_NORM"    # informational, action available
+C_WARN="$C_NORM"    # attention, but not urgent
 C_ALERT="#DC143C"   # urgent
-C_ACCENT="#d3869b"  # media / accent
+C_ACCENT="$C_NORM"  # media / accent
 
 # sb COLOR TEXT -- emit one pango-marked status line.
 sb() { printf "<span color='%s'>%s</span>\n" "$1" "$2" ;}

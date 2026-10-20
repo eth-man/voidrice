@@ -1,4 +1,5 @@
 #!/bin/bash
+. "$HOME/.local/bin/statusbar/sb-theme"
 if pidof spotify >/dev/null ;
 then
 
@@ -31,16 +32,16 @@ fi
 
 
 if [ "$status" == "Playing" ]; then
-	color="#7BD277"
+	color="$C_NORM"
 	statusicon="󰐊"
 elif [ "$status" == Paused ]; then
-	color="#D36060"
+	color="$C_DIM"
 	statusicon="󰏤"
 elif [ "$status" == Stopped ]; then
-	color="#D28B77"
+	color="$C_DIM"
 	statusicon="󰓛"
 else
-	#color="#D36060"
+	#color="$C_DIM"
 	statusicon=""
 #	statusicon="󰝚"
 fi
