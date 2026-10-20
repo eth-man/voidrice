@@ -50,7 +50,20 @@ bar {
 		# wallpaper; statusline is the text colour of sb-theme's C_NORM.
 		background #000009d9
 		statusline #d8dee9
+		# Workspace buttons in the bar's calm palette: unfocused ones are
+		# plain dim numbers, the focused one a soft tile, and red is kept
+		# for urgent, as for alerts in the blocks.
+		#                   border    background text
+		focused_workspace  #2e3440   #2e3440    #eceff4
+		active_workspace   #000009d9 #000009d9  #d8dee9
+		inactive_workspace #000009d9 #000009d9  #969993
+		urgent_workspace   #DC143C   #DC143C    #ffffff
+		binding_mode       #2e3440   #2e3440    #eceff4
 		}
+	# Same width for "1" and "10", and room after the last block so it
+	# does not sit flush against the screen edge.
+	workspace_min_width 30
+	padding 0 8px 0 0
 }
 
 # #---Basic Bindings---# #

@@ -25,9 +25,11 @@ cycle() {
   set_kbdlayout "$next_layout"
 }
 
+# Icon, one space, layout in capitals like the rest of the bar: lowercase
+# letters stand only x-height tall next to digits, so "us" read as smaller.
 i3status() {
     kb="$(setxkbmap -query | grep -oP 'layout:\s*\K\w+')" || exit 1
-    echo "$kb"
+    echo "󰌌 ${kb^^}"
 }
 
 subcommand="$1"
