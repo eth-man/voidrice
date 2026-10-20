@@ -31,7 +31,7 @@ on demand by `sigbar N`.
 - `failed` -- **(fork)** Count of failed systemd units, system and user. Hidden entirely when nothing has failed, so it costs no bar width until it matters; a failed unit is otherwise invisible until you happen to run `systemctl`. Left click lists them. Signal 15.
 - `help` -- A question mark that opens the readme when clicked.
 - `i3-keyboard-layout` -- **(fork)** Current keyboard layout; cycled by `$mod+control+space`. Signal 30.
-- `internet` -- **(fork, reworked)** Wifi and ethernet state. Icons grey out (`#969993`) when a link is down. Click for `nmtui`. Signal 20. Under ablocks the wifi icon animates on a change of state: red bars draining on a disconnect, repeated every 30s while offline, green bars filling once on a reconnect.
+- `internet` -- **(fork, reworked)** Wifi and ethernet state. Icons grey out (`#969993`) when a link is down. Click for `nmtui`. Signal 20. Under ablocks the wifi icon animates on a change of state: red bars draining on a disconnect, repeated every 30s while offline, green bars filling once on a reconnect. Clicking it opens `nmtui` in the background and sweeps the bars as if scanning.
 - `iplocate` -- Geolocation of the current public IP. Needs `geoiplookup`.
 - `mailbox` -- Unread mail count, for use with mutt-wizard. Signal 12. Under ablocks the icon bounces when the unread count goes up.
 - `memory` -- Memory usage. Click for the most memory-intensive processes.

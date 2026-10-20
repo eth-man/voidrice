@@ -1,7 +1,10 @@
 #!/usr/bin/env sh
 
 case $BLOCK_BUTTON in
-	1) $TERMINAL -e nmtui ;;
+	# In the background, so the block can answer the click with an animation
+	# now rather than after nmtui closes. Its stdout must not be the block's,
+	# or the bar would wait on the terminal all the same.
+	1) setsid -f "$TERMINAL" -e nmtui >/dev/null 2>&1 ;;
 	3) pgrep -x dunst >/dev/null && notify-send "󰖩 Internet module" "\\- Click to connect
 󰖪 : no wifi
 󰖩 : wifi, with signal quality
@@ -38,7 +41,14 @@ if [ -n "$ABLOCKS" ]; then
 	# Not "dormant", which a reconnect passes through while associating:
 	# recorded, it would hide the down -> up change this is looking for.
 	case "$wifi" in up|down) echo "$wifi" > "$state" ;; esac
-	if [ "$wifi" = down ] && { [ "$last" = up ] || [ "$lancolor" != "#ffffff" ]; }; then
+	if [ "$BLOCK_BUTTON" = 1 ]; then
+		# The bars sweep as if scanning. Everything after the icon is passed
+		# exactly as printed above, so only the icon moves.
+		case "$wificon" in
+			*" "*) echo "@wifiscan 0 <span color='$wificolor'> ${wificon#* }</span>$lan" ;;
+			*) echo "@wifiscan 0 $lan" ;;
+		esac
+	elif [ "$wifi" = down ] && { [ "$last" = up ] || [ "$lancolor" != "#ffffff" ]; }; then
 		echo "@wifidown 0 $lan"
 	elif [ "$wifi" = up ] && [ "$last" = down ]; then
 		# Everything after the icon, so the animation's last frame is the
