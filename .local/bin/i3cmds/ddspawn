@@ -16,4 +16,13 @@ then
 else
 	echo "Window not detected... spawning."
 	i3 "exec --no-startup-id $TERMINAL -n dropdown_$script $@ -e $script"
+	# for_window parks a new dropdown in the scratchpad; show it from here
+	# rather than with a for_window "scratchpad show", which i3 also re-runs
+	# on every restart. Wait for the window, then a moment for i3 to park it.
+	i=0
+	until xwininfo -tree -root | grep -q "(\"dropdown_$script\" " || [ "$i" -ge 30 ]; do
+		sleep 0.1; i=$((i + 1))
+	done
+	sleep 0.2
+	i3 "[instance=\"dropdown_$script\"] scratchpad show; [instance=\"dropdown_$script\"] move position center"
 fi

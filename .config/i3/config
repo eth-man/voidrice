@@ -30,7 +30,8 @@ gaps outer $outer_gaps
 for_window [instance="dropdown_*"] floating enable
 for_window [instance="dropdown_*"] move scratchpad
 for_window [instance="dropdown_*"] sticky enable
-for_window [instance="dropdown_*"] scratchpad show
+# No "scratchpad show" here: i3 re-runs for_window on every restart, which
+# popped every dropdown open. ddspawn shows a newly spawned one itself.
 for_window [instance="dropdown_tmuxdd"] resize set 1100 500
 for_window [instance="dropdown_dropdowncalc"] resize set 800 300
 for_window [instance="dropdown_tmuxdd"] border pixel 3
