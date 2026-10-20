@@ -125,6 +125,20 @@ print("\n".join(sorted(set(re.findall(r"[\ue000-\uf8ff\U000f0000-\U000ffffd]", t
 	)
 	[ -n "$nonmd" ] && warn "icons outside Material Design (nf-md), so they will not match the rest: $(echo $nonmd)" \
 	                || ok "every status bar icon is Material Design"
+	# And one spacing: icon, one space, value. Blocks that each chose their
+	# own (none, one, a trailing space) read as an uneven bar.
+	jammed=$(python3 - "$BIN"/statusbar/* <<-'EOF' 2>/dev/null
+		import sys, os, re
+		pat = re.compile("[\U000F0001-\U000F1AF0][$%A-Za-z0-9]")
+		for f in sys.argv[1:]:
+		    try: lines = open(f, encoding="utf-8", errors="replace").readlines()
+		    except OSError: continue
+		    for n, l in enumerate(lines, 1):
+		        if pat.search(l): print("%s:%d" % (os.path.basename(f), n))
+		EOF
+	)
+	[ -n "$jammed" ] && warn "icon with no space before its value: $(echo $jammed)" \
+	                 || ok "every icon is followed by a space"
 fi
 
 # ------------------------------------------------------------------- paths ---

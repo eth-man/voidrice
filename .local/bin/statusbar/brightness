@@ -27,4 +27,4 @@ else
 	icon="󰃠"
 fi
 
-printf "%s%d%%\n" "$icon" "$percent"
+printf "%s %d%%\n" "$icon" "$percent"

@@ -34,4 +34,8 @@ else
 fi
 
 # shellcheck disable=SC2046
-printf "<span color='%s'>󰇚%4sB 󰕒%4sB</span>\n" "$color" $(numfmt --to=iec "$rx" "$tx")
+# Icon, one space, value, as everywhere on the bar. The values are padded on
+# the right to a fixed 5 (numfmt gives at most 4, plus the B) so the block
+# keeps its width as the rates change instead of nudging its neighbours.
+set -- $(numfmt --to=iec "$rx" "$tx")
+printf "<span color='%s'>󰇚 %-5s 󰕒 %-5s</span>\n" "$color" "${1}B" "${2}B"

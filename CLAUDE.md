@@ -95,6 +95,10 @@ Every `statusbar/` script follows the same shape, and new modules should too:
 3. Icons are **Nerd Fonts glyphs** (not emoji, despite what `SCRIPTS.md` still says) — the bar font is
    `pango:mono 14` with `separator_block_width=8` (both tuned down to stop the rightmost block
    being clipped). Copy an existing glyph rather than typing one; they are literal UTF-8 in the source.
+   Use **Material Design** icons only (`nf-md`, U+F0001 and up) and light line shapes over filled boxes:
+   other families sit on different grids and the Mono icon font squeezes them unevenly. Write
+   **icon, one space, value**, with no trailing space; a block that must keep a fixed width pads its
+   value on the right (`%-5s`), never between icon and value. `voidrice-doctor` checks the first two.
 4. Optionally ask for an animation. Under ablocks (`eth-man/ablocks`, the C replacement for i3blocks)
    an extra output line `@name [ms [arg]]` plays an animation from its `config.h` for as long as the
    script keeps printing it. Guard it with `[ -n "$ABLOCKS" ]`, because i3blocks would show the line as

@@ -3,9 +3,9 @@
 # i3blocks module: state of the voidrice repo itself.
 #
 #   󰄬  clean and level with origin
-#   󰇚N updates waiting on origin (N commits behind)  -> pull
-#   󰕒N committed but not pushed (N commits ahead)
-#   󰀦N uncommitted changes in the repo
+#   󰇚 N updates waiting on origin (N commits behind)  -> pull
+#   󰕒 N committed but not pushed (N commits ahead)
+#   󰀦 N uncommitted changes in the repo
 #   󰊢  repo not found
 #
 # Fetching is a network call, so it is rate-limited to $FETCH_EVERY seconds
@@ -58,9 +58,9 @@ fi
 : "${ahead:=0}" "${behind:=0}"
 
 out=""
-[ "$behind" -gt 0 ] && out="$out󰇚$behind "
-[ "$ahead"  -gt 0 ] && out="$out󰕒$ahead "
-[ "$dirty"  -gt 0 ] && out="$out󰀦$dirty "
+[ "$behind" -gt 0 ] && out="$out󰇚 $behind "
+[ "$ahead"  -gt 0 ] && out="$out󰕒 $ahead "
+[ "$dirty"  -gt 0 ] && out="$out󰀦 $dirty "
 
 # Most urgent state wins the colour.
 if   [ "$dirty"  -gt 0 ]; then color="$C_WARN"
