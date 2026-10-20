@@ -32,13 +32,13 @@ fi
 
 if [ "$status" == "Playing" ]; then
 	color="#7BD277"
-	statusicon=""
+	statusicon="󰐊"
 elif [ "$status" == Paused ]; then
 	color="#D36060"
-	statusicon=""
+	statusicon="󰏤"
 elif [ "$status" == Stopped ]; then
 	color="#D28B77"
-	statusicon=""
+	statusicon="󰓛"
 else
 	#color="#D36060"
 	statusicon=""

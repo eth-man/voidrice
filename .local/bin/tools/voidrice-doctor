@@ -110,6 +110,21 @@ print("\n".join(sorted(set(re.findall(r"[\ue000-\uf8ff\U000f0000-\U000ffffd]", t
 	done
 	[ -n "$missing" ] && warn "glyph(s) not in a Nerd Font, so another font is substituted:$missing" \
 	                  || ok "every status bar glyph is in an installed Nerd Font"
+	# One icon family keeps the bar uniform: Material Design, U+F0001 up.
+	# Font Awesome, Weather and the other sets sit in the BMP private-use
+	# area, drawn on different grids and squeezed differently by the Mono
+	# font; U+F500-FD46 is where pre-v3 Nerd Fonts kept Material Design,
+	# which now renders as a CJK character or a missing-glyph box.
+	nonmd=$(python3 - "$BIN"/statusbar/* <<-'EOF' 2>/dev/null
+		import sys, os
+		for f in sys.argv[1:]:
+		    try: t = open(f, encoding="utf-8", errors="replace").read()
+		    except OSError: continue
+		    if any(0xE000 <= ord(c) <= 0xFD46 for c in t): print(os.path.basename(f))
+		EOF
+	)
+	[ -n "$nonmd" ] && warn "icons outside Material Design (nf-md), so they will not match the rest: $(echo $nonmd)" \
+	                || ok "every status bar icon is Material Design"
 fi
 
 # ------------------------------------------------------------------- paths ---
