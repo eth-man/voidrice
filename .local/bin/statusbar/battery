@@ -20,7 +20,8 @@ fi
 
 case $BLOCK_BUTTON in
 	3) pgrep -x dunst >/dev/null && notify-send "􀀊 Battery module" "􀀀 empty  􀀂 low  􀀅 half  􀀇 high  􀀊 full  􀀋 charging
-- Red at 20% or less while discharging, with a fill-up animation under ablocks." ;;
+- Red at 20% or less while discharging, with a fill-up animation under ablocks.
+- 􀀽 at 10% or less: critical, blinking until the charger goes in." ;;
 esac
 
 capacity=$(cat /sys/class/power_supply/"$battery_name"/capacity) || exit
@@ -34,6 +35,7 @@ current_brightness="$(bctl get)"
 # the point where the lowbat animation starts too. On the charger a low
 # percentage is being fixed, so it is not an alert state.
 alert_capacity=20
+warn_capacity=10 # critical: solid battery with "!", blinking, sticky warning
 color="$C_NORM"
 if [ "$capacity" -le "$alert_capacity" ] && [ "$status" = "Discharging" ]; then
   color="$C_ALERT"
@@ -61,6 +63,11 @@ if [ "$status" = "Charging" ]; then
     icon="􀀋"
 else
     icon="$(pick "$level" 􀀀 􀀁 􀀂 􀀃 􀀄 􀀅 􀀆 􀀇 􀀈 􀀉 􀀊)"
+fi
+# Critical: the same battery, solid, with a "!" cut out of it. At bar
+# size an outlined "!" inside the battery is two pixels; this one reads.
+if [ "$status" = "Discharging" ] && [ "$capacity" -le "$warn_capacity" ]; then
+    icon="􀀽"
 fi
 
 
@@ -95,7 +102,6 @@ fi
 # Mirrors the Windows critical-battery behaviour: a warning that stays on
 # screen from $warn_capacity down, and an automatic suspend at
 # $suspend_capacity so the machine sleeps instead of dying mid-write.
-warn_capacity=10
 suspend_capacity=5
 warn_flag="$HOME/.battery_warned"
 suspend_stamp="$HOME/.battery_suspend_stamp"
@@ -147,11 +153,15 @@ echo "$status" > "$charging_state_file"
 
 printf "<span color='%s'>%s %s</span>\n" "$color" "$icon" "$capacity%"
 
-# Under ablocks, ask for the "lowbat" animation (a red battery filling up,
-# replayed every 30s) while discharging at or below $anim_capacity. Guarded
+# Under ablocks, while discharging: at or below $warn_capacity the critical
+# icon blinks for as long as it stays there ("batcrit"); up to
+# $alert_capacity a red battery fills up every 30s ("lowbat"). Guarded
 # because i3blocks would show the line as the block's short text, and an if
 # rather than && so a false test is not the script's exit status.
-anim_capacity="$alert_capacity"
-if [ -n "$ABLOCKS" ] && [ "$status" = "Discharging" ] && [ "$capacity" -le "$anim_capacity" ]; then
-    echo "@lowbat 0 $capacity%"
+if [ -n "$ABLOCKS" ] && [ "$status" = "Discharging" ]; then
+    if [ "$capacity" -le "$warn_capacity" ]; then
+        echo "@batcrit 0 $capacity%"
+    elif [ "$capacity" -le "$alert_capacity" ]; then
+        echo "@lowbat 0 $capacity%"
+    fi
 fi
