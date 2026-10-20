@@ -160,11 +160,15 @@ printf "<span color='%s'>%s %s</span>\n" "$color" "$icon" "$capacity%"
 # rather than && so a false test is not the script's exit status.
 # The moment the charger goes in (Charging, Full or "Not charging" after
 # Discharging) the battery fills and the bolt pulses in purple, once
-# ("plugin"); powerupdate refreshes this block on the udev event, so it
-# plays as the plug goes in rather than on the next 5s run.
+# ("plugin"); the moment it comes out, the bolt fades away ("unplug"),
+# ahead of any low-battery animation, which follows on the next run.
+# powerupdate refreshes this block on the udev event, so both play as the
+# plug moves rather than on the next 5s run.
 if [ -n "$ABLOCKS" ]; then
     if [ "$status" = "Discharging" ]; then
-        if [ "$capacity" -le "$warn_capacity" ]; then
+        if [ -n "$prev_status" ] && [ "$prev_status" != "Discharging" ]; then
+            echo "@unplug 0 $capacity%"
+        elif [ "$capacity" -le "$warn_capacity" ]; then
             echo "@batcrit 0 $capacity%"
         elif [ "$capacity" -le "$alert_capacity" ]; then
             echo "@lowbat 0 $capacity%"
