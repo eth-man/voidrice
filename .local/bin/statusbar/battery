@@ -182,3 +182,12 @@ fi
 echo "$status" > "$charging_state_file"
 
 printf "<span color='%s'>%s%s %s</span>\n" "$color" "$icon" "$warn" "$capacity%"
+
+# Under ablocks, ask for the "lowbat" animation (a red battery filling up,
+# replayed every 30s) while discharging at or below $anim_capacity. Guarded
+# because i3blocks would show the line as the block's short text, and an if
+# rather than && so a false test is not the script's exit status.
+anim_capacity=20
+if [ -n "$ABLOCKS" ] && [ "$status" = "Discharging" ] && [ "$capacity" -le "$anim_capacity" ]; then
+    echo "@lowbat 0 $capacity%"
+fi
