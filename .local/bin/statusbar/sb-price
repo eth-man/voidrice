@@ -21,7 +21,7 @@ pvalue=$5
 updateprice() { ping -q -c 1 example.org >/dev/null 2>&1 &&
 	curl -s "rate.sx/1$symbol" > "$pricefile" &&
 	curl -s "rate.sx/$symbol$interval" > "$chartfile" &&
-	pkill -RTMIN+29 "${STATUSBAR:-dwmblocks}" &&
+	sigbar 29 &&
 [ -n "$pvalue" ] && curl -s "usd.rate.sx/$value$symbol" > "$valuefile" ;}
 
 

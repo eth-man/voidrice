@@ -58,6 +58,9 @@ if [ -f "$cfg" ]; then
 	[ -n "$dup" ] && fail "duplicate block(s) -- these render twice: $(echo $dup)" || ok "no duplicate blocks"
 	dups=$(grep '^signal=' "$cfg" | sort | uniq -d)
 	[ -n "$dups" ] && fail "two blocks share a refresh signal: $(echo $dups)" || ok "no signal collisions"
+	# SIGRTMIN+30 is SIGRTMAX on Linux; anything higher cannot be sent at all.
+	high=$(awk -F= '/^signal=/ && $2+0 > 30 {print $2}' "$cfg")
+	[ -n "$high" ] && fail "signal past RTMIN+30 can never be sent: $(echo $high)" || ok "every signal is sendable"
 	miss=0
 	for b in $(grep '^\[' "$cfg" | tr -d '[]'); do
 		cmd=$(awk -v b="[$b]" '$0==b{f=1;next} /^\[/{f=0} f&&/^command=/{sub(/^command=/,"");print;exit}' "$cfg")

@@ -43,7 +43,7 @@ case $BLOCK_BUTTON in
 	       *"Powered: yes"*) bt power off >/dev/null; notify-send "󰂲 Bluetooth" "Powered off" ;;
 	       *)                bt power on  >/dev/null; notify-send "󰂯 Bluetooth" "Powered on" ;;
 	   esac
-	   pkill -RTMIN+17 i3blocks ;;
+	   sigbar 17 ;;
 	3) info=""
 	   for m in $(connected_macs); do
 	       b="$(device_battery "$m")"

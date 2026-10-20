@@ -13,7 +13,7 @@ signal=9
 
 [spotifyControls]
 interval=10
-signal=32
+signal=19
 separator=false
 
 [spotifyPlay]
@@ -102,7 +102,7 @@ interval=2
 
 [ping-lat]
 interval=60
-signal=31
+signal=18
 
 [vpn]
 interval=60

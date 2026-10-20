@@ -30,7 +30,7 @@ do_fetch() {
 case $BLOCK_BUTTON in
 	1)  # refresh now, then show the log of what is incoming
 	    do_fetch
-	    pkill -RTMIN+14 i3blocks
+	    sigbar 14
 	    setsid -f "$TERMINAL" -e sh -c \
 	        'git -C "'"$REPO"'" status; echo; git -C "'"$REPO"'" log --oneline HEAD..@{u} 2>/dev/null; read -r _' ;;
 	2)  pgrep -x dunst >/dev/null && notify-send "󰊢 voidrice" "$(git_ status --short --branch | head -20)" ;;

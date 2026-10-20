@@ -45,7 +45,7 @@ else
 #	statusicon="󰝚"
 fi
 
- pkill -RTMIN+32 "${STATUSBAR}"
+ sigbar 19
 
 echo "<span color='$color'>$statusicon</span>"
 

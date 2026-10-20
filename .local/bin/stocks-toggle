@@ -10,4 +10,4 @@ then
 else
 	[ "$(printf "No\\nYes" | dmenu -i -p "Enable stocks bar?")" = "Yes" ] && touch $FILE && notify-send "Stocks Bar enabled"
 fi
-sleep 3 && pkill -RTMIN+4 "${STATUSBAR:?}"
+sleep 3 && sigbar 4

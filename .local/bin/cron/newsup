@@ -9,8 +9,8 @@ ping -q -c 1 1.1.1.1 > /dev/null || exit
 pgrep -x newsboat >/dev/null && /usr/bin/xdotool key --window "$(/usr/bin/xdotool search --name newsboat)" R && exit
 
 echo 🔃 > /tmp/newsupdate
-pkill -RTMIN+6 i3blocks
+sigbar 6
 /usr/bin/newsboat -x reload
 rm -f /tmp/newsupdate
-pkill -RTMIN+6 i3blocks
+sigbar 6
 /usr/bin/notify-send "📰 RSS feed update complete."

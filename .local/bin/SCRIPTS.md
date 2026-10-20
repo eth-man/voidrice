@@ -21,7 +21,7 @@ i3blocks modules. Each is wired up by a `[block]` section in
 globally. Modules handle clicks through `$BLOCK_BUTTON` and, because
 `markup=pango` is set, colour themselves with `<span color='#rrggbb'>`. Icons
 are Nerd Fonts glyphs, not emoji. A module with a `signal=N` line is refreshed
-on demand by `pkill -RTMIN+N i3blocks`.
+on demand by `sigbar N`.
 
 - `battery` -- Power remaining, with the icon and colour tracking charge level. Takes the battery name as an argument (`battery BAT0`). Below 10% while discharging it raises a critical dunst notification that stays on screen and is re-raised on the next 5s refresh if dismissed, and at 5% it suspends the machine after a 10s grace period which plugging in cancels. It will not suspend again for 5 minutes, so waking a still-critical machine does not drop straight back to sleep; connecting the charger re-arms it. Thresholds are the `warn_capacity` and `suspend_capacity` variables at the top of the low-battery section.
 - `brightness` -- **(fork)** Backlight level from sysfs, icon shifting with brightness. Scroll to change (needs `brightnessctl`). Signal 13.
@@ -95,6 +95,7 @@ Run manually or bound from within vim and other programs.
 - `sac` -- **(fork)** SSH alias creator. `sac <alias> [<user>@]<hostname> [-p <port>]` appends a Host block to `~/.ssh/config`.
 - `setbg` -- Sets the wallpaper, storing it at `~/.config/wall.png`.
 - `shortcuts` -- Regenerates the shell, ranger and vifm shortcut files from `~/.config/bmdirs` and `~/.config/bmfiles`. Run automatically by vim when those files are saved.
+- `sigbar` -- **(fork)** Refreshes status bar blocks: `sigbar N` re-runs the blocks registered on signal N, a bare `sigbar` re-runs them all. Signals i3blocks and ablocks alike, so callers keep working across a bar switch. Every refresh in this repo goes through it rather than `pkill -RTMIN+N i3blocks`.
 - `texclear` -- Removes LaTeX build files. Run by vim on leaving a `.tex` file.
 - `transadd` -- Handles torrent magnet links, starting `transmission-daemon` if needed.
 - `vifmimg`, `vu` -- **(fork)** Ueberzug image previews for vifm.

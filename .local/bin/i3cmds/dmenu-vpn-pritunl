@@ -13,7 +13,7 @@
 vpn_status() {
 	status=$( pritunl-client list $1 | awk  '{print $7}'  | sed 1,3d )
 	notify-send "🔓Pritunl " "Connection is $status."
-	pkill -RTMIN+3 "${STATUSBAR}"
+	sigbar 3
 }
 
 stop_vpn() {

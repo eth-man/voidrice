@@ -22,7 +22,7 @@ alias ka="killall" \
 	yta="yt -x -f bestaudio/best" \
 	YT="youtube-viewer" \
 	ref="shortcuts >/dev/null; source ~/.config/shortcutrc" \
-	upc="sudo pacman -Syu; pkill -RTMIN+8 i3blocks" \
+	upc="sudo pacman -Syu; sigbar 8" \
 	lsp="pacman -Qett --color=always | less" \
 	ffmpeg="ffmpeg -hide_banner" \
 	lpkg="expac --timefmt='%Y-%m-%d %T' '%l\t%n'|sort -n" \

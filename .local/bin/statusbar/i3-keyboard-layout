@@ -11,7 +11,7 @@ get_kbdlayout() {
 set_kbdlayout() {
   eval "array=($1)"
   setxkbmap "${array[@]}"
-  pkill -RTMIN+30 "${STATUSBAR:-dwmblocks}"
+  sigbar 30
   notify-send "⌨  Keyboard" "Current layout: $1"
 }
 

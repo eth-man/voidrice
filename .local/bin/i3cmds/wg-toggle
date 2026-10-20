@@ -11,7 +11,7 @@ ifinstalled wg wg-quick || exit 1
 WGDIR="/etc/wireguard"
 
 askpass() { sudo -n "$@" 2>/dev/null || sudo -A "$@" ;}
-refresh() { pkill -RTMIN+3 i3blocks ;}
+refresh() { sigbar 3 ;}
 
 # `wg show interfaces` is readable without root and lists what is up.
 active="$(wg show interfaces 2>/dev/null)"

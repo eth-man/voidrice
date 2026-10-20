@@ -97,23 +97,31 @@ Every `statusbar/` script follows the same shape, and new modules should too:
    being clipped). Copy an existing glyph rather than typing one; they are literal UTF-8 in the source.
 
 **Refreshing a module is signal-based.** A block declares `signal=N` in `.config/i3blocks/config`, and
-anything that changes its state ends with `pkill -RTMIN+N i3blocks`. Registered signals in this fork:
+anything that changes its state ends with `sigbar N` (`tools/sigbar`). Never call `pkill -RTMIN+N i3blocks`
+directly: `sigbar` signals whichever bar is running, i3blocks or ablocks, so a bar switch needs no re-login.
+Registered signals in this fork:
 
 | N | block | N | block |
 |---|---|---|---|
-| 3 | vpn | 12 | mailbox |
-| 5 | weather | 13 | brightness |
-| 6 | news | 29 | sb-price (`[btcprice]`, disabled) |
-| 7 | torrent | 30 | i3-keyboard-layout |
-| 8 | pacpackages | 31 | ping-lat |
-| 9 | recording | 32 | spotifyControls |
-| 10 | volume | 4 | stocks (`stocks-toggle`; no block registered) |
-| 11 | music (via the `mpdupdate` daemon) | | |
+| 3 | vpn | 13 | brightness |
+| 4 | stocks (`stocks-toggle`; no block registered) | 14 | gitcheck |
+| 5 | weather | 15 | failed |
+| 6 | news | 16 | tasks |
+| 7 | torrent | 17 | sb-bluetooth |
+| 8 | pacpackages | 18 | ping-lat |
+| 9 | recording | 19 | spotifyControls |
+| 10 | volume | 29 | sb-price (`[btcprice]`, disabled) |
+| 11 | music (via the `mpdupdate` daemon) | 30 | i3-keyboard-layout |
+| 12 | mailbox | | |
+
+**30 is the ceiling.** On Linux `SIGRTMIN` is 34 and `SIGRTMAX` 64, so `RTMIN+31` does not exist and
+`pkill` rejects it. ping-lat and spotifyControls sat on 31 and 32 for years and were never refreshed by
+signal. Pick a free number from 1–2 or 20–28.
 
 Adding a module means: write `statusbar/<name>`, `chmod +x`, add a `[<name>]` section with `interval`
 (and `signal` if it is event-driven) to `.config/i3blocks/config`, then restart the bar. i3blocks reads
 its config only at startup, so a *config* change needs `i3-msg restart` (`mod+Shift+r`); a change to a
-script's output alone is picked up by `pkill -SIGUSR1 i3blocks`, which re-runs every block.
+script's output alone is picked up by a bare `sigbar`, which re-runs every block.
 
 ## Applying changes without logging out
 
@@ -123,7 +131,7 @@ or you will reload the old file and conclude, wrongly, that your change did noth
 | Changed | Reload with |
 |---|---|
 | `.config/i3/config` | `i3-msg reload`, or `mod+Shift+r` to restart in place |
-| a `statusbar/` script | `pkill -SIGUSR1 i3blocks` (all blocks); single block: `pkill -RTMIN+<signal> i3blocks` |
+| a `statusbar/` script | `sigbar` (all blocks); single block: `sigbar <signal>` |
 | `.config/i3blocks/config` | `i3-msg restart` — i3blocks only parses its config at startup |
 | `.config/x11/xresources` | `xrdb ~/.config/x11/xresources` (nvim does this automatically on write) |
 | `.config/dunst/dunstrc` | `pkill dunst` (it respawns on next notification) |

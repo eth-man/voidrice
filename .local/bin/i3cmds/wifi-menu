@@ -9,7 +9,7 @@
 
 ifinstalled nmcli || exit 1
 
-refresh() { pkill -RTMIN+4 i3blocks 2>/dev/null; }
+refresh() { sigbar 4 2>/dev/null; }
 
 # Radio off is a common cause of "no networks" -- offer to fix it rather than
 # showing an empty menu.

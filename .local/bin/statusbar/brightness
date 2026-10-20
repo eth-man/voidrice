@@ -4,8 +4,8 @@
 # the click/scroll actions; the readout itself only needs sysfs.
 
 case $BLOCK_BUTTON in
-	4) brightnessctl set +5% >/dev/null 2>&1 && pkill -RTMIN+13 i3blocks ;;
-	5) brightnessctl set 5%- >/dev/null 2>&1 && pkill -RTMIN+13 i3blocks ;;
+	4) brightnessctl set +5% >/dev/null 2>&1 && sigbar 13 ;;
+	5) brightnessctl set 5%- >/dev/null 2>&1 && sigbar 13 ;;
 	3) pgrep -x dunst >/dev/null && notify-send "󰃠 Brightness module" "󰃠: current backlight level.
 - Scroll to change brightness." ;;
 esac
