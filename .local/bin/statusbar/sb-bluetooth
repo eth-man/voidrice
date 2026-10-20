@@ -2,10 +2,10 @@
 
 # i3blocks module: bluetooth adapter and what is connected to it.
 #
-#   󰂲  off, or blocked by rfkill (dim)
-#   󰂯  on, nothing connected
-#   󰂰  scanning for devices
-#   󰂱  connected -- shows the device, and its battery when the device reports one
+#   􀀸  off, or blocked by rfkill (dim)
+#   􀀷  on, nothing connected
+#   􀀺  scanning for devices
+#   􀀹  connected -- shows the device, and its battery when the device reports one
 #
 # The previous version only ever reported the adapter's own power state, so a
 # connected headset and an idle adapter looked exactly the same.
@@ -27,11 +27,11 @@ device_battery() { bt info "$1" | sed -n 's/.*Battery Percentage:.*(\([0-9]\+\))
 # Pick an icon suiting the device class, so a headset and a phone differ.
 device_icon() {
 	case "$(bt info "$1" | sed -n 's/^\s*Icon: //p' | head -1)" in
-		*audio*|*headset*|*headphone*) echo "󰋋" ;;
-		phone)                         echo "󰏲" ;;
-		input-mouse)                   echo "󰍽" ;;
-		input-keyboard)                echo "󰌌" ;;
-		*)                             echo "󰂱" ;;
+		*audio*|*headset*|*headphone*) echo "􀀵" ;;
+		phone)                         echo "􀀶" ;;
+		input-mouse)                   echo "􀀴" ;;
+		input-keyboard)                echo "􀀳" ;;
+		*)                             echo "􀀹" ;;
 	esac
 }
 
@@ -40,8 +40,8 @@ show="$(bt show)"
 case $BLOCK_BUTTON in
 	1) dmenu-bluetooth ;;
 	2) case "$show" in
-	       *"Powered: yes"*) bt power off >/dev/null; notify-send "󰂲 Bluetooth" "Powered off" ;;
-	       *)                bt power on  >/dev/null; notify-send "󰂯 Bluetooth" "Powered on" ;;
+	       *"Powered: yes"*) bt power off >/dev/null; notify-send "􀀸 Bluetooth" "Powered off" ;;
+	       *)                bt power on  >/dev/null; notify-send "􀀷 Bluetooth" "Powered on" ;;
 	   esac
 	   sigbar 17 ;;
 	3) info=""
@@ -50,8 +50,8 @@ case $BLOCK_BUTTON in
 	       info="$info$(device_name "$m")${b:+  ${b}%}
 "
 	   done
-	   pgrep -x dunst >/dev/null && notify-send "󰂯 Bluetooth module" "${info:-Nothing connected}
-- 󰂲 off  󰂯 on  󰂰 scanning  󰂱 connected
+	   pgrep -x dunst >/dev/null && notify-send "􀀷 Bluetooth module" "${info:-Nothing connected}
+- 􀀸 off  􀀷 on  􀀺 scanning  􀀹 connected
 - Left click manages devices.
 - Middle click toggles power." ;;
 esac
@@ -59,13 +59,13 @@ esac
 # rfkill outranks everything: the adapter cannot be used while blocked, and
 # "powered off" would be a misleading way to describe that.
 if rfkill list bluetooth 2>/dev/null | grep -q 'blocked: yes'; then
-	sb "$C_DIM" "󰂲"
+	sb "$C_DIM" "􀀸"
 	exit 0
 fi
 
 case "$show" in
 	*"Powered: yes"*) ;;
-	*) sb "$C_DIM" "󰂲"; exit 0 ;;
+	*) sb "$C_DIM" "􀀸"; exit 0 ;;
 esac
 
 macs="$(connected_macs)"
@@ -92,6 +92,6 @@ if [ -n "$macs" ]; then
 fi
 
 case "$show" in
-	*"Discovering: yes"*) sb "$C_INFO" "󰂰" ;;
-	*)                    sb "$C_NORM" "󰂯" ;;
+	*"Discovering: yes"*) sb "$C_INFO" "􀀺" ;;
+	*)                    sb "$C_NORM" "􀀷" ;;
 esac

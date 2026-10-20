@@ -1,20 +1,20 @@
 #!/usr/bin/env sh
 
 # i3blocks torrent module. Counts torrents by state.
-#   󰓛 stopped   󰔟 idle (needs seeds)   󰕒 uploading
-#   󰇚 downloading   󰄬 done   󰛍 seeding
+#   􀀲 stopped   􀀬 idle (needs seeds)   􀀼 uploading
+#   􀀻 downloading   􀀜 done   􀀧 seeding
 
 . "$HOME/.local/bin/statusbar/sb-theme"
 
 case $BLOCK_BUTTON in
 	1) setsid -f "$TERMINAL" -e tremc ;;
 	2) td-toggle ;;
-	3) pgrep -x dunst >/dev/null && notify-send "󰇚 Torrent module" "\- 󰓛 paused
-- 󰔟 idle (seeds needed)
-- 󰕒 uploading (unfinished)
-- 󰇚 downloading
-- 󰄬 done
-- 󰛍 done and seeding
+	3) pgrep -x dunst >/dev/null && notify-send "􀀻 Torrent module" "\- 􀀲 paused
+- 􀀬 idle (seeds needed)
+- 􀀼 uploading (unfinished)
+- 􀀻 downloading
+- 􀀜 done
+- 􀀧 done and seeding
 - Left click opens tremc, middle click toggles the daemon." ;;
 esac
 
@@ -30,17 +30,17 @@ out="$(transmission-remote -l 2>/dev/null | grep % |
 	s/.*Uploading.*/L/g;
 	s/.*%.*/M/g" |
 	sort -h | uniq -c | sed "
-		s/A/󰓛/g;
-		s/B/󰔟/g;
-		s/L/󰕒/g;
-		s/M/󰇚/g;
-		s/N/󰄬/g;
-		s/Z/󰛍/g" | awk '{print $2, $1}' | tr '\n' ' ' | sed -e 's/ *$//')"
+		s/A/􀀲/g;
+		s/B/􀀬/g;
+		s/L/􀀼/g;
+		s/M/􀀻/g;
+		s/N/􀀜/g;
+		s/Z/􀀧/g" | awk '{print $2, $1}' | tr '\n' ' ' | sed -e 's/ *$//')"
 
 [ -n "$out" ] || exit 0
 
 # Anything still downloading is the interesting case.
 case "$out" in
-	*󰇚*) sb "$C_INFO" "$out" ;;
+	*􀀻*) sb "$C_INFO" "$out" ;;
 	*)   sb "$C_NORM" "$out" ;;
 esac

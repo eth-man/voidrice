@@ -94,12 +94,14 @@ Every `statusbar/` script follows the same shape, and new modules should too:
    `statusbar/sb-theme` by meaning (`$C_OK`, `$C_WARN`, `$C_ALERT`, `$C_DIM`, ...), never as hex. The
    palette is deliberately calm: only `C_ALERT` (red) and `C_DIM` (grey) differ from the text colour,
    so a red block is always the one that needs you. Retheming is one file.
-3. Icons are **Nerd Fonts glyphs** (not emoji, despite what `SCRIPTS.md` still says) — the bar font is
-   `pango:mono 14`, with 24px gaps and no separator lines between blocks. Copy an existing glyph rather than typing one; they are literal UTF-8 in the source.
-   Use **Material Design** icons only (`nf-md`, U+F0001 and up) and light line shapes over filled boxes:
-   other families sit on different grids and the Mono icon font squeezes them unevenly. Write
+3. Icons are **suckless icons**, this fork's own icon font (`eth-man/ablocks`, `icons/icons.py`): every
+   icon a few lines of drawing code on one grid with one stroke weight, built by `make` and installed by
+   `make install` (to `~/.local/share/fonts` for a user install). They sit in plane 16 of the private use
+   area from U+100000; `python3 icons/icons.py list` names them all. Need a new one? Draw it there,
+   appended so existing codepoints never move, rather than borrowing a Nerd Font glyph from another
+   family. The bar font is `pango:mono 14`, with 24px gaps and no separator lines between blocks. Write
    **icon, one space, value**, with no trailing space; a block that must keep a fixed width pads its
-   value on the right (`%-5s`), never between icon and value. `voidrice-doctor` checks the first two.
+   value on the right (`%-5s`), never between icon and value. `voidrice-doctor` checks all of this.
 4. Optionally ask for an animation. Under ablocks (`eth-man/ablocks`, the C replacement for i3blocks)
    an extra output line `@name [ms [arg]]` plays an animation from its `config.h` for as long as the
    script keeps printing it. Guard it with `[ -n "$ABLOCKS" ]`, because i3blocks would show the line as

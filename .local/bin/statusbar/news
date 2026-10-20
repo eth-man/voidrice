@@ -7,16 +7,16 @@
 case $BLOCK_BUTTON in
 	1) setsid "$TERMINAL" -e newsboat ;;
 	2) setsid newsup >/dev/null & exit ;;
-	3) pgrep -x dunst >/dev/null && notify-send "󰑫 News module" "\- Shows unread news items.
+	3) pgrep -x dunst >/dev/null && notify-send "􀀪 News module" "\- Shows unread news items.
 - Left click opens newsboat.
 - Middle click syncs RSS feeds.
 <b>Note:</b> only one instance of newsboat (updates included) may run at a time." ;;
 esac
 
 updating="$(cat /tmp/newsupdate 2>/dev/null)"
-[ -n "$updating" ] && sb "$C_INFO" "󰑐" && exit 0
+[ -n "$updating" ] && sb "$C_INFO" "􀀮" && exit 0
 
 unread="$(newsboat -x print-unread | awk '{print $1}' | sed 's/^0$//')"
 [ -n "$unread" ] || exit 0
 
-sb "$C_INFO" "󰑫 $unread"
+sb "$C_INFO" "􀀪 $unread"

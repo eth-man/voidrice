@@ -2,7 +2,7 @@
 #
 # Usage:
 #	price <url> <Name of currency> <icon> [amount hold] [ price purchased in $]
-#	price BTC "Bitcoin" 󰠓 0.1382 4543
+#	price BTC "Bitcoin" 0.1382 4543
 # ttf-nerd-fonts-symbols-mono is required to show crypto symbols
 # When the name of the currency is multi-word, put it in quotes.
 ##

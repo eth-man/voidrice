@@ -7,21 +7,21 @@ latency="$(ping -c 1 -W 2 8.8.8.8 2>/dev/null | sed -ne '/.*time=/{s///;s/\..*//
 
 case $BLOCK_BUTTON in
 	1) setsid -f "$TERMINAL" -e ping 8.8.8.8 ;;
-	2) notify-send "󰓅 Latency" "${latency:-no reply} ms" ;;
-	3) notify-send "󰓅 Ping latency module" "\- Round trip to 8.8.8.8.
+	2) notify-send "􀀠 Latency" "${latency:-no reply} ms" ;;
+	3) notify-send "􀀠 Ping latency module" "\- Round trip to 8.8.8.8.
 - Colour: normal / high / very high, grey when there is no reply.
 - Left click runs a live ping.
 - Middle click shows the current latency." ;;
 esac
 
 if [ -z "$latency" ]; then
-	sb "$C_DIM" "󰓅"
+	sb "$C_DIM" "􀀠"
 elif [ "$latency" -gt 110 ]; then
-	notify-send -u normal --hint=string:x-dunst-stack-tag:"latency" "󰓅 Very high latency ($latency ms)"
-	sb "$C_ALERT" "󰓅 $latency"
+	notify-send -u normal --hint=string:x-dunst-stack-tag:"latency" "􀀠 Very high latency ($latency ms)"
+	sb "$C_ALERT" "􀀠 $latency"
 elif [ "$latency" -gt 80 ]; then
-	notify-send -u low --hint=string:x-dunst-stack-tag:"latency" "󰓅 High latency ($latency ms)"
-	sb "$C_WARN" "󰓅 $latency"
+	notify-send -u low --hint=string:x-dunst-stack-tag:"latency" "􀀠 High latency ($latency ms)"
+	sb "$C_WARN" "􀀠 $latency"
 else
-	sb "$C_NORM" "󰓅"
+	sb "$C_NORM" "􀀠"
 fi

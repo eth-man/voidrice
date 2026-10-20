@@ -13,7 +13,7 @@ filter() {
 case $BLOCK_BUTTON in
 	1) setsid -f "$TERMINAL" -e ncmpcpp ;;
 	2) mpc toggle >/dev/null ;;
-	3) pgrep -x dunst >/dev/null && notify-send "󰎈 Music module" "\- Shows the mpd song playing.
+	3) pgrep -x dunst >/dev/null && notify-send "􀀯 Music module" "\- Shows the mpd song playing.
 - Italic and grey when paused.
 - Left click opens ncmpcpp.
 - Middle click pauses.
@@ -29,4 +29,4 @@ case "$song" in
 	''|'</span>'|'<span></span>') exit 0 ;;
 esac
 
-printf "<span color='%s'>󰎈 </span>%s\n" "$C_ACCENT" "$song"
+printf "<span color='%s'>􀀯 </span>%s\n" "$C_ACCENT" "$song"

@@ -2,7 +2,7 @@
 # Shared palette for i3blocks modules. Sourced, not executed:
 #
 #   . "$HOME/.local/bin/statusbar/sb-theme"
-#   sb "$C_WARN" "󰏔 3"
+#   sb "$C_WARN" "􀀩 3"
 #
 # Every module colours through these names so the whole bar can be
 # re-themed from one file instead of hunting hex codes in 20 scripts.

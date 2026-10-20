@@ -2,8 +2,8 @@
 
 # VPN status: WireGuard and OpenVPN.
 #
-#   󰦝 tunnel up (shows the interface / config name)
-#   󰦞 nothing connected
+#   􀀞 tunnel up (shows the interface / config name)
+#   􀀟 nothing connected
 #
 # WireGuard state comes from `wg show interfaces`, which is readable without
 # root; bringing tunnels up or down needs sudo and is delegated to wg-toggle.
@@ -33,11 +33,11 @@ fi
 case $BLOCK_BUTTON in
 	1) wg-toggle ;;
 	2) if [ -n "$kind" ]; then
-	       notify-send "󰦝 $kind: $name" "$details"
+	       notify-send "􀀞 $kind: $name" "$details"
 	   else
-	       notify-send "󰦞 VPN" "Not connected"
+	       notify-send "􀀟 VPN" "Not connected"
 	   fi ;;
-	3) notify-send "󰦝 VPN module" "\- 󰦝 connected, 󰦞 disconnected.
+	3) notify-send "􀀞 VPN module" "\- 􀀞 connected, 􀀟 disconnected.
 - Covers WireGuard and OpenVPN.
 - Left click connects, disconnects or switches tunnel.
 - Middle click shows connection details." ;;
@@ -58,7 +58,7 @@ if [ -n "$ABLOCKS" ]; then
 fi
 
 if [ -n "$kind" ]; then
-	sb "$C_OK" "󰦝 $name"
+	sb "$C_OK" "􀀞 $name"
 else
-	sb "$C_DIM" "󰦞"
+	sb "$C_DIM" "􀀟"
 fi

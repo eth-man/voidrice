@@ -67,15 +67,15 @@ remaining_minutes=$minutes
 
 # Determine icon and color
 if [ "$dpms_enabled" = "Disabled" ]; then
-  icon="󱎫"
+  icon="􀀫"
   color="$C_NORM"
   output="$icon off"
 elif [ "$remaining_minutes" -le 1 ]; then
-  icon="󱎫"
+  icon="􀀫"
   color="$C_ALERT"
   output="$icon"
 else
-  icon="󱎫"
+  icon="􀀫"
   color="$C_NORM"
   output="$icon"
 fi

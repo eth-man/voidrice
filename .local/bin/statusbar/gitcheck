@@ -2,11 +2,11 @@
 
 # i3blocks module: state of the voidrice repo itself.
 #
-#   󰄬  clean and level with origin
-#   󰇚 N updates waiting on origin (N commits behind)  -> pull
-#   󰕒 N committed but not pushed (N commits ahead)
-#   󰀦 N uncommitted changes in the repo
-#   󰊢  repo not found
+#   􀀜  clean and level with origin
+#   􀀥 N updates waiting on origin (N commits behind)  -> pull
+#   􀀦 N committed but not pushed (N commits ahead)
+#   􀀛 N uncommitted changes in the repo
+#   􀀨  repo not found
 #
 # Fetching is a network call, so it is rate-limited to $FETCH_EVERY seconds
 # rather than run on every interval. GIT_TERMINAL_PROMPT=0 guarantees the
@@ -18,7 +18,7 @@ REPO="${DOTREPO:-$HOME/voidrice-repo}"
 FETCH_EVERY=900
 stamp="/tmp/gitcheck-fetch-$(id -u)"
 
-[ -d "$REPO/.git" ] || { sb "$C_DIM" "󰊢"; exit 0 ;}
+[ -d "$REPO/.git" ] || { sb "$C_DIM" "􀀨"; exit 0 ;}
 
 git_() { git -C "$REPO" "$@" 2>/dev/null ;}
 
@@ -33,11 +33,11 @@ case $BLOCK_BUTTON in
 	    sigbar 14
 	    setsid -f "$TERMINAL" -e sh -c \
 	        'git -C "'"$REPO"'" status; echo; git -C "'"$REPO"'" log --oneline HEAD..@{u} 2>/dev/null; read -r _' ;;
-	2)  pgrep -x dunst >/dev/null && notify-send "󰊢 voidrice" "$(git_ status --short --branch | head -20)" ;;
-	3)  pgrep -x dunst >/dev/null && notify-send "󰊢 Repo module" "\- 󰄬 clean and synced
-- 󰇚 commits waiting on origin
-- 󰕒 commits not pushed
-- 󰀦 uncommitted changes
+	2)  pgrep -x dunst >/dev/null && notify-send "􀀨 voidrice" "$(git_ status --short --branch | head -20)" ;;
+	3)  pgrep -x dunst >/dev/null && notify-send "􀀨 Repo module" "\- 􀀜 clean and synced
+- 􀀥 commits waiting on origin
+- 􀀦 commits not pushed
+- 􀀛 uncommitted changes
 - Left click: fetch now and show status
 - Middle click: show short status" ;;
 esac
@@ -58,15 +58,15 @@ fi
 : "${ahead:=0}" "${behind:=0}"
 
 out=""
-[ "$behind" -gt 0 ] && out="$out󰇚 $behind "
-[ "$ahead"  -gt 0 ] && out="$out󰕒 $ahead "
-[ "$dirty"  -gt 0 ] && out="$out󰀦 $dirty "
+[ "$behind" -gt 0 ] && out="$out􀀥 $behind "
+[ "$ahead"  -gt 0 ] && out="$out􀀦 $ahead "
+[ "$dirty"  -gt 0 ] && out="$out􀀛 $dirty "
 
 # Most urgent state wins the colour.
 if   [ "$dirty"  -gt 0 ]; then color="$C_WARN"
 elif [ "$behind" -gt 0 ]; then color="$C_INFO"
 elif [ "$ahead"  -gt 0 ]; then color="$C_ACCENT"
-else color="$C_OK"; out="󰄬"
+else color="$C_OK"; out="􀀜"
 fi
 
 sb "$color" "${out% }"

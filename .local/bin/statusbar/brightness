@@ -6,7 +6,7 @@
 case $BLOCK_BUTTON in
 	4) brightnessctl set +5% >/dev/null 2>&1 && sigbar 13 ;;
 	5) brightnessctl set 5%- >/dev/null 2>&1 && sigbar 13 ;;
-	3) pgrep -x dunst >/dev/null && notify-send "󰃠 Brightness module" "󰃠: current backlight level.
+	3) pgrep -x dunst >/dev/null && notify-send "􀀙 Brightness module" "􀀙: current backlight level.
 - Scroll to change brightness." ;;
 esac
 
@@ -20,11 +20,11 @@ read -r max < "${1%/}/max_brightness"
 percent=$((100 * curr / max))
 
 if [ "$percent" -le 20 ]; then
-	icon="󰃞"
+	icon="􀀗"
 elif [ "$percent" -le 60 ]; then
-	icon="󰃟"
+	icon="􀀘"
 else
-	icon="󰃠"
+	icon="􀀙"
 fi
 
 printf "%s %d%%\n" "$icon" "$percent"

@@ -2,9 +2,9 @@
 . "$HOME/.local/bin/statusbar/sb-theme"
 
 case $BLOCK_BUTTON in
-	1) notify-send "󰻠 CPU hogs" "$(ps axch -o cmd:15,%cpu --sort=-%cpu | head)" ;;
+	1) notify-send "􀀤 CPU hogs" "$(ps axch -o cmd:15,%cpu --sort=-%cpu | head)" ;;
 	2) setsid -f "$TERMINAL" -e htop ;;
-	3) notify-send "󰻠 CPU module" "\- Shows CPU temperature.
+	3) notify-send "􀀤 CPU module" "\- Shows CPU temperature.
 - Colour tracks temperature: normal / warm / hot.
 - Left click shows the busiest processes.
 - Middle click opens htop." ;;
@@ -17,4 +17,4 @@ if   [ "$temp" -ge 80 ]; then color="$C_ALERT"
 elif [ "$temp" -ge 65 ]; then color="$C_WARN"
 else color="$C_NORM"; fi
 
-sb "$color" "󰻠 ${temp}C"
+sb "$color" "􀀤 ${temp}C"

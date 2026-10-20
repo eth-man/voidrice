@@ -6,22 +6,22 @@ case $BLOCK_BUTTON in
 	# now rather than after nmtui closes. Its stdout must not be the block's,
 	# or the bar would wait on the terminal all the same.
 	1) setsid -f "$TERMINAL" -e nmtui >/dev/null 2>&1 ;;
-	3) pgrep -x dunst >/dev/null && notify-send "󰖩 Internet module" "\\- Click to connect
-󰖪 : no wifi
-󰖩 : wifi, with signal quality
-󰈀 : ethernet
+	3) pgrep -x dunst >/dev/null && notify-send "􀀐 Internet module" "\\- Click to connect
+􀀑 : no wifi
+􀀐 : wifi, with signal quality
+􀀝 : ethernet
 Grey means the link is down.
 " ;;
 esac
 
 case "$(cat /sys/class/net/w*/operstate 2>/dev/null)" in
-	down) wificon="󰖪" && wificolor="$C_DIM";;
-	up) wificon="$(awk '/^\s*w/ { print "󰖩", int($3 * 100 / 70) "%" }' /proc/net/wireless)" && wificolor="$C_NORM"
+	down) wificon="􀀑" && wificolor="$C_DIM";;
+	up) wificon="$(awk '/^\s*w/ { print "􀀐", int($3 * 100 / 70) "%" }' /proc/net/wireless)" && wificolor="$C_NORM"
 esac
 
 case "$(cat /sys/class/net/e*/operstate 2>/dev/null)" in
 	down) lanicon="" && lancolor="$C_DIM";;
-	up) lanicon="󰈀" && lancolor="$C_NORM" ;;
+	up) lanicon="􀀝" && lancolor="$C_NORM" ;;
 esac
 
 

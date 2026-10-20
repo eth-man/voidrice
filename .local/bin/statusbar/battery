@@ -19,7 +19,7 @@ if [ ! -d /sys/class/power_supply/"$battery_name" ]; then
 fi
 
 case $BLOCK_BUTTON in
-	3) pgrep -x dunst >/dev/null && notify-send "󰁹 Battery module" "󰂎 empty  󰁻 low  󰁾 half  󰂀 high  󰁹 full  󰂄 charging
+	3) pgrep -x dunst >/dev/null && notify-send "􀀊 Battery module" "􀀀 empty  􀀂 low  􀀅 half  􀀇 high  􀀊 full  􀀋 charging
 - Red at 20% or less while discharging, with a fill-up animation under ablocks." ;;
 esac
 
@@ -53,14 +53,14 @@ else
     [ "$status" = "Discharging" ] && bctl set 5% >/dev/null
 fi
 
-# Material Design battery icons, like the rest of the bar: one per 10%, and
-# while charging the set with the bolt drawn inside the battery.
+# suckless icons, like the rest of the bar: one per 10% of charge, and on
+# the charger the battery with a bolt, the level being in the text.
 pick() { n=$1; shift; shift "$n"; printf %s "$1" ;}
 level=$(( capacity / 10 )); [ "$level" -gt 10 ] && level=10
 if [ "$status" = "Charging" ]; then
-    icon="$(pick "$level" 󰢟 󰢜 󰂆 󰂇 󰂈 󰢝 󰂉 󰢞 󰂊 󰂋 󰂅)"
+    icon="􀀋"
 else
-    icon="$(pick "$level" 󰂎 󰁺 󰁻 󰁼 󰁽 󰁾 󰁿 󰂀 󰂁 󰂂 󰁹)"
+    icon="$(pick "$level" 􀀀 􀀁 􀀂 􀀃 􀀄 􀀅 􀀆 􀀇 􀀈 􀀉 􀀊)"
 fi
 
 
@@ -85,7 +85,7 @@ elif [ "$status" = "Discharging" ]; then
         echo "$current_brightness" > "$brightness_file"
     fi
 elif [ "$status" = "Full" ]; then
-    icon="󰁹"
+    icon="􀀊"
     if [ "$prev_status" = "Charging" ] && [ "$capacity" -gt 15 ]; then
         echo "$current_brightness" > "$brightness_file"
     fi
@@ -108,7 +108,7 @@ if [ "$status" = "Discharging" ] && [ "$capacity" -le "$warn_capacity" ]; then
     # which is what keeps the warning on screen until the charger goes in.
     pgrep -x dunst >/dev/null && notify-send -u critical \
         -h string:x-dunst-stack-tag:battery-critical \
-        "󰂃 Battery critically low: $capacity%" \
+        "􀀌 Battery critically low: $capacity%" \
         "Connect the charger.
 The system suspends automatically at $suspend_capacity%." >/dev/null 2>&1
     : > "$warn_flag"
@@ -118,7 +118,7 @@ elif [ -f "$warn_flag" ]; then
     # dunstctl close-all taking unrelated notifications with it.
     pgrep -x dunst >/dev/null && notify-send -u low -t 4000 \
         -h string:x-dunst-stack-tag:battery-critical \
-        "󰂄 Battery OK: $capacity%" "Charger connected." >/dev/null 2>&1
+        "􀀋 Battery OK: $capacity%" "Charger connected." >/dev/null 2>&1
     rm -f "$warn_flag"
 fi
 
@@ -129,7 +129,7 @@ if [ "$status" = "Discharging" ] && [ "$capacity" -le "$suspend_capacity" ]; the
         date +%s > "$suspend_stamp"
         pgrep -x dunst >/dev/null && notify-send -u critical \
             -h string:x-dunst-stack-tag:battery-critical \
-            "󰂃 Suspending in 10s" \
+            "􀀌 Suspending in 10s" \
             "Battery at $capacity%. Connect the charger to cancel." >/dev/null 2>&1
         # Detached so the bar is not blocked for the grace period, and the
         # charge is re-read at the end of it so plugging in actually cancels.

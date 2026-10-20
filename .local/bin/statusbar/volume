@@ -4,21 +4,21 @@
 case $BLOCK_BUTTON in
 	1) setsid -f "$TERMINAL" -e pulsemixer ;;
 	2) pulsemixer --toggle-mute ;;
-	3) pgrep -x dunst >/dev/null && notify-send "󰕾 Volume module" "\- 󰝟 muted, 󰕿 low, 󰖀 medium, 󰕾 high.
+	3) pgrep -x dunst >/dev/null && notify-send "􀀕 Volume module" "\- 􀀖 muted, 􀀓 low, 􀀔 medium, 􀀕 high.
 - Middle click mutes.
 - Scroll changes volume." ;;
 	4) pulsemixer --change-volume +5 ;;
 	5) pulsemixer --change-volume -5 ;;
 esac
 
-[ "$(pulsemixer --get-mute)" = "1" ] && sb "$C_DIM" "󰝟" && exit 0
+[ "$(pulsemixer --get-mute)" = "1" ] && sb "$C_DIM" "􀀖" && exit 0
 
 vol="$(pulsemixer --get-volume | awk '{print $1}')"
 [ -n "$vol" ] || exit 0
 
-if   [ "$vol" -gt 70 ]; then icon="󰕾"; color="$C_WARN"
-elif [ "$vol" -lt 40 ]; then icon="󰕿"; color="$C_NORM"
-else                         icon="󰖀"; color="$C_NORM"
+if   [ "$vol" -gt 70 ]; then icon="􀀕"; color="$C_WARN"
+elif [ "$vol" -lt 40 ]; then icon="􀀓"; color="$C_NORM"
+else                         icon="􀀔"; color="$C_NORM"
 fi
 
 sb "$color" "$icon $vol%"

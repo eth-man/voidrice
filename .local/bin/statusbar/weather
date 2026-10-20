@@ -20,28 +20,28 @@ high=$(sed '13q;d' "$HOME/.local/share/weatherreport" | grep -o "m\\(-\\)*[0-9]\
 
 if [ "$rain" -gt "$rain_gt" ]; then
 	color1="$C_INFO"
-	rainicon="󰖌 $rain%"
+	rainicon="􀀡 $rain%"
 else
 	color1="$C_NORM"
-	rainicon="󰖌 $rain%"
+	rainicon="􀀡 $rain%"
 fi
 
 
 if [ "$low" -lt "$temp_lt" ]; then
 	color2="$C_INFO"
-	lowicon="󰜗 $low"
+	lowicon="􀀢 $low"
 else
 	color2="$C_NORM"
-	lowicon="󰜗 $low"
+	lowicon="􀀢 $low"
 fi
 
 
 if [ "$high" -ge "$temp_gt" ]; then
 	color3="$C_WARN"
-	highicon="󰖨 $high"
+	highicon="􀀚 $high"
 else
 	color3="$C_NORM"
-	highicon="󰖨 $high"
+	highicon="􀀚 $high"
 fi
 
 
@@ -54,9 +54,9 @@ case $BLOCK_BUTTON in
     2) getforecast && showweather ;;
     3) pgrep -x dunst >/dev/null && notify-send "🌈 Weather module" "\- Left click for full forecast.
 - Middle click to update forecast.
-󰖌: Chance of rain/snow
-󰜗: Daily low
-󰖨: Daily high" ;;
+􀀡: Chance of rain/snow
+􀀢: Daily low
+􀀚: Daily high" ;;
 esac
 
 if [ "$(stat -c %y "$HOME/.local/share/weatherreport" >/dev/null 2>&1 | awk '{print $1}')" != "$(date '+%Y-%m-%d')" ]
