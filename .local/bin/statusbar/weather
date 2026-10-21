@@ -1,65 +1,73 @@
 #!/usr/bin/env sh
 . "$HOME/.local/bin/statusbar/sb-theme"
 
-# when to change icon color
+# thresholds: past one, an icon moves and shows its number
 rain_gt=50 # rain % greater
 temp_lt=14 # temp < lower then
 temp_gt=34 # temp > greater then
 
 location="$1"; [ -z "$location" ] || { location="$location+" && rm -f "$HOME/.local/share/weatherreport" ;}
 
+# middle click writes today's date here to stop today's alert until tomorrow
+dismissed="$HOME/.local/share/weatherdismissed"
+
 getforecast() { ping -q -c 1 1.1.1.1 >/dev/null || exit 1
 curl -s "wttr.in/$location" > "$HOME/.local/share/weatherreport" || exit 1 ;}
 
-showweather() { #rain=$(sed '16q;d' "$HOME/.local/share/weatherreport" | grep -wo "[0-9]*" | sort -n | sed -e '$!d' | tr -d '\n')
-rain=$(sed '16q;d' "$HOME/.local/share/weatherreport" | grep -wo "[0-9]*%" | sort -n | sed -e '$!d' | tr -d '\n' | sed 's/.$//')
+getvals() { rain=$(sed '16q;d' "$HOME/.local/share/weatherreport" | grep -wo "[0-9]*%" | sort -n | sed -e '$!d' | tr -d '\n' | sed 's/.$//')
 low=$(sed '13q;d' "$HOME/.local/share/weatherreport" | grep -o "m\\(-\\)*[0-9]\\+" | sort -n -t 'm' -k 2n | sed -e 1q -e '$!d' | tr -d "\n|m" )
 #need to find a way to get last line instead of first line with sed
-high=$(sed '13q;d' "$HOME/.local/share/weatherreport" | grep -o "m\\(-\\)*[0-9]\\+" | sort -n -t 'm' -k 1n | sed -e '$!d' | tr -d "\n|m")
+high=$(sed '13q;d' "$HOME/.local/share/weatherreport" | grep -o "m\\(-\\)*[0-9]\\+" | sort -n -t 'm' -k 2n | sed -e '$!d' | tr -d "\n|m")
+wet=; cold=; hot=
+[ "${rain:-0}" -gt "$rain_gt" ] && wet=1
+[ "${low:-99}" -lt "$temp_lt" ] && cold=1
+[ "${high:-0}" -ge "$temp_gt" ] && hot=1 ;}
 
+# a threshold is crossed today and nobody has middle-clicked it away
+alerting() { getvals; [ -n "$wet$cold$hot" ] && [ "$(cat "$dismissed" 2>/dev/null)" != "$(date '+%Y-%m-%d')" ] ;}
 
-if [ "$rain" -gt "$rain_gt" ]; then
-	color1="$C_INFO"
-	rainicon="􀀡 $rain%"
-else
-	color1="$C_NORM"
-	rainicon="􀀡 $rain%"
+# field ICON VALUE OVER: the three ablocks fields for one icon, still or
+# moving. ICON and VALUE carry the space after them, so the space stays in
+# the icon's own span and keeps the width the plain block has.
+field() { if [ -n "$3" ]; then printf '\t%s\t%s' "$1" "$2"; else printf '%s\t\t' "$1"; fi ;}
+
+showweather() { getvals
+
+# ablocks: bare icons. An icon over its threshold moves, then turns into its
+# number, every few minutes; a middle click with no alert shows them all.
+if [ -n "$ABLOCKS" ]; then
+	sb "$C_NORM" "􀀡 􀀢 􀀚"
+	if alerting; then
+		printf '@weather 0 %s\t%s\t%s\n' "$(field "􀀡 " "$rain% " "$wet")" "$(field "􀀢 " "$low " "$cold")" "$(field 􀀚 "$high" "$hot")"
+	elif [ -n "$show" ]; then
+		echo "@weathershow 0 􀀡 $rain% 􀀢 $low 􀀚 $high"
+	fi
+	return
 fi
 
-
-if [ "$low" -lt "$temp_lt" ]; then
-	color2="$C_INFO"
-	lowicon="􀀢 $low"
-else
-	color2="$C_NORM"
-	lowicon="􀀢 $low"
-fi
-
-
-if [ "$high" -ge "$temp_gt" ]; then
-	color3="$C_WARN"
-	highicon="􀀚 $high"
-else
-	color3="$C_NORM"
-	highicon="􀀚 $high"
-fi
-
-
-#printf "<span color='%s'>%s %s %s</span>\n" "$color1" "$rainicon" "$lowicon" "$highicon" ;}
+# i3blocks cannot animate: an icon over its threshold just shows its number
+color1="$C_NORM"; rainicon="􀀡"
+[ -n "$wet" ] && color1="$C_INFO" && rainicon="􀀡 $rain%"
+color2="$C_NORM"; lowicon="􀀢"
+[ -n "$cold" ] && color2="$C_INFO" && lowicon="􀀢 $low"
+color3="$C_NORM"; highicon="􀀚"
+[ -n "$hot" ] && color3="$C_WARN" && highicon="􀀚 $high"
 printf "<span color='%s'>%s </span><span color='%s'>%s </span><span color='%s'>%s</span>\n" "$color1" "$rainicon" "$color2" "$lowicon" "$color3" "$highicon" ;}
 
 
 case $BLOCK_BUTTON in
     1) $TERMINAL -e less -rf "$HOME/.local/share/weatherreport" ;;
-    2) getforecast && showweather ;;
+    2) if [ -n "$ABLOCKS" ] && alerting; then date '+%Y-%m-%d' > "$dismissed"; else getforecast; show=1; fi ;;
     3) pgrep -x dunst >/dev/null && notify-send "🌈 Weather module" "\- Left click for full forecast.
-- Middle click to update forecast.
+- Middle click to stop an alert for today, or else to update the forecast
+  and show every number.
+An icon moves and shows its number when today crosses its threshold.
 􀀡: Chance of rain/snow
 􀀢: Daily low
 􀀚: Daily high" ;;
 esac
 
-if [ "$(stat -c %y "$HOME/.local/share/weatherreport" >/dev/null 2>&1 | awk '{print $1}')" != "$(date '+%Y-%m-%d')" ]
+if [ "$(stat -c %y "$HOME/.local/share/weatherreport" 2>/dev/null | awk '{print $1}')" != "$(date '+%Y-%m-%d')" ]
 	then getforecast && showweather
 	else showweather
 fi
