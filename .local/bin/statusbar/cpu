@@ -1,20 +1,28 @@
 #!/usr/bin/env sh
 . "$HOME/.local/bin/statusbar/sb-theme"
 
+hot=80 # C: from here the temperature shows, in red, and the icon blinks
+
 case $BLOCK_BUTTON in
 	1) notify-send "􀀤 CPU hogs" "$(ps axch -o cmd:15,%cpu --sort=-%cpu | head)" ;;
 	2) setsid -f "$TERMINAL" -e htop ;;
-	3) notify-send "􀀤 CPU module" "\- Shows CPU temperature.
-- Colour tracks temperature: normal / warm / hot.
+	3) notify-send "􀀤 CPU module" "\- Shows the CPU icon; the temperature
+  appears, in red, at ${hot}C and above, and the icon blinks until
+  it cools down.
 - Left click shows the busiest processes.
 - Middle click opens htop." ;;
 esac
 
-temp=$(sensors | awk '/Core 0/ {print $3}' | cut -c2- | cut -c-2)
+temp=$(sensors | awk '/Core 0/ {gsub(/[^0-9.]/, "", $3); print int($3); exit}')
 [ -n "$temp" ] || exit 0
 
-if   [ "$temp" -ge 80 ]; then color="$C_ALERT"
-elif [ "$temp" -ge 65 ]; then color="$C_WARN"
-else color="$C_NORM"; fi
-
-sb "$color" "􀀤 ${temp}C"
+# just the icon until it runs hot
+if [ "$temp" -ge "$hot" ]; then
+	sb "$C_ALERT" "􀀤 ${temp}C"
+	# under ablocks the icon blinks for as long as it stays hot
+	if [ -n "$ABLOCKS" ]; then
+		echo "@cpuhot 0 ${temp}C"
+	fi
+else
+	sb "$C_NORM" "􀀤"
+fi
