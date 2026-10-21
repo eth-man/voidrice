@@ -1,6 +1,10 @@
 #!/usr/bin/env sh
 . "$HOME/.local/bin/statusbar/sb-theme"
 
+# Shows the date and the time, the time in bold. Under ablocks, digits that
+# change roll down like an old flip clock: the old ones drop out, the new
+# ones fall in from above.
+
 case $BLOCK_BUTTON in
 	1) pgrep -x dunst >/dev/null && notify-send "This Month" "$(cal --color=always | sed "s/..7m/<b><span color=\"red\">/;s/..27m/<\/span><\/b>/")" && notify-send "Appointments" "$(calcurse -D ~/.config/calcurse -d3)" ;;
 	2) $TERMINAL -e calcurse -D ~/.config/calcurse ;;
@@ -8,4 +12,26 @@ case $BLOCK_BUTTON in
 - Middle click opens calcurse." ;;
 esac
 
-sb "$C_NORM" "􀀣 $(date '+%b %d (%a) %H:%M')"
+# one date call, so the date and the time can't straddle midnight
+now=$(date '+%b %d (%a)|%H:%M')
+day=${now%|*}
+time=${now#*|}
+
+sb "$C_NORM" "􀀣 $day <b>$time</b>"
+
+[ -n "$ABLOCKS" ] || exit 0
+
+# the time the last run showed; a different one now means a digit flipped
+state="${XDG_RUNTIME_DIR:-/tmp}/clock-time"
+prev=$(cat "$state" 2>/dev/null)
+[ "$prev" = "$time" ] && exit 0
+echo "$time" > "$state"
+[ ${#prev} -eq ${#time} ] || exit 0
+
+# split off the digits both times share; only the rest rolls
+same= old=$prev new=$time
+while [ "${old%"${old#?}"}" = "${new%"${new#?}"}" ]; do
+	same=$same${new%"${new#?}"}
+	old=${old#?} new=${new#?}
+done
+printf '@clockflip 0 %s\t%s\t%s\t%s\t%s\n' "$C_NORM" "􀀣 $day " "$same" "$old" "$new"
