@@ -18,6 +18,7 @@ remapd &		# applies `remaps` now, and again whenever a USB input device appears
 setbg &			# set the background with the `setbg` script
 vpnupdate &		# refresh the vpn block the moment a tunnel interface appears
 powerupdate &		# refresh the battery block the moment the charger goes in or out
+backlightupdate &	# refresh the brightness block the moment the backlight changes
 
 # Load colours, fonts and the st alpha value. This is active, not optional:
 # without it *.font and *.alpha are unset and st falls back to config.h.

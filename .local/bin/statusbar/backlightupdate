@@ -1,0 +1,32 @@
+#!/usr/bin/env sh
+# Whenever the screen brightness changes, update the brightness module.
+#
+# The brightness block re-runs every 5s, so a change from the keys showed up
+# to 5s late. The kernel sends a udev event for every backlight step, keys,
+# scroll or any other tool alike, and `udevadm monitor` needs no root. A fade
+# sends a burst of them; ablocks folds signals that arrive mid-run into one
+# more run, so the block follows the fade without piling up.
+#
+# Started from .config/x11/xprofile. Built like powerupdate.
+
+PIDFILE="/tmp/backlightupdate"
+
+# Only one daemon at a time; see vpnupdate for why the pid is checked
+# digit by digit before kill -0 sees it.
+if [ -r "$PIDFILE" ]; then
+	pid="$(cat "$PIDFILE")"
+	case "$pid" in
+		'' | *[!0-9]*) ;;
+		*) kill -0 "$pid" 2>/dev/null && exit 0 ;;
+	esac
+fi
+echo $$ > "$PIDFILE"
+
+# Outer loop so the daemon survives `udevadm monitor` dying.
+while : ; do
+	udevadm monitor --udev --subsystem-match=backlight | while read -r line; do
+		# Only the events themselves, not udevadm's banner lines.
+		case "$line" in UDEV*) sigbar 13 ;; esac
+	done
+	sleep 5
+done

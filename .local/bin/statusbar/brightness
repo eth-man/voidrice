@@ -1,12 +1,17 @@
 #!/usr/bin/env sh
 
-# i3blocks module showing backlight brightness. Requires `brightnessctl` for
-# the click/scroll actions; the readout itself only needs sysfs.
+# i3blocks module showing backlight brightness. Requires `xbacklight` for
+# the scroll actions; the readout itself only needs sysfs.
+#
+# Under ablocks the block is just the icon: when the level changes, the
+# percentage shows beside it for a moment. The backlightupdate daemon
+# refreshes the block on every change, so it shows at once.
 
 case $BLOCK_BUTTON in
-	4) brightnessctl set +5% >/dev/null 2>&1 && sigbar 13 ;;
-	5) brightnessctl set 5%- >/dev/null 2>&1 && sigbar 13 ;;
-	3) pgrep -x dunst >/dev/null && notify-send "􀀙 Brightness module" "􀀙: current backlight level.
+	4) xbacklight -inc 5 && sigbar 13 ;;
+	5) xbacklight -dec 5 && sigbar 13 ;;
+	3) pgrep -x dunst >/dev/null && notify-send "􀀙 Brightness module" "􀀙: current backlight level; the percentage
+  shows for a moment when it changes.
 - Scroll to change brightness." ;;
 esac
 
@@ -27,4 +32,18 @@ else
 	icon="􀀙"
 fi
 
-printf "%s %d%%\n" "$icon" "$percent"
+# i3blocks cannot animate, so there the percentage always shows
+if [ -z "$ABLOCKS" ]; then
+	printf "%s %d%%\n" "$icon" "$percent"
+	exit
+fi
+
+echo "$icon"
+
+# the level the last run saw; a different one now means it was changed
+state="${XDG_RUNTIME_DIR:-/tmp}/brightness-level"
+prev=$(cat "$state" 2>/dev/null)
+echo "$percent" > "$state"
+if [ -n "$prev" ] && [ "$prev" != "$percent" ]; then
+	printf '@brightshow 0 %s\t%s%%\n' "$icon" "$percent"
+fi
