@@ -5,11 +5,16 @@
 # `interval=1` in the i3blocks config this reads as bytes per second.
 # Complements `ping-lat` (latency) and `internet` (link state).
 
+# present: the icons alone, no rates
+norates="$HOME/.local/share/sb-nettraf.norates"
+
 case $BLOCK_BUTTON in
 	1) setsid -f "$TERMINAL" -e "$(command -v bmon || command -v iftop || echo nload)" >/dev/null 2>&1 ;;
+	2) if [ -e "$norates" ]; then rm -f "$norates"; else : > "$norates"; fi ;;
 	3) pgrep -x dunst >/dev/null && notify-send "􀀻􀀼 Network traffic module" "􀀻: received
 􀀼: transmitted
-- Left click for a live traffic monitor." ;;
+- Left click for a live traffic monitor.
+- Middle click hides or shows the rates." ;;
 esac
 
 update() {
@@ -39,4 +44,8 @@ fi
 # the right to a fixed 5 (numfmt gives at most 4, plus the B) so the block
 # keeps its width as the rates change instead of nudging its neighbours.
 set -- $(numfmt --to=iec "$rx" "$tx")
+if [ -e "$norates" ]; then
+	printf "<span color='%s'>􀀻 􀀼</span>\n" "$color"
+	exit
+fi
 printf "<span color='%s'>􀀻 %-5s 􀀼 %-5s</span>\n" "$color" "${1}B" "${2}B"

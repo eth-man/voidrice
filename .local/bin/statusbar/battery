@@ -5,6 +5,8 @@ battery_name="$1"
 . "$HOME/.local/bin/statusbar/sb-theme"
 brightness_file="$HOME/.brightness"
 charging_state_file="$HOME/.charging_state"
+# present: the icon alone, the percentage only while it is red
+nopercent="$HOME/.local/share/sb-battery.nopercent"
 
 brightnessctl_path=$(command -v brightnessctl)
 cat_path=$(command -v cat)
@@ -19,9 +21,11 @@ if [ ! -d /sys/class/power_supply/"$battery_name" ]; then
 fi
 
 case $BLOCK_BUTTON in
+	2) if [ -e "$nopercent" ]; then rm -f "$nopercent"; else : > "$nopercent"; fi ;;
 	3) pgrep -x dunst >/dev/null && notify-send "􀀊 Battery module" "􀀀 empty  􀀂 low  􀀅 half  􀀇 high  􀀊 full  􀀋 charging
 - Red at 20% or less while discharging, with a fill-up animation under ablocks.
-- 􀀽 at 10% or less: critical, blinking until the charger goes in." ;;
+- 􀀽 at 10% or less: critical, blinking until the charger goes in.
+- Middle click hides or shows the percentage; hidden, it still shows while red." ;;
 esac
 
 capacity=$(cat /sys/class/power_supply/"$battery_name"/capacity) || exit
@@ -151,7 +155,11 @@ fi
 
 echo "$status" > "$charging_state_file"
 
-printf "<span color='%s'>%s %s</span>\n" "$color" "$icon" "$capacity%"
+if [ -e "$nopercent" ] && [ "$color" != "$C_ALERT" ]; then
+    printf "<span color='%s'>%s</span>\n" "$color" "$icon"
+else
+    printf "<span color='%s'>%s %s</span>\n" "$color" "$icon" "$capacity%"
+fi
 
 # Under ablocks, while discharging: at or below $warn_capacity the critical
 # icon blinks for as long as it stays there ("batcrit"); up to
@@ -163,7 +171,8 @@ printf "<span color='%s'>%s %s</span>\n" "$color" "$icon" "$capacity%"
 # ("plugin"); the moment it comes out, the bolt fades away ("unplug"),
 # ahead of any low-battery animation, which follows on the next run.
 # powerupdate refreshes this block on the udev event, so both play as the
-# plug moves rather than on the next 5s run.
+# plug moves rather than on the next 5s run. Both show the percentage even
+# when the block hides it, so plugging in or out tells the level.
 if [ -n "$ABLOCKS" ]; then
     if [ "$status" = "Discharging" ]; then
         if [ -n "$prev_status" ] && [ "$prev_status" != "Discharging" ]; then
