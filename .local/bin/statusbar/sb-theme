@@ -15,6 +15,10 @@
 # C_WARN="#e8cb61" C_ACCENT="#d3869b".
 C_NORM="#d8dee9"    # normal / idle: the text colour
 C_DIM="#969993"     # disabled, absent, powered off
+C_FAINT="#434752"   # drawn but not lit, e.g. the wifi arcs the signal
+                    # misses: about a quarter of the text colour on the
+                    # bar. A colour, not alpha: on a transparent bar the
+                    # compositor shows alpha text far brighter than meant.
 C_OK="$C_NORM"      # healthy, connected, up to date
 C_INFO="$C_NORM"    # informational, action available
 C_WARN="$C_NORM"    # attention, but not urgent

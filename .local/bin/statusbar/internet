@@ -27,9 +27,9 @@ case "$(cat /sys/class/net/w*/operstate 2>/dev/null)" in
 		# the arcs the signal earns, the ones it doesn't faint under them:
 		# wifi-unlit-N (U+10005C..) has no width and draws beneath wifi-N
 		if [ "$pct" -ge 75 ]; then wificon="􀀐"
-		elif [ "$pct" -ge 50 ]; then wificon="<span alpha='25%'>􀁞</span>􀀏"
-		elif [ "$pct" -ge 25 ]; then wificon="<span alpha='25%'>􀁝</span>􀀎"
-		else wificon="<span alpha='25%'>􀁜</span>􀀍"
+		elif [ "$pct" -ge 50 ]; then wificon="<span color='$C_FAINT'>􀁞</span>􀀏"
+		elif [ "$pct" -ge 25 ]; then wificon="<span color='$C_FAINT'>􀁝</span>􀀎"
+		else wificon="<span color='$C_FAINT'>􀁜</span>􀀍"
 		fi
 		wificolor="$C_NORM"
 		[ -e "$nopercent" ] || wifipct=" $pct%"

@@ -92,8 +92,12 @@ Every `statusbar/` script follows the same shape, and new modules should too:
 2. Print one line to stdout. `markup=pango` is set globally in `.config/i3blocks/config`, so this fork's
    modules colorize with `printf "<span color='%s'>%s</span>\n" "$color" "$icon"`. Take colours from
    `statusbar/sb-theme` by meaning (`$C_OK`, `$C_WARN`, `$C_ALERT`, `$C_DIM`, ...), never as hex. The
-   palette is deliberately calm: only `C_ALERT` (red) and `C_DIM` (grey) differ from the text colour,
-   so a red block is always the one that needs you. Retheming is one file.
+   palette is deliberately calm: only `C_ALERT` (red), `C_DIM` (grey) and `C_FAINT` (the unlit part of
+   an icon) differ from the text colour, so a red block is always the one that needs you. Retheming
+   is one file. Never fade part of a block with pango `alpha`: the bar is transparent, and once
+   composited alpha text shows far brighter than meant (even `alpha='1'` is plainly visible). Use a
+   colour such as `C_FAINT` for "faint", and an empty glyph such as U+2800 for "blank". Check such
+   changes on a composited screenshot (`maim -g 1920x29+0+0`), not `maim -i` of the bar window.
 3. Icons are **suckless icons**, this fork's own icon font (`eth-man/ablocks`, `icons/icons.py`): every
    icon a few lines of drawing code on one grid with one stroke weight, built by `make` and installed by
    `make install` (to `~/.local/share/fonts` for a user install). They sit in plane 16 of the private use
