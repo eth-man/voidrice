@@ -38,7 +38,7 @@ on demand by `sigbar N`.
 - `memory` -- Memory usage. Click for the most memory-intensive processes.
 - `mpdupdate` -- Daemon that refreshes the `music` block whenever mpd changes. Signal 11.
 - `music` -- Current song; greyed and italic when paused.
-- `nettraf` -- **(fork)** Network throughput since the last run; at `interval=2` this reads as bytes per second. Turns amber above 1 MiB per interval. Middle click hides or shows the rates. Complements `ping-lat` (latency) and `internet` (link state).
+- `nettraf` -- **(fork)** Network throughput in bytes per second since the last run. An arrow dims while its direction idles (under 1 KiB/s). Under ablocks, from 1 MiB/s (teal) or 10 MiB/s (amber) the fast arrow streams in its direction, then shows its rate for a moment, over and over until it drops under half that. Middle click hides or shows the rates; hidden, the block is just its two arrows and a fast rate briefly covers both, as a whole number (`2M`), in the same width. Complements `ping-lat` (latency) and `internet` (link state).
 - `news` -- Unread newsboat articles. Opens newsboat or refreshes feeds. Signal 6.
 - `pacpackages` -- **(fork, reworked)** Count of upgradable packages via `yay`. Only meaningful if a cronjob syncs repositories. Signal 8.
 - `ping-lat` -- **(fork)** Network latency monitor. Colours by threshold and raises a dunst notification above 80ms/110ms. Signal 31.

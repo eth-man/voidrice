@@ -1,8 +1,9 @@
 #!/usr/bin/env sh
 . "$HOME/.local/bin/statusbar/sb-theme"
 
-# i3blocks module showing network throughput since the last run. With
-# `interval=1` in the i3blocks config this reads as bytes per second.
+# i3blocks module showing network throughput, in bytes per second, since
+# the last run. An idle arrow dims; a fast one, under ablocks, streams in
+# its direction and shows its rate for a moment.
 # Complements `ping-lat` (latency) and `internet` (link state).
 
 # present: the icons alone, no rates
@@ -17,35 +18,98 @@ case $BLOCK_BUTTON in
 - Middle click hides or shows the rates." ;;
 esac
 
+# update FILE...: the bytes per second the counters in FILE... moved since
+# the last run, which may be a few seconds ago; 0 on the first run
 update() {
 	sum=0
 	for arg; do
 		read -r i < "$arg"
 		sum=$((sum + i))
 	done
+	read -r up _ < /proc/uptime
+	cs=$(printf %s "$up" | tr -d .) # centiseconds since boot
 	cache="/tmp/${1##*/}"
-	if [ -f "$cache" ]; then read -r old < "$cache"; else old=0; fi
-	printf "%d\n" "$sum" > "$cache"
-	printf "%d\n" "$((sum - old))"
+	old= then=
+	[ -f "$cache" ] && read -r old then < "$cache"
+	printf "%d %d\n" "$sum" "$cs" > "$cache"
+	if [ -n "$then" ] && [ "$cs" -gt "$then" ]; then
+		printf "%d\n" "$(( (sum - old) * 100 / (cs - then) ))"
+	else
+		echo 0
+	fi
 }
 
 rx="$(update /sys/class/net/[ew]*/statistics/rx_bytes)"
 tx="$(update /sys/class/net/[ew]*/statistics/tx_bytes)"
 
-# Highlight when the link is genuinely busy (>1 MiB in the interval).
-if [ "$rx" -gt 1048576 ] || [ "$tx" -gt 1048576 ]; then
-	color="$C_WARN"
-else
-	color="$C_NORM"
-fi
+idle=1024        # B/s: below it the arrow dims
+fast=1048576     # B/s: from here the arrow streams under ablocks (nettraf)
+faster=10485760  # B/s: and in another colour (nettrafmax)
+
+# Once fast, an arrow stays so down to half the threshold, so the dips of
+# a speed test do not stop and restart the animation every run.
+fastfile="${XDG_RUNTIME_DIR:-/tmp}/sb-nettraf.fast"
+wasfast=$(cat "$fastfile" 2>/dev/null)
+isfast() { # NAME RATE
+	case " $wasfast " in
+		*" $1 "*) [ "$2" -ge "$((fast / 2))" ] ;;
+		*) [ "$2" -ge "$fast" ] ;;
+	esac
+}
+nowfast=
+isfast rx "$rx" && nowfast="$nowfast rx"
+isfast tx "$tx" && nowfast="$nowfast tx"
+echo "$nowfast" > "$fastfile"
 
 # shellcheck disable=SC2046
-# Icon, one space, value, as everywhere on the bar. The values are padded on
-# the right to a fixed 5 (numfmt gives at most 4, plus the B) so the block
-# keeps its width as the rates change instead of nudging its neighbours.
 set -- $(numfmt --to=iec "$rx" "$tx")
-if [ -e "$norates" ]; then
-	printf "<span color='%s'>􀀻 􀀼</span>\n" "$color"
-	exit
+rxv="${1}B" txv="${2}B"
+
+# One arrow's four parts, the animation's fields: still (the arrow and the
+# text beside it, if it keeps still), moving (the arrow alone, if it is
+# fast; else a zero-width space), count (the arrow and its rate, coloured
+# and counted by the animation) and tail (the text beside it, while it
+# moves). The text is padded on the right to a fixed 5 (numfmt gives at
+# most 4, plus the B) so the block keeps its width as the rates change.
+# With the rates hidden the text is only the gap between the arrows:
+# suckless icons' gap (U+10005F), not a space, whose width would change
+# with the text beside it as an arrow moves.
+zwsp="$(printf '\342\200\213')"
+parts() { # ICON RATE VALUE SEP NAME
+	acolor="$C_NORM"; [ "$2" -lt "$idle" ] && acolor="$C_DIM"
+	slot=" $(printf %-5s "$3")$4"
+	if [ -e "$norates" ]; then
+		tail=; [ -n "$4" ] && tail="􀁟"
+	else
+		tail="<span color='$C_NORM'>$slot</span>"
+	fi
+	still="<span color='$acolor'>$1</span>$tail" moving="$zwsp" count= side=
+	case "$nowfast" in *"$5"*)
+		still= moving="$1" count="$1<span>$slot</span>" side="$tail"
+	esac
+	fields="$(printf '%s\t%s\t%s\t%s' "$still" "$moving" "$count" "$side")"
+	line="${still:-<span color='$C_NORM'>$1</span>$tail}"
+}
+parts 􀀻 "$rx" "$rxv" " " rx; rxparts=$fields rxline=$line
+parts 􀀼 "$tx" "$txv" "" tx; txparts=$fields txline=$line
+
+echo "$rxline$txline"
+
+# Under ablocks, while either way is fast: the arrow streams, then shows
+# its rate for a moment, over and over. With the rates hidden the block is
+# only its two arrows, so the rate covers both (nettrafmini): the faster
+# way's, as a whole number centred in 4 characters, "15M " or " 2M ".
+if [ -n "$ABLOCKS" ] && [ -n "$nowfast" ]; then
+	anim=nettraf
+	[ "$rx" -ge "$faster" ] || [ "$tx" -ge "$faster" ] && anim=nettrafmax
+	num=
+	if [ -e "$norates" ]; then
+		anim=$(printf %s "$anim" | sed 's/nettraf/nettrafmini/')
+		max=$rx; [ "$tx" -gt "$max" ] && max=$tx
+		num=$(numfmt --to=iec --round=nearest --format=%.0f "$max")
+		while [ ${#num} -lt 4 ]; do
+			num=" $num"; [ ${#num} -lt 4 ] && num="$num "
+		done
+	fi
+	printf '@%s 0 %s\t%s\t%s\n' "$anim" "$rxparts" "$txparts" "$num"
 fi
-printf "<span color='%s'>􀀻 %-5s 􀀼 %-5s</span>\n" "$color" "${1}B" "${2}B"
