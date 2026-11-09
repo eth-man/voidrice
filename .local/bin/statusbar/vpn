@@ -53,7 +53,7 @@ if [ -n "$ABLOCKS" ]; then
 	if [ -n "$kind" ] && [ "$last" != up ]; then
 		echo "@bounce"
 	elif [ -z "$kind" ] && [ "$last" = up ]; then
-		echo "@blink"
+		echo "@blink 0 􀀟"
 	fi
 fi
 
