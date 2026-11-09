@@ -1,24 +1,57 @@
 #!/usr/bin/env sh
 . "$HOME/.local/bin/statusbar/sb-theme"
 
+# Shows the speaker, its waves for the level: none at 0%, then one, two or
+# three by thirds; grey when muted. Under ablocks the percentage shows only
+# for a moment when the volume changes, sliding up or down with it, and the
+# waves drain on a mute and fill on an unmute. The volume keys end with
+# `sigbar 10`, so it shows the moment a key is pressed.
+
 case $BLOCK_BUTTON in
 	1) setsid -f "$TERMINAL" -e pulsemixer ;;
 	2) pulsemixer --toggle-mute ;;
-	3) pgrep -x dunst >/dev/null && notify-send "􀀕 Volume module" "\- 􀀖 muted, 􀀓 low, 􀀔 medium, 􀀕 high.
+	3) pgrep -x dunst >/dev/null && notify-send "􀀕 Volume module" "\- 􀀖 muted, 􀀒 silent, 􀀓 low, 􀀔 medium, 􀀕 high.
+- The percentage shows for a moment when the volume changes.
 - Middle click mutes.
 - Scroll changes volume." ;;
 	4) pulsemixer --change-volume +5 ;;
 	5) pulsemixer --change-volume -5 ;;
 esac
 
-[ "$(pulsemixer --get-mute)" = "1" ] && sb "$C_DIM" "􀀖" && exit 0
-
+mute="$(pulsemixer --get-mute)"
 vol="$(pulsemixer --get-volume | awk '{print $1}')"
 [ -n "$vol" ] || exit 0
 
-if   [ "$vol" -gt 70 ]; then icon="􀀕"; color="$C_WARN"
-elif [ "$vol" -lt 40 ]; then icon="􀀓"; color="$C_NORM"
-else                         icon="􀀔"; color="$C_NORM"
+if [ "$mute" = 1 ]; then icon="􀀖"; color="$C_DIM"
+elif [ "$vol" -eq 0 ]; then icon="􀀒"; color="$C_NORM"
+elif [ "$vol" -lt 34 ]; then icon="􀀓"; color="$C_NORM"
+elif [ "$vol" -lt 67 ]; then icon="􀀔"; color="$C_NORM"
+else icon="􀀕"; color="$C_NORM"
 fi
 
-sb "$color" "$icon $vol%"
+# i3blocks cannot animate, so there the percentage always shows
+if [ -z "$ABLOCKS" ]; then
+	if [ "$mute" = 1 ]; then sb "$color" "$icon"; else sb "$color" "$icon $vol%"; fi
+	exit 0
+fi
+
+sb "$color" "$icon"
+
+# what the last run saw; a difference now is a change to animate
+state="${XDG_RUNTIME_DIR:-/tmp}/sb-volume"
+prev="$(cat "$state" 2>/dev/null)"
+echo "$mute $vol" > "$state"
+[ -n "$prev" ] && [ "$prev" != "$mute $vol" ] || exit 0
+pmute=${prev% *} pvol=${prev#* }
+
+if [ "$mute" = 1 ]; then
+	[ "$pmute" = 1 ] || echo "@volmute"
+elif [ "$pmute" = 1 ]; then
+	printf '@volunmute 0 %s\t%s%%\n' "$icon" "$vol"
+elif [ "$vol" -ge 100 ]; then
+	printf '@volmax 0 %s\t%s%%\n' "$icon" "$vol"
+elif [ "$vol" -gt "$pvol" ]; then
+	printf '@volup 0 %s\t%s%%\n' "$icon" "$vol"
+else
+	printf '@voldown 0 %s\t%s%%\n' "$icon" "$vol"
+fi

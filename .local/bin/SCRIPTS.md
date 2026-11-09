@@ -52,7 +52,7 @@ on demand by `sigbar N`.
 - `tasks` -- **(fork)** Outstanding background jobs queued with task spooler by `qndl`/`queueandnotify`, shown as total(queued). Hidden when the queue is empty. Signal 16.
 - `powerupdate` -- **(fork)** Daemon that refreshes the `battery` block (signal 21) whenever udev reports a power_supply change, so plugging the charger in shows at once, with the purple plug-in animation under ablocks. Started from `xprofile`, like `vpnupdate`.
 - `torrent` -- Torrents idle, downloading or seeding. Signal 7.
-- `volume` -- Volume percentage or a mute glyph. Middle click mutes, scroll changes. Signal 10.
+- `volume` -- The speaker, with no waves at 0% and one, two or three by thirds; grey and crossed when muted. Under ablocks the percentage shows only for a moment when the volume changes, sliding up or down with it (amber, the speaker shaking, at 100% and over), and the waves drain on a mute and fill on an unmute; i3blocks always shows it. Middle click mutes, scroll changes. Signal 10.
 - `vpn` -- **(fork)** VPN state for both WireGuard and OpenVPN, naming the active tunnel. Left click hands off to `wg-toggle`; middle click shows endpoint, handshake age and transfer counters. Signal 3. Under ablocks the icon bounces when a tunnel comes up and blinks when it drops.
 - `vpnupdate` -- **(fork)** Daemon that refreshes the `vpn` block whenever a network interface appears or disappears, so a tunnel raised by hand with `wg-quick` updates the bar as fast as one raised by `wg-toggle`. Started from `xprofile`. Signal 3. Also refreshes `internet` (signal 20), so wifi changes show within a second.
 - `weather` -- **(fork, reworked)** Forecast from wttr.in, with the temperature colour-coded by threshold. Signal 5.
