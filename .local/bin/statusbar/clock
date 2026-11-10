@@ -7,6 +7,9 @@
 # in bold. Under ablocks, digits that change roll down like an old flip
 # clock: the old ones drop out, the new ones fall in from above.
 
+# 0 hides the day of the week, leaving the date and the time
+showweek=1
+
 case $BLOCK_BUTTON in
 	1) pgrep -x dunst >/dev/null && notify-send "This Month" "$(cal --color=always | sed "s/..7m/<b><span color=\"red\">/;s/..27m/<\/span><\/b>/")" && notify-send "Appointments" "$(calcurse -D ~/.config/calcurse -d3)" ;;
 	2) $TERMINAL -e calcurse -D ~/.config/calcurse ;;
@@ -32,13 +35,16 @@ while [ -n "$mday" ]; do
 	mday=$rest
 done
 day=$day􀁛
-# the first day of the week, 1 = Monday .. 7 = Sunday
-first=$(cat "$HOME/.local/share/weekstart" 2>/dev/null)
-case $first in [1-7]) ;; *) first=1 ;; esac
-# suckless icons week-1 (the first day) .. week-7, U+10003E onwards
-week=$(pick $(((weekday - first + 7) % 7 + 1)) 􀀾 􀀿 􀁀 􀁁 􀁂 􀁃 􀁄)
+date="􀀣 $day"
+if [ "$showweek" = 1 ]; then
+	# the first day of the week, 1 = Monday .. 7 = Sunday
+	first=$(cat "$HOME/.local/share/weekstart" 2>/dev/null)
+	case $first in [1-7]) ;; *) first=1 ;; esac
+	# suckless icons week-1 (the first day) .. week-7, U+10003E onwards
+	date="$date $(pick $(((weekday - first + 7) % 7 + 1)) 􀀾 􀀿 􀁀 􀁁 􀁂 􀁃 􀁄)"
+fi
 
-sb "$C_NORM" "􀀣 $day $week <b>$time</b>"
+sb "$C_NORM" "$date <b>$time</b>"
 
 [ -n "$ABLOCKS" ] || exit 0
 
@@ -55,4 +61,4 @@ while [ "${old%"${old#?}"}" = "${new%"${new#?}"}" ]; do
 	same=$same${new%"${new#?}"}
 	old=${old#?} new=${new#?}
 done
-printf '@clockflip 0 %s\t%s\t%s\t%s\t%s\n' "$C_NORM" "􀀣 $day $week " "$same" "$old" "$new"
+printf '@clockflip 0 %s\t%s\t%s\t%s\t%s\n' "$C_NORM" "$date " "$same" "$old" "$new"
