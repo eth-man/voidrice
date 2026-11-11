@@ -10,10 +10,26 @@
 # 0 hides the day of the week, leaving the date and the time
 showweek=1
 
+# the first day of the week, 1 = Monday .. 7 = Sunday
+first=$(cat "$HOME/.local/share/weekstart" 2>/dev/null)
+case $first in [1-7]) ;; *) first=1 ;; esac
+
+# The month for the notification: the day names dim, today on a soft
+# tile like the bar's focused workspace, then the next three days of
+# appointments, if there are any. cal can start a week only on Sunday
+# or Monday, so any other first day shows from Monday.
+month() {
+	if [ "$first" = 7 ]; then cal -s; else cal -m; fi | sed '1d; /^ *$/d' |
+		sed "1s|.*|<span color='$C_DIM'>&</span>|
+			2,\$ s@\(^\| \)\($(date +%-d)\)\( \|\$\)@\1<span background='#2e3440' weight='bold'>\2</span>\3@"
+	appts=$(calcurse -D ~/.config/calcurse -d3 2>/dev/null | sed 's/&/\&amp;/g; s/</\&lt;/g')
+	[ -n "$appts" ] && printf '\n\n%s' "$appts"
+}
+
 case $BLOCK_BUTTON in
-	1) pgrep -x dunst >/dev/null && notify-send "This Month" "$(cal --color=always | sed "s/..7m/<b><span color=\"red\">/;s/..27m/<\/span><\/b>/")" && notify-send "Appointments" "$(calcurse -D ~/.config/calcurse -d3)" ;;
+	1) pgrep -x dunst >/dev/null && notify-send -h string:x-dunst-stack-tag:clock "$(date '+%B %Y')" "$(month)" ;;
 	2) $TERMINAL -e calcurse -D ~/.config/calcurse ;;
-	3) pgrep -x dunst >/dev/null && notify-send "􀀣 Time/date module" "\- The tall bar after the date is today's place in the week.
+	3) pgrep -x dunst >/dev/null && notify-send "Time/date module" "\- The tall bar after the date is today's place in the week.
 - Left click shows the next three days of appointments and the month.
 - Middle click opens calcurse." ;;
 esac
@@ -35,11 +51,8 @@ while [ -n "$mday" ]; do
 	mday=$rest
 done
 day=$day􀁛
-date="􀀣 $day"
+date=$day
 if [ "$showweek" = 1 ]; then
-	# the first day of the week, 1 = Monday .. 7 = Sunday
-	first=$(cat "$HOME/.local/share/weekstart" 2>/dev/null)
-	case $first in [1-7]) ;; *) first=1 ;; esac
 	# suckless icons week-1 (the first day) .. week-7, U+10003E onwards
 	date="$date $(pick $(((weekday - first + 7) % 7 + 1)) 􀀾 􀀿 􀁀 􀁁 􀁂 􀁃 􀁄)"
 fi
