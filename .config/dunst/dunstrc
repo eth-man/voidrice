@@ -1,16 +1,21 @@
 [global]
     monitor = 0
     follow = keyboard
-    geometry = "350x10-0+34"
+    width = 420
+    origin = top-right
+    offset = (0, 34)
     indicate_hidden = yes
     shrink = yes
-    transparency = 20
-    notification_height = 0
+    transparency = 0
     separator_height = 2
-    padding = 0
-    horizontal_padding = 8
-    frame_width = 3
-    frame_color = "#282828"
+    padding = 8
+    horizontal_padding = 12
+    # The bar's palette (sb-theme, the i3bar colours): its dark strip, its
+    # text colour and the focused workspace's tile for the frame, with red
+    # kept for what is critical, as on the bar. The strip is solid here:
+    # composited, a background with alpha lets the text behind show through.
+    frame_width = 2
+    frame_color = "#2e3440"
 
     # Define a color for the separator.
     # possible values are:
@@ -24,7 +29,7 @@
     sort = yes
 
     idle_threshold = 120
-    font = Monospace 16
+    font = mono 14
     line_height = 0
     markup = full
 
@@ -75,21 +80,21 @@
 [urgency_low]
     # IMPORTANT: colors have to be defined in quotation marks.
     # Otherwise the "#" and following would be interpreted as a comment.
-    background = "#282828"
-    foreground = "#928374"
+    background = "#0b0c14"
+    foreground = "#969993"
     timeout = 7
     # Icon for notifications with low urgency, uncomment to enable
     #icon = /path/to/icon
 
 [urgency_normal]
-    background = "#458588"
-    foreground = "#ebdbb2"
+    background = "#0b0c14"
+    foreground = "#d8dee9"
     timeout = 7
 
 [urgency_critical]
-    background = "#cc2421"
-    foreground = "#ebdbb2"
-    frame_color = "#fabd2f"
+    background = "#0b0c14"
+    foreground = "#d8dee9"
+    frame_color = "#DC143C"
     timeout = 0
 
 # Every section that isn't one of the above is interpreted as a rules to
