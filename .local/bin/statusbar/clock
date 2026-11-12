@@ -29,8 +29,11 @@ month() {
 case $BLOCK_BUTTON in
 	1) pgrep -x dunst >/dev/null && notify-send -h string:x-dunst-stack-tag:clock "$(date '+%B %Y')" "$(month)" ;;
 	2) $TERMINAL -e calcurse -D ~/.config/calcurse ;;
-	3) pgrep -x dunst >/dev/null && notify-send "Time/date module" "\- The tall bar after the date is today's place in the week.
-- Left click shows the next three days of appointments and the month.
+	3) pgrep -x dunst >/dev/null && notify-send "Time/date module" "Great Scott! It's <b>$(date +%Y)</b>.
+Park the DeLorean.
+
+- The tall bar after the date is today's place in the week.
+- Left click shows the month and the next three days of appointments.
 - Middle click opens calcurse." ;;
 esac
 
