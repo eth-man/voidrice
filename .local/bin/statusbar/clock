@@ -3,9 +3,11 @@
 
 # Shows the date as a number plate, the day of the week as
 # its place in the week (today the tall bar; the week starts on Monday, or
-# on the day 1-7 named in ~/.local/share/weekstart) and the time, the time
-# in bold. Under ablocks, digits that change roll down like an old flip
-# clock: the old ones drop out, the new ones fall in from above.
+# on the day 1-7 named in ~/.local/share/weekstart) and the time in
+# seven-segment digits, like the time circuits in Back to the Future. On
+# 21 October, every year, the plate reads OUTATIME instead. Under ablocks,
+# digits that change roll down like an old flip clock: the old ones drop
+# out, the new ones fall in from above.
 
 # 0 hides the day of the week, leaving the date and the time
 showweek=1
@@ -29,9 +31,14 @@ month() {
 case $BLOCK_BUTTON in
 	1) pgrep -x dunst >/dev/null && notify-send -h string:x-dunst-stack-tag:clock "$(date '+%B %Y')" "$(month)" ;;
 	2) $TERMINAL -e calcurse -D ~/.config/calcurse ;;
-	3) pgrep -x dunst >/dev/null && notify-send "Time/date module" "Great Scott! It's <b>$(date +%Y)</b>.
+	3) # on 21 October only, the plate explains itself
+	outatime=
+	[ "$(date +%m%d)" = 1021 ] && outatime="
+OUTATIME: today is Back to the Future Day, the day Marty and Doc arrive in 2015. The plate is the DeLorean's; tomorrow it is the date again.
+"
+	pgrep -x dunst >/dev/null && notify-send "Time/date module" "Great Scott! It's <b>$(date +%Y)</b>.
 Park the DeLorean.
-
+$outatime
 - The tall bar after the date is today's place in the week.
 - Left click shows the month and the next three days of appointments.
 - Middle click opens calcurse." ;;
@@ -40,10 +47,24 @@ esac
 # pick N ITEM...: the Nth item
 pick() { shift "$1"; printf %s "$1" ;}
 
+# segs HH:MM: the time in suckless icons seg-0 .. seg-9 from U+100060,
+# each over seg-ghost (U+10006A), its unlit segments, with colon between
+segs() {
+	s=$1
+	while [ -n "$s" ]; do
+		c=${s%"${s#?}"} s=${s#?}
+		case $c in
+			:) printf %s "􀁫" ;;
+			*) printf "<span color='%s'>􀁪</span>%s" "$C_GHOST" "$(pick $((c + 1)) 􀁠 􀁡 􀁢 􀁣 􀁤 􀁥 􀁦 􀁧 􀁨 􀁩)" ;;
+		esac
+	done
+}
+
 # one date call, so the date and the time can't straddle midnight
 IFS=\| read -r month mday weekday time <<EOF
 $(date '+%-m|%-d|%u|%H:%M')
 EOF
+today=$month.$mday
 # The date as a number plate: suckless icons month-1 (January) ..
 # month-12 from U+100045 open the plate, plate-0 .. plate-9 from U+100051
 # carry the day's digits and plate-end (U+10005B) closes it.
@@ -54,13 +75,16 @@ while [ -n "$mday" ]; do
 	mday=$rest
 done
 day=$day􀁛
+# Back to the Future Day: on 21 October, every year, the DeLorean's plate
+# (outatime, U+10006C) in place of the date
+[ "$today" = 10.21 ] && day=􀁬
 date=$day
 if [ "$showweek" = 1 ]; then
 	# suckless icons week-1 (the first day) .. week-7, U+10003E onwards
-	date="$date $(pick $(((weekday - first + 7) % 7 + 1)) 􀀾 􀀿 􀁀 􀁁 􀁂 􀁃 􀁄)"
+	date="$date $(pick $(( (weekday - first + 7) % 7 + 1 )) 􀀾 􀀿 􀁀 􀁁 􀁂 􀁃 􀁄)"
 fi
 
-sb "$C_NORM" "$date <b>$time</b>"
+sb "$C_NORM" "$date $(segs "$time")"
 
 [ -n "$ABLOCKS" ] || exit 0
 
@@ -77,4 +101,4 @@ while [ "${old%"${old#?}"}" = "${new%"${new#?}"}" ]; do
 	same=$same${new%"${new#?}"}
 	old=${old#?} new=${new#?}
 done
-printf '@clockflip 0 %s\t%s\t%s\t%s\t%s\n' "$C_NORM" "$date " "$same" "$old" "$new"
+printf '@clockflip 0 %s\t%s\t%s\t%s\t%s\n' "$C_NORM" "$date " "$(segs "$same")" "$(segs "$old")" "$(segs "$new")"

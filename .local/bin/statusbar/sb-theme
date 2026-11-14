@@ -19,6 +19,8 @@ C_FAINT="#434752"   # drawn but not lit, e.g. the wifi arcs the signal
                     # misses: about a quarter of the text colour on the
                     # bar. A colour, not alpha: on a transparent bar the
                     # compositor shows alpha text far brighter than meant.
+C_GHOST="#1d2029"   # fainter still: the unlit segments of the clock's
+                    # seven-segment digits, there only if you look
 C_OK="$C_NORM"      # healthy, connected, up to date
 C_INFO="$C_NORM"    # informational, action available
 C_WARN="$C_NORM"    # attention, but not urgent
