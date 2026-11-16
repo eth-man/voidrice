@@ -44,7 +44,7 @@ on demand by `sigbar N`.
 - `ping-lat` -- **(fork)** Network latency monitor. Colours by threshold and raises a dunst notification above 80ms/110ms. Signal 31.
 - `popupgrade` -- Spawns a `yay` upgrade, then refreshes `pacpackages`.
 - `gitcheck` -- **(fork)** State of this dotfiles repository: a tick when clean and level with origin, a down arrow and count when updates are waiting to pull, an up arrow when commits are unpushed, a warning sign when there are uncommitted changes. Fetches at most once every 15 minutes and runs with `GIT_TERMINAL_PROMPT=0` so it can never block the bar on a credential prompt. Signal 14.
-- `sb-theme` -- **(fork)** Not a module: a palette (`C_NORM`, `C_DIM`, `C_OK`, `C_INFO`, `C_WARN`, `C_ALERT`, `C_ACCENT`) plus an `sb()` helper, sourced by the others so the whole bar can be recoloured from one file.
+- `sb-theme` -- **(fork)** Not a module: sources the desktop's palette, `~/.config/theme/palette` (`C_NORM`, `C_DIM`, `C_OK`, `C_INFO`, `C_WARN`, `C_ALERT`, `C_ACCENT`, ...), and adds an `sb()` helper, so every module colours by name and the whole bar is recoloured from one file.
 - `sb-bluetooth` -- **(fork)** Bluetooth state. Distinguishes off, blocked by rfkill, scanning, and connected; when a device is connected it shows an icon matching the device class (headset, phone, mouse, keyboard) plus that device's own battery when it reports one, turning amber below 20%. Left click opens the device menu, middle click toggles adapter power. Signal 17.
 - `sb-price` -- **(fork)** Cryptocurrency ticker. Signal 29.
 - `screen-timeout` -- **(fork)** Toggles and displays the DPMS screen timeout.
@@ -90,8 +90,9 @@ Run manually or bound from within vim and other programs.
 - `queueandnotify` -- Reads the newsboat queue and hands each url to `qndl`. Replaces podboat.
 - `remaps` -- Maps capslock to escape when tapped and super when held, and the menu key to super.
 - `dotsync` -- **(fork)** Moves tracked files between `$HOME` and the repository at `~/voidrice-repo`, since `$HOME` is deliberately not a git work tree. `status`, `diff`, `capture` (into the repo), `deploy` (out to `$HOME`); the last two are a dry run until `-y`. The file list is always `git ls-files`, so only tracked paths move and an untracked private file cannot enter the repo.
-- `voidrice-doctor` -- **(fork)** Self-check for the whole setup, bound to `Mod+Shift+F1`. Catches the failures that are otherwise silent: a script missing its executable bit is simply unreachable, a module that errors just shows an empty block, a glyph the Nerd Font lacks is quietly drawn by a substitute font, and a binding to an uninstalled command fails only when the key is pressed. Also flags bash-only syntax under a `sh` shebang, duplicate i3blocks entries and signal collisions. Exits with the number of failures.
+- `voidrice-doctor` -- **(fork)** Self-check for the whole setup, bound to `Mod+Shift+F1`. Catches the failures that are otherwise silent: a script missing its executable bit is simply unreachable, a module that errors just shows an empty block, a glyph the Nerd Font lacks is quietly drawn by a substitute font, and a binding to an uninstalled command fails only when the key is pressed. Also flags bash-only syntax under a `sh` shebang, duplicate i3blocks entries, signal collisions, generated colour files out of step with the palette, and hex colours in i3, dunst or a bar module that bypass it. Exits with the number of failures.
 - `remapd` -- **(fork, new)** Runs `remaps` again whenever a USB input device is hotplugged, so docking or attaching a keyboard does not silently lose the remap. Started from `xprofile`.
+- `retheme` -- **(fork)** Applies `~/.config/theme/palette` to everything that cannot source it: writes `~/.config/x11/colors` (st, dmenu, and i3's borders and bar through `set_from_resource`) and `~/.config/dunst/dunstrc.d/palette.conf`, then reloads X resources, i3, dunst and the bar. `retheme DIR` writes under another tree, such as the repo, without reloading; `retheme -c [DIR]` only checks the files are in step. Run by vim when the palette is saved.
 - `rotdir` -- "Rotates" a directory listing around a chosen file so the image viewer can page through the rest of the directory in order.
 - `rssadd` -- Appends a feed url to `~/.config/newsboat/urls`, refusing duplicates.
 - `rssget` -- **(fork, new)** Discovers a site's RSS/Atom feed and passes it to `rssadd`. Knows the hidden feed urls for YouTube, Reddit, GitHub, GitLab and Medium; otherwise scrapes the page's `<link>` tags. Reads the clipboard when given no argument.
@@ -130,7 +131,7 @@ Bound to keys in `~/.config/i3/config`; mostly dmenu interfaces.
 - `mpv-hover` -- **(fork)** Plays a copied video url in a floating mpv window. Reached through `cabl`.
 - `openvpn` -- **(fork)** Picks a `.ovpn` profile from `~/.local/ovpn-config` and connects.
 - `oui-lookup` -- **(fork)** Looks up a MAC address vendor in the Wireshark `manuf` database, cached at `~/.local/share/manuf` and refreshed monthly. Reached through `cabl`.
-- `prompt` -- Yes/No confirmation prompt used by the destructive bindings.
+- `prompt` -- Yes/No confirmation prompt used by the destructive bindings. Drawn in the palette, with the alert red for the selection.
 - `samedir` -- Opens a terminal in the focused window's directory. `Mod+Shift+Return`. Walks the process tree outward and takes the first process with a usable cwd; the previous version took whichever process sorted last in `pstree`, which landed in `$HOME` whenever the shell had a child running.
 - `showclip` -- Shows the clipboard and primary selection as notifications.
 - `sshmenu` -- **(fork)** Picks a host from `~/.ssh/config` and connects. `$mod+Ctrl+s`.

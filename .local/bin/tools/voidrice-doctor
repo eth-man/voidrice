@@ -147,6 +147,21 @@ if [ -f "$prof" ]; then
 	[ $miss -eq 0 ] && ok "every path exported by .profile exists"
 fi
 
+# ------------------------------------------------------------------- theme ---
+sec "theme"
+if "$BIN/tools/retheme" -c "$REPO" >/dev/null 2>&1; then
+	ok "x11/colors and dunst's palette.conf match the palette"
+else
+	fail "generated colours are out of step with .config/theme/palette (run: retheme \"$REPO\")"
+fi
+# Every colour should come from the palette by name. Allowed: i3's
+# set_from_resource fallbacks, and the disabled sb-price block.
+stray=$(cd "$REPO" && grep -nE "#[0-9a-fA-F]{6}" .config/i3/config .config/dunst/dunstrc \
+	$(git ls-files .local/bin/statusbar | grep -v -e sb-price -e sb-theme) 2>/dev/null \
+	| grep -v 'set_from_resource')
+[ -n "$stray" ] && while IFS= read -r l; do warn "hex colour outside the palette: $l"; done <<<"$stray" \
+                || ok "i3, dunst and the bar modules take every colour from the palette"
+
 # ------------------------------------------------------------------ dotsync ---
 sec "sync"
 if command -v dotsync >/dev/null 2>&1 || [ -x "$BIN/tools/dotsync" ]; then

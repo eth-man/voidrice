@@ -37,9 +37,10 @@ the menu is extended by adding one guarded line.
 
 **Status bar**
 
-Nerd Fonts glyphs throughout, every module colour-coded through a single
-palette in `statusbar/sb-theme` — white normal, grey off, amber attention, red
-urgent. Beyond upstream's modules:
+Every module colours itself from one palette, `.config/theme/palette`, and so
+does everything else: window borders, the terminal, dmenu, notifications.
+It's a calm one. Normal is white, off is grey, and red means you should
+probably look. Change a colour, run `retheme`, and the whole desktop follows. Beyond upstream's modules:
 
 - **repo** — whether these dotfiles are behind, ahead or dirty; click to fetch
 - **failed** — failed systemd units, system and user; hidden when there are none

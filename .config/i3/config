@@ -20,6 +20,27 @@ set $reboot sudo -A reboot
 set $netrefresh --no-startup-id sudo -A systemctl restart NetworkManager
 set $hibernate sudo -A systemctl suspend
 
+# #---Colours---# #
+# From the desktop's palette (~/.config/theme/palette), which `retheme` puts
+# into X resources; the fallbacks are its values, for when xrdb has not run.
+set_from_resource $c_norm   i3wm.norm   #d8dee9
+set_from_resource $c_bright i3wm.bright #eceff4
+set_from_resource $c_dim    i3wm.dim    #969993
+set_from_resource $c_alert  i3wm.alert  #DC143C
+set_from_resource $c_panel  i3wm.panel  #0b0c14
+set_from_resource $c_tile   i3wm.tile   #2e3440
+set_from_resource $c_edge   i3wm.edge   #4c566a
+set_from_resource $c_strip  i3wm.strip  #000009d9
+
+# Window borders in the bar's calm palette: the focused window a lighter
+# edge than the rest, and red only for a window that asks for attention.
+#                       border   background text      indicator child_border
+client.focused          $c_edge  $c_edge    $c_bright $c_dim    $c_edge
+client.focused_inactive $c_tile  $c_tile    $c_norm   $c_tile   $c_tile
+client.unfocused        $c_tile  $c_panel   $c_dim    $c_tile   $c_tile
+client.urgent           $c_alert $c_alert   $c_bright $c_alert  $c_alert
+client.background       $c_panel
+
 # #---Gaps---# #
 for_window [class="^.*"] border pixel 3
 gaps inner $inner_gaps
@@ -48,18 +69,18 @@ bar {
 	modifier None
 	colors {
 		# Mostly solid, so the text sits on a calm strip rather than the
-		# wallpaper; statusline is the text colour of sb-theme's C_NORM.
-		background #000009d9
-		statusline #d8dee9
+		# wallpaper; statusline is the palette's text colour, as in the blocks.
+		background $c_strip
+		statusline $c_norm
 		# Workspace buttons in the bar's calm palette: unfocused ones are
 		# plain dim numbers, the focused one a soft tile, and red is kept
 		# for urgent, as for alerts in the blocks.
 		#                   border    background text
-		focused_workspace  #2e3440   #2e3440    #eceff4
-		active_workspace   #000009d9 #000009d9  #d8dee9
-		inactive_workspace #000009d9 #000009d9  #969993
-		urgent_workspace   #DC143C   #DC143C    #ffffff
-		binding_mode       #2e3440   #2e3440    #eceff4
+		focused_workspace  $c_tile   $c_tile    $c_bright
+		active_workspace   $c_strip  $c_strip   $c_norm
+		inactive_workspace $c_strip  $c_strip   $c_dim
+		urgent_workspace   $c_alert  $c_alert   $c_bright
+		binding_mode       $c_tile   $c_tile    $c_bright
 		}
 	# Same width for "1" and "10", and room after the last block so it
 	# does not sit flush against the screen edge.

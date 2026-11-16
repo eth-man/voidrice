@@ -10,12 +10,12 @@
     separator_height = 2
     padding = 8
     horizontal_padding = 12
-    # The bar's palette (sb-theme, the i3bar colours): its dark strip, its
-    # text colour and the focused workspace's tile for the frame, with red
-    # kept for what is critical, as on the bar. The strip is solid here:
-    # composited, a background with alpha lets the text behind show through.
+    # Colours come from the desktop's palette (~/.config/theme/palette),
+    # which `retheme` writes to dunstrc.d/palette.conf, read after this file:
+    # the panel colour, its text colour and the tile for the frame, with red
+    # kept for what is critical, as on the bar. The background is solid:
+    # composited, one with alpha lets the text behind show through.
     frame_width = 2
-    frame_color = "#2e3440"
 
     # Define a color for the separator.
     # possible values are:
@@ -78,23 +78,14 @@
     context = ctrl+shift+period
 
 [urgency_low]
-    # IMPORTANT: colors have to be defined in quotation marks.
-    # Otherwise the "#" and following would be interpreted as a comment.
-    background = "#0b0c14"
-    foreground = "#969993"
     timeout = 7
     # Icon for notifications with low urgency, uncomment to enable
     #icon = /path/to/icon
 
 [urgency_normal]
-    background = "#0b0c14"
-    foreground = "#d8dee9"
     timeout = 7
 
 [urgency_critical]
-    background = "#0b0c14"
-    foreground = "#d8dee9"
-    frame_color = "#DC143C"
     timeout = 0
 
 # Every section that isn't one of the above is interpreted as a rules to

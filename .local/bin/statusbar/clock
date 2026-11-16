@@ -23,7 +23,7 @@ case $first in [1-7]) ;; *) first=1 ;; esac
 month() {
 	if [ "$first" = 7 ]; then cal -s; else cal -m; fi | sed '1d; /^ *$/d' |
 		sed "1s|.*|<span color='$C_DIM'>&</span>|
-			2,\$ s@\(^\| \)\($(date +%-d)\)\( \|\$\)@\1<span background='#2e3440' weight='bold'>\2</span>\3@"
+			2,\$ s@\(^\| \)\($(date +%-d)\)\( \|\$\)@\1<span background='$C_TILE' weight='bold'>\2</span>\3@"
 	appts=$(calcurse -D ~/.config/calcurse -d3 2>/dev/null | sed 's/&/\&amp;/g; s/</\&lt;/g')
 	[ -n "$appts" ] && printf '\n\n%s' "$appts"
 }

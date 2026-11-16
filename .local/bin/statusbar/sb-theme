@@ -4,28 +4,11 @@
 #   . "$HOME/.local/bin/statusbar/sb-theme"
 #   sb "$C_WARN" "􀀩 3"
 #
-# Every module colours through these names so the whole bar can be
-# re-themed from one file instead of hunting hex codes in 20 scripts.
+# The colours themselves ($C_NORM, $C_DIM, $C_ALERT, ...) live in
+# ~/.config/theme/palette, which the rest of the desktop is themed from too,
+# so the bar, the windows, the terminal and the notifications stay one design.
 
-# Calm palette: colour is kept for what needs attention now (C_ALERT) and
-# what is switched off (C_DIM). Every other state shares the text colour,
-# so the one red block on the bar is the one that matters. The names stay
-# semantic, so a livelier theme only needs them given their own values
-# again, as they once were: C_OK="#90EE90" C_INFO="#83a598"
-# C_WARN="#e8cb61" C_ACCENT="#d3869b".
-C_NORM="#d8dee9"    # normal / idle: the text colour
-C_DIM="#969993"     # disabled, absent, powered off
-C_FAINT="#434752"   # drawn but not lit, e.g. the wifi arcs the signal
-                    # misses: about a quarter of the text colour on the
-                    # bar. A colour, not alpha: on a transparent bar the
-                    # compositor shows alpha text far brighter than meant.
-C_GHOST="#1d2029"   # fainter still: the unlit segments of the clock's
-                    # seven-segment digits, there only if you look
-C_OK="$C_NORM"      # healthy, connected, up to date
-C_INFO="$C_NORM"    # informational, action available
-C_WARN="$C_NORM"    # attention, but not urgent
-C_ALERT="#DC143C"   # urgent
-C_ACCENT="$C_NORM"  # media / accent
+. "${XDG_CONFIG_HOME:-$HOME/.config}/theme/palette"
 
 # sb COLOR TEXT -- emit one pango-marked status line.
 sb() { printf "<span color='%s'>%s</span>\n" "$1" "$2" ;}
