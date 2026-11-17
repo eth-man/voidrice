@@ -180,7 +180,7 @@ Test a statusbar module the way i3blocks calls it — as a bare command with the
 
 - `.config/shortcutrc`, `.config/ranger/shortcuts.conf`, `.config/vifm/vifmshortcuts` are all regenerated
   by `.local/bin/tools/shortcuts` from `.config/bmdirs` and `.config/bmfiles`. Edit the `bm*` source files.
-- `.config/x11/colors` and `.config/dunst/dunstrc.d/palette.conf` are written by `retheme` from
+- `.config/x11/colors`, `.config/dunst/dunstrc.d/palette.conf` and `.config/gtk-{3,4}.0/gtk.css` are written by `retheme` from
   `.config/theme/palette`. Edit the palette, then `retheme` (live) and `retheme ~/voidrice-repo` (repo);
   `voidrice-doctor` fails when they are out of step.
 - `.config/getkeys/*` are hand-written cheat sheets that mirror each program's config. If you change a

@@ -150,7 +150,7 @@ fi
 # ------------------------------------------------------------------- theme ---
 sec "theme"
 if "$BIN/tools/retheme" -c "$REPO" >/dev/null 2>&1; then
-	ok "x11/colors and dunst's palette.conf match the palette"
+	ok "the files retheme writes match the palette"
 else
 	fail "generated colours are out of step with .config/theme/palette (run: retheme \"$REPO\")"
 fi
