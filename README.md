@@ -40,7 +40,9 @@ the menu is extended by adding one guarded line.
 Every module colours itself from one palette, `.config/theme/palette`, and so
 does everything else: window borders, the terminal, dmenu, notifications.
 It's a calm one. Normal is white, off is grey, and red means you should
-probably look. Change a colour, run `retheme`, and the whole desktop follows. Beyond upstream's modules:
+probably look. Change a colour, run `retheme`, and the whole desktop follows.
+Bored of blue-grey? `retheme gruvbox` takes everything back to warm retro
+brown, and `retheme nord` brings it back. Beyond upstream's modules:
 
 - **repo** — whether these dotfiles are behind, ahead or dirty; click to fetch
 - **failed** — failed systemd units, system and user; hidden when there are none

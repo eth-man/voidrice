@@ -5,7 +5,8 @@
 #   sb "$C_WARN" "􀀩 3"
 #
 # The colours themselves ($C_NORM, $C_DIM, $C_ALERT, ...) live in
-# ~/.config/theme/palette, which the rest of the desktop is themed from too,
+# ~/.config/theme/palette (a link to the theme in use, switched with
+# `retheme NAME`), which the rest of the desktop is themed from too,
 # so the bar, the windows, the terminal and the notifications stay one design.
 
 . "${XDG_CONFIG_HOME:-$HOME/.config}/theme/palette"

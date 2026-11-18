@@ -109,8 +109,8 @@ set clipboard+=unnamedplus
 " Run xrdb whenever Xdefaults or Xresources are updated.
 	autocmd BufWritePost *Xresources,*xresources,*Xdefaults !xrdb %
 
-" Re-theme the desktop whenever its palette is updated.
-	autocmd BufWritePost ~/.config/theme/palette !retheme
+" Re-theme the desktop whenever a theme is updated.
+	autocmd BufWritePost ~/.config/theme/* !retheme
 
 " Navigating with guides
 	inoremap <leader><leader> <Esc>/<++><Enter>"_c4l

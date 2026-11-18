@@ -1,0 +1,46 @@
+# nord: a theme for the whole desktop, calm and blue-grey. `palette` is a
+# link to the theme in use; switch with `retheme NAME`, list with
+# `retheme -l`. Sourced as sh, by the bar modules (sb-theme) and by
+# `retheme`, which writes it out for everything that cannot source sh: X
+# resources (st, dmenu, i3), dunst, GTK and zathura. Change a colour here,
+# then run `retheme`; vim does that on save.
+#
+# Calm on purpose: colour is kept for what needs attention now (C_ALERT)
+# and what is switched off (C_DIM). Every other state shares the text
+# colour, so the one red thing on screen is the one that matters.
+# A new theme is a copy of this file with its own values for every name.
+
+# Text
+C_NORM="#d8dee9"    # normal / idle: the text colour
+C_BRIGHT="#eceff4"  # text on a highlighted tile
+C_DIM="#969993"     # disabled, absent, powered off
+C_FAINT="#434752"   # drawn but not lit, e.g. the wifi arcs the signal
+                    # misses. A colour, not alpha: on a transparent bar the
+                    # compositor shows alpha text far brighter than meant.
+C_GHOST="#1d2029"   # fainter still: the unlit segments of the clock's
+                    # seven-segment digits, there only if you look
+C_ALERT="#DC143C"   # urgent
+
+# Semantic names the modules use. They share the text colour; a livelier
+# theme only needs them given their own values again, as they once were:
+# C_OK="#90EE90" C_INFO="#83a598" C_WARN="#e8cb61" C_ACCENT="#d3869b".
+C_OK="$C_NORM"      # healthy, connected, up to date
+C_INFO="$C_NORM"    # informational, action available
+C_WARN="$C_NORM"    # attention, but not urgent
+C_ACCENT="$C_NORM"  # media / accent
+
+# Surfaces, darkest first
+C_STRIP="#000009"   # the bar, drawn at BAR_ALPHA over the wallpaper
+BAR_ALPHA="d9"
+C_PANEL="#0b0c14"   # solid backgrounds: terminal, dmenu, notifications
+C_TILE="#2e3440"    # a raised tile: the focused workspace, a notification's
+                    # frame, the borders of windows without focus
+C_EDGE="#4c566a"    # the border of the focused window
+
+# The terminal's text and sixteen colours: Nord's, which the text colours
+# above come from, a step brighter for reading. Its text is C_BRIGHT, and
+# its grey (8, for comments, hints and dim text) is lifted from Nord's
+# #4c566a, which is barely legible on C_PANEL. 0-7 normal, 8-15 bright.
+TERM_FG="$C_BRIGHT"
+TERM_COLORS="#3b4252 #bf616a #a3be8c #ebcb8b #81a1c1 #b48ead #88c0d0 #e5e9f0
+#7b88a1 #bf616a #a3be8c #ebcb8b #81a1c1 #b48ead #8fbcbb #eceff4"

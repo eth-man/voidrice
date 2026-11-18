@@ -1,0 +1,38 @@
+# gruvbox: the warm retro theme st shipped with, cream on dark brown, its
+# colours carried to the whole desktop. See `nord` for how themes work.
+#
+# As calm as nord: only C_ALERT, C_DIM and C_FAINT differ from the text
+# colour, so the one red thing on screen is the one that matters.
+
+# Text
+C_NORM="#ebdbb2"    # normal / idle: the text colour
+C_BRIGHT="#fbf1c7"  # text on a highlighted tile
+C_DIM="#928374"     # disabled, absent, powered off
+C_FAINT="#504945"   # drawn but not lit, e.g. the wifi arcs the signal
+                    # misses. A colour, not alpha: on a transparent bar the
+                    # compositor shows alpha text far brighter than meant.
+C_GHOST="#32302f"   # fainter still: the unlit segments of the clock's
+                    # seven-segment digits, there only if you look
+C_ALERT="#fb4934"   # urgent
+
+# Semantic names the modules use. They share the text colour; a livelier
+# theme gives them their own values, e.g. gruvbox's own
+# C_OK="#b8bb26" C_INFO="#83a598" C_WARN="#fabd2f" C_ACCENT="#d3869b".
+C_OK="$C_NORM"      # healthy, connected, up to date
+C_INFO="$C_NORM"    # informational, action available
+C_WARN="$C_NORM"    # attention, but not urgent
+C_ACCENT="$C_NORM"  # media / accent
+
+# Surfaces, darkest first
+C_STRIP="#1d2021"   # the bar, drawn at BAR_ALPHA over the wallpaper
+BAR_ALPHA="d9"
+C_PANEL="#282828"   # solid backgrounds: terminal, dmenu, notifications
+C_TILE="#3c3836"    # a raised tile: the focused workspace, a notification's
+                    # frame, the borders of windows without focus
+C_EDGE="#665c54"    # the border of the focused window
+
+# The terminal's text and sixteen colours: st's gruvbox, exactly as it
+# was compiled in. 0-7 normal, 8-15 bright.
+TERM_FG="$C_NORM"
+TERM_COLORS="#282828 #cc241d #98971a #d79921 #458588 #b16286 #689d6a #a89984
+#928374 #fb4934 #b8bb26 #fabd2f #83a598 #d3869b #8ec07c #ebdbb2"

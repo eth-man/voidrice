@@ -1,7 +1,10 @@
 #!/usr/bin/env sh
 
-# Apply ~/.config/theme/palette to everything that cannot source it as sh.
-# Writes these files, then reloads what reads them:
+# Themes for the whole desktop. Each is a file of colours in
+# ~/.config/theme/ (nord, gruvbox, ...), and ~/.config/theme/palette is a
+# link to the one in use. The bar modules source it directly; for
+# everything that cannot source sh, retheme writes these files from it,
+# then reloads what reads them:
 #
 #   ~/.config/x11/colors                 xresources: st, dmenu, and i3,
 #                                        which reads it with set_from_resource
@@ -9,19 +12,49 @@
 #   ~/.config/gtk-{3,4}.0/gtk.css        GTK's, over the adw-gtk3-dark theme
 #   ~/.config/zathura/palette            zathura's, included by zathurarc
 #
-#   retheme            write them all and reload X resources, i3, dunst and the bar
-#   retheme DIR        write them under DIR instead, e.g. the repo; no reload
-#   retheme -c [DIR]   only check that the files under DIR (default $HOME)
-#                      match the palette; exit 1 and show the diff if not
+#   retheme            rewrite them from the theme in use, and reload
+#   retheme NAME       switch the whole desktop to theme NAME
+#   retheme -m         pick a theme from dmenu
+#   retheme -l         list the themes, the one in use marked with *
+#   retheme -d DIR     work under DIR instead of $HOME, e.g. the repo; no reload
+#   retheme -c         only check that the files match the theme in use;
+#                      exit 1 and show the diff if not
 #
-# All of them are generated: edit the palette, not them.
+# All of them are generated: edit a theme, not them.
 
-check=0
-[ "$1" = "-c" ] && { check=1; shift ;}
-root="${1:-$HOME}"
+check=0; menu=0; list=0; root="$HOME"
+while getopts cd:lm o; do
+	case $o in
+		c) check=1 ;;
+		d) root="$OPTARG" ;;
+		l) list=1 ;;
+		m) menu=1 ;;
+		*) sed -n '/^#   retheme /s/^# *//p' "$0" >&2; exit 2 ;;
+	esac
+done
+shift $((OPTIND - 1))
 
-palette="$root/.config/theme/palette"
-[ -r "$palette" ] || { echo "retheme: no palette at $palette" >&2; exit 1 ;}
+themes="$root/.config/theme"
+palette="$themes/palette"
+current=$(readlink "$palette")
+
+names() { for f in "$themes"/*; do [ "$f" = "$palette" ] || echo "${f##*/}"; done ;}
+
+if [ $list -eq 1 ]; then
+	names | while read -r t; do
+		[ "$t" = "$current" ] && echo "* $t" || echo "  $t"
+	done
+	exit 0
+fi
+
+theme="$1"
+[ $menu -eq 1 ] && { theme=$(names | dmenu -i -p "Theme ($current):") || exit 0 ;}
+if [ -n "$theme" ]; then
+	[ -f "$themes/$theme" ] || { echo "retheme: no theme '$theme' in $themes; there are: $(names | tr '\n' ' ')" >&2; exit 1 ;}
+	ln -sfn "$theme" "$palette"
+fi
+
+[ -r "$palette" ] || { echo "retheme: no theme in use at $palette" >&2; exit 1 ;}
 . "$palette"
 
 xcolors() {
@@ -183,9 +216,13 @@ if pgrep -x dunst >/dev/null; then
 fi
 sigbar
 
-# GTK and zathura read their colours as each program starts. Programs that ask the desktop
-# whether it is dark (libadwaita apps, Chrome) read color-scheme.
+# GTK and zathura read their colours as each program starts. Programs that
+# ask the desktop whether it is dark (libadwaita apps, Chrome) read
+# color-scheme.
 if command -v gsettings >/dev/null; then
 	gsettings set org.gnome.desktop.interface color-scheme prefer-dark
 	gsettings set org.gnome.desktop.interface gtk-theme adw-gtk3-dark
 fi
+
+[ -n "$theme" ] && pgrep -x dunst >/dev/null && notify-send "Theme: $theme" "The bar, windows, notifications and menus have switched; open a new terminal to see its colours."
+exit 0

@@ -92,8 +92,10 @@ Every `statusbar/` script follows the same shape, and new modules should too:
 2. Print one line to stdout. `markup=pango` is set globally in `.config/i3blocks/config`, so this fork's
    modules colorize with `printf "<span color='%s'>%s</span>\n" "$color" "$icon"`. Take colours from
    `statusbar/sb-theme` by meaning (`$C_OK`, `$C_WARN`, `$C_ALERT`, `$C_DIM`, ...), never as hex. The
-   values live in `.config/theme/palette`, which sb-theme sources and which themes the rest of the
-   desktop too (i3 borders and bar, st, dmenu, dunst) through `retheme`. The
+   values live in `.config/theme/palette`, a link to the theme in use (`nord`, `gruvbox`, ...), which
+   sb-theme sources and which themes the rest of the desktop too (i3 borders and bar, st, dmenu,
+   dunst, GTK, zathura) through `retheme`; `retheme NAME` switches theme. A new colour name must be
+   added to every theme file. The
    palette is deliberately calm: only `C_ALERT` (red), `C_DIM` (grey) and `C_FAINT` (the unlit part of
    an icon) differ from the text colour, so a red block is always the one that needs you. Retheming
    is one file. Never fade part of a block with pango `alpha`: the bar is transparent, and once
@@ -159,7 +161,7 @@ or you will reload the old file and conclude, wrongly, that your change did noth
 | a new font (e.g. suckless icons) | restart what draws with it: `i3-msg restart` for the bar, dunst as above. Long-running programs load the font list once and show a missing-glyph box until then |
 | `.config/x11/xprofile` | requires restarting X |
 | `.config/bmdirs` / `.config/bmfiles` | `shortcuts` (nvim runs it automatically on write) |
-| `.config/theme/palette` | `retheme` (nvim runs it on write): rewrites the generated colour files, reloads xrdb, i3, dunst and the bar. Open terminals keep their colours until reopened |
+| a theme in `.config/theme/` | `retheme` (nvim runs it on write): rewrites the generated colour files, reloads xrdb, i3, dunst and the bar. Open terminals keep their colours until reopened |
 
 Test a statusbar module the way i3blocks calls it — as a bare command with the button variable set:
 `BLOCK_BUTTON= internet` for the render path, `BLOCK_BUTTON=3 internet` for the click path.
@@ -181,7 +183,8 @@ Test a statusbar module the way i3blocks calls it — as a bare command with the
 - `.config/shortcutrc`, `.config/ranger/shortcuts.conf`, `.config/vifm/vifmshortcuts` are all regenerated
   by `.local/bin/tools/shortcuts` from `.config/bmdirs` and `.config/bmfiles`. Edit the `bm*` source files.
 - `.config/x11/colors`, `.config/dunst/dunstrc.d/palette.conf`, `.config/gtk-{3,4}.0/gtk.css` and `.config/zathura/palette` are written by `retheme` from
-  `.config/theme/palette`. Edit the palette, then `retheme` (live) and `retheme ~/voidrice-repo` (repo);
+  the theme `.config/theme/palette` links to. Edit the theme, then `retheme` (live) and
+  `retheme -d ~/voidrice-repo` (repo);
   `voidrice-doctor` fails when they are out of step.
 - `.config/getkeys/*` are hand-written cheat sheets that mirror each program's config. If you change a
   keybinding in `.config/i3/config`, update `.config/getkeys/i3` to match — nothing enforces this.

@@ -149,10 +149,10 @@ fi
 
 # ------------------------------------------------------------------- theme ---
 sec "theme"
-if "$BIN/tools/retheme" -c "$REPO" >/dev/null 2>&1; then
-	ok "the files retheme writes match the palette"
+if "$BIN/tools/retheme" -c -d "$REPO" >/dev/null 2>&1; then
+	ok "the files retheme writes match the theme in use ($(readlink "$REPO/.config/theme/palette"))"
 else
-	fail "generated colours are out of step with .config/theme/palette (run: retheme \"$REPO\")"
+	fail "generated colours are out of step with the theme in use (run: retheme -d \"$REPO\")"
 fi
 # Every colour should come from the palette by name. Allowed: i3's
 # set_from_resource fallbacks, and the disabled sb-price block.
