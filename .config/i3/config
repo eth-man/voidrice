@@ -156,7 +156,7 @@ bindcode $mod+38			exec --no-startup-id ddspawn dropdowncalc -f mono:pixelsize=2
 bindcode $mod+Shift+38		exec $term -e pulsemixer
 
 #bindsym $mod+s			gaps inner current plus 5
-bindsym $mod+39			gaps inner current plus 5
+bindcode $mod+39			gaps inner current plus 5
 #bindsym $mod+Shift+s		gaps inner current minus 5
 bindcode $mod+Shift+39		gaps inner current minus 5
 
