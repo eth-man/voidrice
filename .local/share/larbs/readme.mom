@@ -10,21 +10,25 @@
 .PRINTSTYLE TYPESET
 .PT_SIZE 10
 .START
-Use vim keys (\f(CWh/j/k/l\fP) to navigate this document.
-Pressing \f(CWs\fP will fit it to window width (\f(CWa\fP to revert).
-\f(CWK\fP and \f(CWJ\fP zoom in and out.
-\f(CWSuper+f\fP to toggle fullscreen.
-\f(CWf\fP will highlight links to follow which are selectable by typing the number that appears plus \f(CWEnter\fP.
-\f(CWq\fP to quit.
-(These are general shortcuts of \f(CWzathura\fP, the pdf reader.)
+.PP
+Use vim keys (\f(CWh/j/k/l\fP) to move around this document.
+\f(CWs\fP fits it to the window width (\f(CWa\fP to undo that),
+\f(CWK\fP and \f(CWJ\fP zoom in and out,
+\f(CWf\fP numbers the links so you can follow one by typing its number and \f(CWEnter\fP,
+and \f(CWq\fP quits.
+\f(CWi\fP recolours the page into the desktop's theme, for reading at night.
+(These are \f(CWzathura\fP's keys, the PDF reader.)
 .LI
 .ITEM
-\f(CWMod+F1\fP will show this document at any time.
+\f(CWMod+F1\fP shows this document at any time.
 .ITEM
-By \f(CWMod\fP I mean the Super Key, usually known as "the Windows Key."
+\f(CWMod\fP is the Super key, the one with the Windows logo on it.
 .LIST OFF
 .PP
-Questions or suggestions? Open an issue on the repository.
+This is a fork of Luke Smith's LARBS that stayed on i3 when upstream moved to
+dwm, and grew up doing day-to-day sysadmin work.
+Anything marked \fBfork\fP below does not exist upstream.
+Questions or ideas? Open an issue:
 .LI
 .ITEM
 This fork:
@@ -33,476 +37,441 @@ This fork:
 The installer:
 .PDF_WWW_LINK "https://github.com/eth-man/larbs" "github.com/eth-man/larbs"
 .ITEM
-Upstream this was forked from:
+The status bar and its icons:
+.PDF_WWW_LINK "https://github.com/eth-man/ablocks" "github.com/eth-man/ablocks"
+.ITEM
+Upstream:
 .PDF_WWW_LINK "https://github.com/LukeSmithxyz/voidrice" "Luke Smith's voidrice"
 .LIST OFF
-FAQs are at the end of this document.
-.PP
-This is a fork of Luke Smith's LARBS, kept on i3 and i3blocks rather than
-following upstream to dwm, and adapted for day-to-day sysadmin work.
-Anything below marked \fBfork\fP does not exist upstream.
+The FAQs are at the end.
 .HEADING 1 "Welcome!"
-.HEADING 2 "Basic goals and principles of this system:"
+.HEADING 2 "What this system is trying to be"
 .LI
 .ITEM
 \fBNaturalness\fP \(en
-Remove the border between mind and matter:
-everything important should be as few keypresses as possible away from you,
-and you shouldn't have to think about what you're doing.
-Immersion.
+everything important is a few keypresses away, so you stop thinking about the
+computer and think about the work.
 .ITEM
 \fBEconomy\fP \(en
-Programs should be simple and light on system resources and highly extensible.
-Because of this, many are terminal or small ncurses programs that have all the magic inside of them.
+small programs, light on resources, mostly in the terminal, each one easy to
+read and change.
 .ITEM
-\fBKeyboard/vim-centrality\fP \(en
-All terminal programs (and other programs) use vim keys when possible.
-Your hands never need leave the home row or thereabout.
+\fBVim keys everywhere\fP \(en
+your hands never need to leave the home row.
 .ITEM
-\fBDecentralization\fP \(en
-This system is a web of small, modifiable and replaceable programs that users can easily customize.
+\fBCalm\fP \(en
+\fBfork:\fP the screen stays quiet until something needs you.
+Almost everything is drawn in one text colour, grey means off, and red means
+look at me.
+If something on screen is red, it is the thing to deal with.
 .LIST OFF
-.HEADING 2 "General keyboard changes"
+.HEADING 2 "Keyboard changes"
 .LI
 .ITEM
-Capslock is a useless key in high quality space.
-It's now remapped.
-If you press it alone, it will function as escape, making vimcraft much more natural,
-but you can also hold it down and it will act as another Windows/super/mod key.
+Caps Lock is Escape when tapped and another Super key when held.
+Vim gets a lot nicer.
 .ITEM
-The menu button (usually between the right Alt and Ctrl) is an alternative Super/Mod button.
-This is to make one-handing on laptops easier.
+The Menu key (between the right Alt and Ctrl) is a second Super key, for
+one-handed use on a laptop.
 .LIST OFF
-If you'd like to change any of these keyboard changes, you need only open and change \f(CW~/.local/bin/tools/remaps\fP.
-Actually, this should go without saying, but \fIeverything\fP here can easily be changed.
+Both live in \f(CW~/.local/bin/tools/remaps\fP if you would rather not.
+The shell uses vi mode; \f(CW~/.inputrc\fP is where to turn that off.
+.HEADING 2 "The status bar"
 .PP
-Additionally, while this isn't a part of i3, the default editing mode in the shell is using vi bindings.
-If you want to learn more of this, run \f(CWMod+Shift+E\fP and type and select the option for "vi mode in shell".
-This setting can be changed if you don't like it by deleting or commenting out the contents of \f(CW~/.inputrc\fP.
-.HEADING 2 "The Status Bar"
+\fBfork:\fP the bar is \f(CWablocks\fP, a small C replacement for i3blocks
+written for this setup.
+Workspaces are on the left; on the right are the blocks: weather, CPU, volume,
+brightness, battery, the date and time, bluetooth, network traffic, latency,
+VPN, wifi and the keyboard layout, plus blocks that only appear when they have
+something to say (failed services, pending upgrades, a recording in progress).
 .PP
-If you're new to i3, notice the status bar on the top of the screen.
-To the left side, you'll see the numbers of your current workspace(s).
-On the right side, you'll see various system status notifiers, the date, volume, even music and local weather if possible, etc.
-I'm sure you can figure it out.
-Several modules will be click-sensitive, although if you're using my system as indented, you probably won't be doing much clicking.
-Still, you can right click on a module to get some information about what exactly it means.\c
-.FOOTNOTE
-The statusbar icons are Nerd Fonts glyphs, not emojis, and every module colours
-itself: white is normal, grey means off or absent, amber wants attention and red
-is urgent. The palette lives in one place, \f(CW~/.local/bin/statusbar/sb-theme\fP,
-so the whole bar can be recoloured by editing that file rather than each module.
-Note that Symbols Nerd Font does not cover the whole Material range: if a glyph
-suddenly renders in a different weight, it has fallen back to another font and
-should be swapped for one the font actually has.
-.FOOTNOTE END
+Every block is clickable, and the buttons mean the same thing everywhere:
+.LI
+.ITEM
+\fBLeft click\fP \(en the obvious action: open the mixer, the network menu, the calendar.
+.ITEM
+\fBMiddle click\fP \(en details, or show and hide a number.
+.ITEM
+\fBRight click\fP \(en a note explaining what the icons mean.
+.ITEM
+\fBScroll\fP \(en up and down, where that means something (volume, brightness).
+.LIST OFF
 .PP
-The i3blocks config is \f(CW~/.config/i3blocks/config\fP, which you can access by the
-terminal shortcut \f(CWcfB\fP. Notice that the config file refers to several module
-scripts in the \f(CW~/.local/bin/\fP directory. You can read a summary of all of these
-scripts in the file \f(CW~/.local/bin/SCRIPTS.md\fP.
-.HEADING 2 "Deeper Tutorials"
+The icons are \fBsuckless icons\fP, this fork's own icon font: each one is a few
+lines of drawing code on one grid, so they all match.
+Things move a little when it matters: the battery fills as the charger goes in,
+the wifi arcs drain when the connection drops, changed digits on the clock roll
+over like a flip clock.
+Several blocks hide their numbers until they change, then fade them away again.
 .PP
-In addition to this guide and reading the dotfiles of programs manually, you
-can also get program-specific information by running the \f(CWgetkeys\fP command.
-This will give you the bindings of what program you want. You can also press
-\f(CWMod+E\fP (that's a capital \f(CWE\fP) to get be able to watch tutorial videos on
-specific programs or concepts directly from YouTube.
+The blocks are compiled into ablocks, in \f(CW~/ablocks/config.h\fP.
+Each one runs a script from \f(CW~/.local/bin/statusbar/\fP, and
+\f(CW~/.local/bin/SCRIPTS.md\fP describes every script in the system.
+\f(CW~/.config/i3blocks/config\fP has the same blocks for plain i3blocks, kept as a
+fallback.
+.HEADING 2 "Themes"
+.PP
+\fBfork:\fP the whole desktop takes its colours from one theme: the bar, window
+borders, the terminal, dmenu, notifications, GTK programs and zathura.
+Switching is one command:
+.LI
+.ITEM
+\f(CWretheme gruvbox\fP \(en warm retro brown, the old st colours
+.ITEM
+\f(CWretheme nord\fP \(en calm blue-grey
+.ITEM
+\f(CWretheme -m\fP \(en pick one from dmenu
+.ITEM
+\f(CWretheme -l\fP \(en list them
+.LIST OFF
+Themes are plain files in \f(CW~/.config/theme/\fP.
+To make your own, copy one, change the colours and run \f(CWretheme\fP with its name.
+Saving a theme in vim applies it straight away.
+Terminals that are already open keep their colours until you open a new one.
+.HEADING 2 "Learning more"
+.PP
+\f(CWgetkeys\fP shows the key bindings of a program you name.
+\f(CWMod+Shift+e\fP picks a tutorial video on a program or concept to watch.
 .HEADING 1 "Key Bindings"
 .PP
-All of the bindings below are in either r\f(CW~/.config/sxhkd/sxhkdrc\fP (for general bindings) or in \f(CW~/.config/i3/config\fP (for i3-specific commands).
-You can change them in either of these files to what you want and both files can be accessed respectively by running \f(CWcfk\fP or \f(CWcfi\fP respectively in the terminal.
-.HEADING 2 "Window basics"
-.PP
-Notice the case sensitivity of the shortcuts\c
+All of these live in \f(CW~/.config/i3/config\fP (\f(CWcfi\fP in the terminal opens it).
+Shortcuts are case-sensitive: \f(CWMod+Q\fP means \f(CWMod+Shift+q\fP.\c
 .FOOTNOTE
-To type capital letters, hold down the \f(CWShift\fP key\(emthat might sound like an obvious and condescending thing to tell you, but there have literally been multiple people (Boomers) who have emailed me asking how to type a capital letter since caps lock isn't enabled.
+Yes, people have asked how to type a capital letter now that Caps Lock is Escape.
+Hold Shift.
 .FOOTNOTE OFF
- , Be sure you play around with these. Be flexible with the basic commands and the system will grow on you quick.
+.HEADING 2 "Windows"
 .LI
 .ITEM
-\f(CWMod+Enter\fP \(en Spawn terminal (the default terminal is \f(CWst\fP; run \f(CWman st\fP for more.)
+\f(CWMod+Enter\fP \(en terminal (\f(CWst\fP; \f(CWman st\fP for its keys)
 .ITEM
-\f(CWMod+q\fP \(en Close window
+\f(CWMod+Shift+Enter\fP \(en terminal in the same directory as the focused one
 .ITEM
-\f(CWMod+Q\fP \(en Force close window
+\f(CWMod+q\fP \(en close the window
 .ITEM
-\f(CWMod+d\fP \(en dmenu (For running commands or programs without shortcuts)
+\f(CWMod+Shift+q\fP \(en kill it, for when closing doesn't work
 .ITEM
-\f(CWMod+t\fP \(en Toggle between spawning vertically and horizontally\c
+\f(CWMod+d\fP \(en dmenu, to run anything by name
+.ITEM
+\f(CWMod+h/j/k/l\fP \(en move focus (the arrow keys work too)
+.ITEM
+\f(CWMod+Shift+h/j/k/l\fP \(en move the window
+.ITEM
+\f(CWMod+Ctrl+h/j/k/l\fP \(en move the workspace to another screen
+.ITEM
+\f(CWMod+Shift+y/u/i/o\fP \(en resize the window
+.ITEM
+\f(CWMod+t\fP \(en switch between splitting side by side and stacked\c
 .FOOTNOTE
-You may notice that one side of your window border is a different color.
-This indicates the direction that the next window will spawn.
+The focused window's border has one side in a different shade: that is where
+the next window will open.
 .FOOTNOTE END
 .ITEM
-\f(CWMod+f\fP \(en Fullscreen
+\f(CWMod+/\fP \(en new terminal below; \f(CWMod+'\fP \(en new terminal beside
 .ITEM
-\f(CWMod+h/j/k/l\fP \(en Move to different windows
+\f(CWMod+f\fP \(en fullscreen
 .ITEM
-\f(CWMod+H/J/K/L\fP \(en Move a window around
+\f(CWMod+Shift+f\fP \(en distraction-free mode: every binding sleeps until you press it again
 .ITEM
-\f(CWMod+Ctrl+h/j/k/l\fP \(en Move a workspace around screens
+\f(CWMod+Shift+Space\fP \(en float the window; \f(CWMod+Space\fP \(en move focus between floating and tiled
 .ITEM
-\f(CWMod+Y/U/I/O\fP \(en Resize windows
+\f(CWMod+o\fP \(en make a floating window sticky, so it follows you between workspaces
 .ITEM
-\f(CWMod+/\fP \(en Spawn vertical terminal
+\f(CWMod+Shift+b\fP / \f(CWMod+Shift+n\fP \(en float the window small in the bottom left/right corner, for a video on the side
 .ITEM
-\f(CWMod+'\fP \(en Spawn horizontal terminal
+\f(CWMod+Shift+r\fP \(en resize a floating window to an exact size
 .ITEM
-\f(CWMod+s/S\fP \(en Increase/decrease inner gaps
+\f(CWMod+s\fP / \f(CWMod+Shift+s\fP \(en more/less space between windows
 .ITEM
-\f(CWMod+z/Z\fP \(en Increase/decrease outer gaps
+\f(CWMod+z\fP / \f(CWMod+Shift+z\fP \(en more/less space around the edge
 .ITEM
-\f(CWMod+D\fP \(en Reduce gaps to 0 pixels
+\f(CWMod+Shift+d\fP \(en no gaps; \f(CWMod+Shift+t\fP \(en gaps back to normal
 .ITEM
-\f(CWMod+T\fP \(en Restore gaps to default (15 pixels)
-.ITEM
-\f(CWMod+Shift+Space\fP \(en Make a window float (it will still be resizeable)
-.ITEM
-\f(CWMod+Space\fP \(en Switch focus from a floating window to a non-floating one (or
-  vice versa)
-.ITEM
-\f(CWMod+o\fP \(en Make floating window sticky (will stay on active workspace)
-.ITEM
-\f(CWMod+b\fP \(en Toggle status bar
-.ITEM
-\f(CWMod+B\fP \(en Toggle window float in bottom left corner (good for video watched intermittently)
-.ITEM
-\f(CWMod+N\fP \(en Same as above, but for the bottom right corner.
+\f(CWMod+b\fP \(en hide or show the bar
 .LIST OFF
-.HEADING 2 "Basic Programs"
-.PP
-\fINote:\fP LARBS will install nearly all of these programs by default, but some only come if you chose an extra option.
-Naturally, you can use \f(CWyay\fP to look for and install any you want to add.
+.HEADING 2 "Workspaces"
 .LI
 .ITEM
-\f(CWMod+r\fP \(en vifm (file browser/manager)
+\f(CWMod+(number)\fP \(en go to that workspace; \f(CWMod+Shift+(number)\fP \(en send the window there
 .ITEM
-\f(CWMod+e\fP \(en mutt (email; not installed by default, see below)
+\f(CWMod+Tab\fP or \f(CWMod+\e\fP \(en back to the workspace you were just on
 .ITEM
-\f(CWMod+m\fP \(en ncmpcpp (music player)
+\f(CWMod+g\fP / \f(CWMod+;\fP \(en the workspace to the left/right (also \f(CWPage Up\fP/\f(CWPage Down\fP)
 .ITEM
-\f(CWMod+w\fP \(en nmtui (for connecting to wireless internet)
+\f(CWMod+Home\fP / \f(CWMod+End\fP \(en the first/last workspace
 .ITEM
-\f(CWMod+a\fP \(en Dropdown calculator (hide with \f(CWmod+a\fP)
+\f(CWMod+Shift+Delete\fP \(en the panic button: mutes everything, pauses all music
+and video, and jumps to an empty workspace with \f(CWhtop\fP open, so the screen
+looks like work.
+.LIST OFF
+.HEADING 2 "Programs"
+.LI
 .ITEM
-\f(CWMod+i\fP \(en htop (system info)
+\f(CWMod+w\fP \(en web browser
 .ITEM
-\f(CWMod+n\fP \(en newsboat (RSS feed reader)
+\f(CWMod+r\fP \(en ranger, the file manager
 .ITEM
-\f(CWMod+y\fP \(en calcurse (calendar and schedule)
+\f(CWMod+u\fP \(en a dropdown terminal (the same key hides it again)
 .ITEM
-\f(CWMod+u\fP \(en "Dropdown" terminal (hide with \f(CWmod+u\fP)
+\f(CWMod+a\fP \(en a dropdown calculator (the same key hides it again)
 .ITEM
-\f(CWMod+A\fP \(en pulsemixer (audio system control)
+\f(CWMod+i\fP \(en htop, what the machine is doing
 .ITEM
-\f(CWMod+W\fP \(en Web Browser
+\f(CWMod+y\fP \(en calcurse, calendar and schedule
 .ITEM
-\f(CWMod+G\fP \(en GIMP (for general image manipulation; starts on workspace 5)
+\f(CWMod+n\fP \(en newsboat, RSS
+.ITEM
+\f(CWMod+v\fP \(en your vimwiki
+.ITEM
+\f(CWMod+m\fP \(en \fBfork:\fP pick a markdown note from dmenu and edit it
+.ITEM
+\f(CWMod+Shift+a\fP \(en pulsemixer, the audio mixer
+.ITEM
+\f(CWMod+e\fP \(en email in neomutt, once it is set up (see the FAQ)
+.LIST OFF
+.HEADING 2 "Music and volume"
+.PP
+Music is mpd, so these work from anywhere, whatever is focused.
+.LI
+.ITEM
+\f(CWMod+p\fP \(en play/pause; \f(CWMod+Shift+p\fP \(en pause
+.ITEM
+\f(CWMod+<\fP / \f(CWMod+>\fP \(en previous/next track; \f(CWMod+Shift+<\fP \(en restart the track
+.ITEM
+\f(CWMod+[\fP / \f(CWMod+]\fP \(en back/forward 10 seconds (with Shift, 2 minutes)
+.ITEM
+\f(CWMod+-\fP / \f(CWMod++\fP \(en volume down/up 5% (with Shift, 15%)
+.ITEM
+\f(CWMod+Shift+m\fP \(en mute
+.LIST OFF
+The media keys on the keyboard do what they say.
+.HEADING 2 "Screenshots and recording"
+.PP
+Everything is saved in your home directory, named after the moment it was taken,
+so nothing is ever overwritten.
+.LI
+.ITEM
+\f(CWPrint\fP \(en screenshot of everything
+.ITEM
+\f(CWShift+Print\fP \(en pick an area or window, and save it or copy it
+.ITEM
+\f(CWMod+Print\fP \(en record the screen, audio or webcam, chosen from dmenu; an icon shows on the bar while it runs
+.ITEM
+\f(CWMod+Delete\fP \(en stop the recording
+.ITEM
+\f(CWMod+Shift+c\fP \(en webcam in the corner of the screen, for screencasts
 .LIST OFF
 .HEADING 2 "System"
 .LI
 .ITEM
-\f(CWMod+R\fP \(en resize a floating window to give size (width height)
+\f(CWMod+Backspace\fP \(en the session menu: lock, sleep, hibernate, reboot, shut down, restart i3, leave i3, screen off
 .ITEM
-\f(CWMod+x\fP \(en i3lock (Enter password to return)
+\f(CWMod+x\fP \(en lock the screen
 .ITEM
-\f(CWMod+X\fP \(en shutdown (will ask to confirm)
+\f(CWMod+Shift+x\fP / \f(CWMod+Shift+Backspace\fP \(en shut down / reboot (both ask first)
 .ITEM
-\f(CWMod+Shift+Backspace\fP \(en reboot (will ask to confirm)
+\f(CWMod+Shift+Escape\fP \(en leave i3 (asks first)
 .ITEM
-\f(CWMod+Shift+Escape\fP \(en exit i3 (will ask to confirm)
+\f(CWMod+F1\fP \(en this document; \f(CWMod+Shift+F1\fP \(en \fBfork:\fP check the whole setup for problems (see the FAQ)
 .ITEM
-\f(CWMod+F1\fP \(en Shows this document
+\f(CWMod+F2\fP \(en restart i3 in place
 .ITEM
-\f(CWMod+F2\fP \(en Refresh i3
+\f(CWMod+F3\fP \(en choose which screens to use; \f(CWMod+Shift+F3\fP \(en \fBfork:\fP apply a saved screen layout, for docking
 .ITEM
-\f(CWMod+F3\fP \(en Select screen/display to use
+\f(CWMod+F4\fP \(en sleep (asks first)
 .ITEM
-\f(CWMod+F4\fP \(en Hibernate (will ask to confirm)
+\f(CWMod+F5\fP \(en restart NetworkManager
 .ITEM
-\f(CWMod+F5\fP \(en Reset Network Manager, search for new networks
+\f(CWMod+F6\fP \(en the torrent client (starts its daemon first if needed)
 .ITEM
-\f(CWMod+F6\fP \(en transmission torrent client (cli)
+\f(CWMod+F7\fP \(en \fBfork:\fP turn the stock ticker on or off
 .ITEM
-\f(CWMod+F7\fP \(en Toggle on/off transmission client via dmenu
+\f(CWMod+F9\fP / \f(CWMod+F10\fP \(en mount/unmount a USB drive or phone; \f(CWMod+Shift+F9\fP \(en \fBfork:\fP mount a network share
 .ITEM
-\f(CWMod+F8\fP \(en Check mail, if
-.PDF_WWW_LINK "https://github.com/lukesmithxyz/mutt-wizard" "mutt-wizard"
-is installed.
+\f(CWMod+F11\fP \(en search the web
 .ITEM
-\f(CWMod+F9\fP \(en Mount a USB drive/hard drive or Android
+\f(CWMod+F12\fP \(en nmtui, for networks; \f(CWMod+Shift+w\fP \(en \fBfork:\fP a quicker wifi picker in dmenu
 .ITEM
-\f(CWMod+F10\fP \(en Unmount a non-essential drive or Android
+\f(CWMod+`\fP \(en pick an emoji or symbol and copy it
 .ITEM
-\f(CWMod+F11\fP \(en Search term on DuckDuckGo
+\f(CWMod+Insert\fP \(en show what is on the clipboard
 .ITEM
-\f(CWMod+F12\fP \(en \f(CWnmtui\fP for selecting the wireless internet source.
-.ITEM
-\f(CWMod+`\fP \(en Select an emoji to copy to clipboard
-.ITEM
-\f(CWMod+Insert\fP \(en Show contents of clipboard/primary selection
-.ITEM
-\f(CWMod+Pause\fP \(en Show QR code from clipboard contents (requires \f(CWqrencode\fP)
+\f(CWMod+c\fP \(en \fBfork:\fP the clipboard plumber (below)
 .LIST OFF
-.HEADING 2 "Audio"
-.PP
-I use ncmpcpp as a music player, which is a front end for mpd.
-.LI
-.ITEM
-\f(CWMod+m\fP \(en ncmpcpp music player
-.ITEM
-\f(CWMod+.\fP \(en Next track
-.ITEM
-\f(CWMod+,\fP \(en Previous track
-.ITEM
-\f(CWMod+<\fP \(en Restart track
-.ITEM
-\f(CWMod+p\fP \(en Pause
-.ITEM
-\f(CWMod+M\fP \(en Mute all audio
-.ITEM
-\f(CWMod+-\fP \(en Decrease volume (holding shift increases amount)
-.ITEM
-\f(CWMod++\fP \(en Increase volume (holding shift increases amount)
-.ITEM
-\f(CWMod+[\fP \(en Back 10 seconds (holding shift increases amount)
-.ITEM
-\f(CWMod+]\fP \(en Forward 10 seconds (holding shift increases amount)
-.ITEM
-\f(CWMod+A\fP \(en pulsemixer (general volume sink/source control)
-.LIST OFF
-.HEADING 2 "Workspaces"
-.PP
-There are ten workspaces. They work just like those in vanilla i3 with some
-additions.
-.LI
-.ITEM
-\f(CWMod+(Number)\fP \(en Go to that number workspace
-.ITEM
-\f(CWMod+Shift+(Number)\fP \(en Send window to that workspace
-.ITEM
-\f(CWMod+Tab\fP \(en Go to previous workspace
-.ITEM
-\f(CWMod+g\fP \(en Go to left workspace
-.ITEM
-\f(CWMod+;\fP \(en Go to right workspace
-.ITEM
-\f(CWMod+Shift+Delete\fP \(en "Porno-mode" Press this key sequence if you want to hide
-  what you have on your screen. Moves to a totally new workspace, mutes sound,
-  pauses music and brings up distraction windows.
-.LIST OFF
-.HEADING 2 "Recording"
-.PP
-I use maim and ffmpeg to make different recordings of the desktop and audio.
-All of these recording shortcuts will output into \f(CW~\fP, and will not overwrite
-previous recordings as their names are based on their exact times.
-.LI
-.ITEM
-\f(CWPrintScreen\fP \(en Take a screenshot
-.ITEM
-\f(CWShift+PrintScreen\fP \(en Select area to screenshot
-.ITEM
-\f(CWMod+PrintScreen\fP \(en Opens dmenu menu to select kind of audio/video recording
-.ITEM
-\f(CWMod+Delete\fP \(en Kills any recording started in the above way.
-.ITEM
-\f(CWMod+ScrollLock\fP \(en Turn on and off screenkey (if installed) for visual typing display
-.ITEM
-\f(CWMod+Shift+c\fP \(en Toggles a webcam in the bottom right for screencasting.
-.LIST OFF
-.HEADING 2 "Other buttons"
-.PP
-I've mapped those extra buttons that some keyboards have (play and pause
-buttons, screen brightness, email, web browsing buttons, etc.) to what you
-would expect.
-.HEADING 1 "Bookmarking Files and Directories"
-.PP
-Note the files \f(CW~/.config/bmdirs\fP and \f(CW~/.config/bmfiles\fP.
-These files hold bookmarked directories and files respectively, along with shortcut keys to their left.
-LARBS, specfically the \f(CWshortcuts\fP script, will automatically read these files and autogenerate aliases and shortcuts for bash/zsh and vifm from them.
-.PP
-For example, by default, the shortcut key for \f(CW~/Documents\fP is simply \f(CWd\fP.
-Thus, if you type and run \f(CWd\fP in bash, you will automatically \f(CWcd\fP to \f(CW~/Documents\fP.
-It also generates four vifm shortcuts using the shortcut \f(CWd\fP:
-.LI
-.ITEM
-\f(CWgd\fP \(en
-Go to \f(CW~/Documents\fP
-.ITEM
-\f(CWMd\fP \(en
-Move (mv) selected file(s) to \f(CW~/Documents\fP
-.ITEM
-\f(CWtd\fP \(en
-Create a new tab in \f(CW~/Documents\fP
-.ITEM
-\f(CWYd\fP \(en
-Copy/yank (cp) a copy of the selected file(s) to \f(CWDocuments\fP
-.LIST OFF
-Shortcuts like these are generated for all key sequence/directory pairs in \f(CW~/.config/bmdirs\fP.
-Additionally, you may also add editable files to \f(CW~/.config/bmfiles\fP.
-Each key sequence you pair with a file will become an alias to edit it in either bash or vifm.
-.PP
-Whenever you edit and save one of the bookmark files, vim will automatically rerun the shortcut script, thus updating the shortcuts that will be used in new instances of bash and vifm.
-It just werks.
-Note that it is your responsibility to ensure that none of the bindings you add conflict with another necessary function or command.
 .HEADING 1 "What This Fork Adds"
-.PP
-Everything here is \fBfork\fP, i.e. not in upstream LARBS. Upstream moved to dwm
-and dwmblocks; this keeps i3, i3blocks and ranger.
 .HEADING 2 "Networking and sysadmin"
 .LI
 .ITEM
 \f(CWMod+Ctrl+s\fP \(en pick a host from \f(CW~/.ssh/config\fP and ssh to it.
+\f(CWsac <alias> [<user>@]<host> [-p <port>]\fP adds one.
 .ITEM
-\f(CWsac\fP \(en ssh alias creator: \f(CWsac <alias> [<user>@]<host> [-p <port>]\fP appends a
-Host block to \f(CW~/.ssh/config\fP, which \f(CWMod+Ctrl+s\fP then offers.
+\f(CWMod+Ctrl+v\fP \(en WireGuard: connect, disconnect or switch tunnel.
+The tunnels in \f(CW/etc/wireguard\fP hold private keys and are root-only, so it asks for
+your password.
+The VPN block names the tunnel while one is up; middle click it for the endpoint,
+handshake age and traffic.
 .ITEM
-\f(CWMod+Ctrl+v\fP \(en WireGuard: connect, disconnect or switch tunnel. The VPN
-module in the status bar names the interface while a tunnel is up and dims when
-nothing is connected; middle click it for endpoint, handshake age and transfer
-counters. Tunnels are read from
-\f(CW/etc/wireguard\fP, which is root-only because the configs hold private keys, so
-you will be asked for your password.
+\f(CWMod+Shift+v\fP \(en pick a Pritunl profile.
 .ITEM
-\f(CWMod+Shift+v\fP \(en Pritunl profile selection.
-.ITEM
-\f(CWMod+Shift+F3\fP \(en apply a saved screen layout from \f(CW~/.screenlayout\fP, for docking.
+\f(CWMod+Ctrl+p\fP \(en what is listening on which port.
 .LIST OFF
 .HEADING 2 "The clipboard plumber"
 .PP
-\f(CWMod+c\fP takes whatever is in the selection and offers what can be done with it,
-based on what it looks like. A URL can be opened or played; a MAC address can be
-converted between Cisco, Windows and Unix notation, or looked up against the IEEE
-vendor database; a video link can be played in a floating mpv window; text can be
-turned into a QR code. To add your own handler, edit \f(CWcabl\fP and add a guarded
-line defining a shell function \(en the menu is built from the function names, so
-the name you choose is what you will see.
-.HEADING 2 "Status bar modules"
+\f(CWMod+c\fP looks at whatever you have selected and offers what can be done with
+it: open or play a link, play a video in a floating window, turn a MAC address into
+Cisco, Windows or Unix notation or look up its vendor, make a QR code.
+To add your own action, put a guarded line defining a shell function in
+\f(CWcabl\fP; the menu lists the function names, so name it what you want to see.
+.HEADING 2 "Status bar blocks you won't find upstream"
 .LI
 .ITEM
-\fBRepo\fP \(en the state of this dotfiles repository: a tick when clean and level with
-origin, a down arrow and count when updates are waiting to be pulled, an up arrow
-when commits have not been pushed, a warning sign when there are uncommitted
-changes. Click to fetch and see what is
-incoming. It fetches at most once every fifteen minutes.
+\fBFailed\fP \(en failed systemd services, system and user.
+Invisible until something fails; click to see what.
 .ITEM
-\fBLatency\fP \(en round-trip time, which changes colour and warns as it degrades.
+\fBLatency\fP \(en round-trip time, with a notification when it gets bad.
 .ITEM
-\fBVPN\fP \(en covers both WireGuard and OpenVPN, and names the active tunnel.
+\fBTraffic\fP \(en up and down rates; fast transfers stream across the bar.
 .ITEM
-\fBPackages\fP \(en how many upgrades are pending; click to run them.
+\fBVPN\fP \(en WireGuard and OpenVPN, with the tunnel's name.
 .ITEM
-\fBScreen timeout\fP \(en the current blank timeout; right click to change it.
+\fBBluetooth\fP \(en off, blocked, scanning or connected, with the device's icon
+and battery when it reports one.
 .ITEM
-Weather is colour-coded by temperature, and the network icons grey out when a
-link is down.
+\fBUpgrades\fP \(en how many packages can be upgraded; click to upgrade.
+.ITEM
+\fBTasks\fP \(en jobs queued with the task spooler.
+.ITEM
+\fBScreen timeout\fP \(en how long until the screen blanks; right click to change it.
+.ITEM
+\fBRepo\fP \(en whether these dotfiles have changes to pull, push or commit
+(optional, off on some machines).
 .LIST OFF
-.HEADING 2 "Keeping the dotfiles safe"
+.HEADING 1 "Bookmarks"
 .PP
-See \fIHow do I update or commit my dotfiles?\fP below. The short version is that
-the repository is \f(CW~/voidrice-repo\fP, not your home directory, and \f(CWdotsync\fP
-moves files between the two.
-.HEADING 1 "Frequently Asked Questions (FAQs)"
-.HEADING 2 "My keyboard isn't working as expected!"
+\f(CW~/.config/bmdirs\fP and \f(CW~/.config/bmfiles\fP list directories and files you
+use a lot, each with a short key.
+The \f(CWshortcuts\fP script turns them into shell aliases and file manager keys.
+With \f(CWd\fP for \f(CW~/Documents\fP, for example:
+.LI
+.ITEM
+\f(CWd\fP in the shell \(en \f(CWcd\fP to \f(CW~/Documents\fP
+.ITEM
+\f(CWgd\fP in ranger \(en go there; \f(CWtd\fP \(en open it in a new tab
+.ITEM
+\f(CWmd\fP / \f(CWYd\fP in ranger \(en move/copy the selected files there
+.LIST OFF
+A key in \f(CWbmfiles\fP becomes an alias that opens that file in your editor.
+Saving either file in vim regenerates everything, and new shells and ranger
+windows pick it up.
+Just don't give a bookmark the name of a command you need.
+.HEADING 1 "Frequently Asked Questions"
+.HEADING 2 "Something seems broken. Where do I start?"
 .PP
-LARBS runs some custom keyboard settings in \f(CW~/.local/bin/tools/remaps\fP.
-These settings may override your preferred settings, so you should open this file and comment out troublesome lines if you have issues.
+\fBfork:\fP press \f(CWMod+Shift+F1\fP, or run \f(CWvoidrice-doctor\fP.
+It looks for the problems that otherwise fail silently: a script that isn't
+executable, a bar block that errors, an icon the font doesn't have, a key bound to
+something that isn't installed, colours out of step with the theme, and dotfiles
+that have drifted from the repository.
+.HEADING 2 "My keyboard isn't doing what I expect!"
+.PP
+The remaps in \f(CW~/.local/bin/tools/remaps\fP may be overriding your own settings;
+comment out what gets in the way.
+Keyboard layouts and other per-machine bindings go in
+\f(CW~/.config/i3/config.local\fP, which i3 reads if it exists and which is never
+committed.
 .HEADING 2 "My audio isn't working!"
 .PP
-Sometimes, PulseAudio can be finicky on initial installation and configuration.
-If you have no audio output, chances are your problems will be resolved by a reboot or manually killing and restarting PulseAudio.
-You may also need to set your preferred default output sink which you can do by the command line, or by selecting one with \f(CWpulsemixer\fP (\f(CWmod+A\fP).
+Audio can be finicky on a fresh install.
+Restart the audio server or reboot, and pick the output you want in
+\f(CWpulsemixer\fP (\f(CWMod+Shift+a\fP).
 .HEADING 2 "How do I copy and paste?"
 .PP
-Copying and pasting is always program-specific on any system.
-In most graphical programs, copy and paste will be the same as they are on Windows: \f(CWctrl-c\fP and \f(CWctrl-v\fP.
-In the Linux terminal, those binds have other more important purposes, so you can run \f(CWman st\fP to see how to copy and paste in my terminal build.
+In graphical programs, \f(CWCtrl+c\fP and \f(CWCtrl+v\fP as usual.
+In the terminal those keys mean other things; \f(CWman st\fP has the terminal's own.
+Vim uses the system clipboard, so what you yank there pastes anywhere.
+.HEADING 2 "How do I change the wallpaper?"
 .PP
-Additionally, I've set vim to use the clipboard as the default buffer, which means when you copy or delete something in vim, it will be in your system clipboard as well, so you can \f(CWctrl-v\fP it into your Firefox instance, etc. You can also paste material copied from other programs into vim with the typical vim bindings.
-.HEADING 2 "How do I change the background/wallpaper?"
+Run \f(CWsetbg\fP on an image, or hover over it in ranger and type \f(CWbg\fP.
+It is kept as \f(CW~/.config/wall.png\fP.
+.HEADING 2 "How do I change the colours?"
 .PP
-The i3 configuration will always read the file \f(CW~/.config/wall.png\fP as the wallpaper.
-The script \f(CWsetbg\fP, if run on an image will set it as the persistent background.
-When using the file manager, you can simply hover over an image name and type \f(CWbg\fP and this will run \f(CWsetbg\fP.
-.HEADING 2 "How I change the colorscheme?"
+\fBfork:\fP with a theme; see \fIThemes\fP above.
+Don't edit \f(CW~/.config/x11/colors\fP, dunst's \f(CWpalette.conf\fP, GTK's
+\f(CWgtk.css\fP or zathura's \f(CWpalette\fP: \f(CWretheme\fP writes all of them from
+the theme and will overwrite your changes.
+.HEADING 2 "How do I make the terminal font bigger?"
 .PP
-LARBS no longer uses Xresource by default, but you can still add an \f(CW~/.Xdefaults\fP file and add color settings to change the theme of numerous programs, including the terminal. See
-.PDF_WWW_LINK "https://wiki.archlinux.org/index.php/X_resources" "the Arch Wiki's article"
-for more information.
-.HEADING 2 "How do I set up my email?"
+\fBfork:\fP no need to rebuild st: it reads \f(CW*.font\fP from
+\f(CW~/.config/x11/xresources\fP.
+Change the \f(CWpixelsize\fP there, save it in vim (which reloads it) and open a new
+terminal.
+Comment lines in that file with \f(CW!\fP, never \f(CW/*\fP: the file goes through the
+C preprocessor, and a stray \f(CW/*\fP silently swallows everything after it.
+That once ate the font line and kept the font tiny for months.
+.HEADING 2 "How do I set up email?"
 .PP
-LARBS is automatically set up to be compatible with \f(CWmutt-wizard\fP, which is now in the AUR and can be installed by running \f(CWyay -S mutt-wizard-git\fP.
-You can then add email accounts by running \f(CWmw add\fP.
+Email is optional: install
+.PDF_WWW_LINK "https://github.com/lukesmithxyz/mutt-wizard" "mutt-wizard"
+(\f(CWyay -S mutt-wizard-git\fP) and add an account with \f(CWmw add\fP.
+Then \f(CWMod+e\fP opens your mail, \f(CWMod+F8\fP syncs it, \f(CWmw cron\fP syncs it
+regularly, and the mailbox block counts what is unread.
+.HEADING 2 "How do I set up music?"
 .PP
-Once you have successfully added your email address(es), you can open your mail with \f(CWneomutt\fP which is also bound to \f(CWMod+e\fP.
-You can sync your mail by pressing \f(CWMod+F8\fP and you can set a cronjob to sync mail every several minutes by running \f(CWmw cron\fP.
-.HEADING 2 "How do I set up my music?"
-.PP
-By default, mpd, the music daemon assumes that \f(CW~/Music\fP is your music directory.
-This can be changed in \f(CW~/.config/mpd/mpd.conf\fP.
-When you add music to your music folder, you may have to run \f(CWmpc up\fP in the terminal to update the database.
-mpd is controlled by ncmpcpp, which is accessible by \f(CWMod+m\fP.
+mpd plays whatever is in \f(CW~/Music\fP (change it in \f(CW~/.config/mpd/mpd.conf\fP).
+After adding music, run \f(CWmpc update\fP.
+\f(CWncmpcpp\fP in a terminal browses and queues it.
 .HEADING 2 "How do I update or commit my dotfiles?"
 .PP
-\fBfork:\fP the repository is \fBnot\fP your home directory. It lives in
-\f(CW~/voidrice-repo\fP and \f(CW$HOME\fP is not a git work tree at all. It used to
-be, but that meant a single \f(CWgit add -A\fP could commit \f(CW~/.ssh\fP, browser
-profiles with saved passwords, and wallet data to a public repository.
+\fBfork:\fP the repository is \fBnot\fP your home directory.
+It lives in \f(CW~/voidrice-repo\fP, and \f(CW$HOME\fP is not a git work tree at all.
+It used to be, which meant a single \f(CWgit add -A\fP could have published
+\f(CW~/.ssh\fP, saved browser passwords and wallet data.
 .PP
-Because the files therefore exist in two places, \f(CWdotsync\fP keeps them in step:
+The files therefore exist in two places, and \f(CWdotsync\fP keeps them in step:
 .LI
 .ITEM
 \f(CWdotsync status\fP \(en which tracked files differ between \f(CW$HOME\fP and the repo
 .ITEM
-\f(CWdotsync diff\fP \(en show those differences
+\f(CWdotsync diff\fP \(en the differences themselves
 .ITEM
-\f(CWdotsync capture\fP \(en copy live \f(CW$HOME\fP edits into the repo, ready to commit
+\f(CWdotsync capture\fP \(en copy your live edits into the repo, ready to commit
 .ITEM
 \f(CWdotsync deploy\fP \(en copy the repo back out to \f(CW$HOME\fP
 .LIST OFF
 .PP
-Both directions are a dry run until you add \f(CW-y\fP. The file list always comes
-from \f(CWgit ls-files\fP, so only already-tracked files move and an untracked
-private file has no way into the repository.
+Both directions only show what they would do until you add \f(CW-y\fP.
+They only ever move files git already tracks, so a private file can't sneak into
+the repository.
+The usual loop: edit in \f(CW$HOME\fP so the change is live,
+\f(CWdotsync capture -y\fP, commit in \f(CW~/voidrice-repo\fP.
+Programs always read from \f(CW$HOME\fP, so if you edited in the repo,
+\f(CWdotsync deploy -y\fP before reloading, or you'll reload the old file and
+wonder why nothing changed.
+.HEADING 2 "Where is the source for st, dmenu and the bar?"
 .PP
-The usual loop is: edit in \f(CW$HOME\fP so the change is live, \f(CWdotsync capture -y\fP,
-then commit in \f(CW~/voidrice-repo\fP. The \fBrepo\fP module in the status bar shows when the
-repo is behind, ahead or dirty; click it to fetch and see what is waiting.
+\fBfork:\fP kept, not thrown away.
+\f(CWst\fP and \f(CWdmenu\fP are in \f(CW~/.local/src/\fP: edit \f(CWconfig.h\fP and
+\f(CWsudo make install\fP.
+The bar is in \f(CW~/ablocks\fP: edit \f(CWconfig.h\fP,
+\f(CWmake PREFIX=$HOME/.local install\fP, then \f(CWMod+F2\fP.
+Its icon font is drawn by \f(CWicons/icons.py\fP in the same place.
+.HEADING 1 "Credit"
 .PP
-Reloading always reads from \f(CW$HOME\fP, never the repo, so if you edited in the
-repo run \f(CWdotsync deploy -y\fP first or you will reload the old file.
-.HEADING 2 "Where are the build files for st or AUR programs?"
-.PP
-\fBfork:\fP they are kept, not discarded \(en \f(CWst\fP and \f(CWdmenu\fP are cloned under
-\f(CW~/.local/src/\fP, so you can edit \f(CWconfig.h\fP and run \f(CWsudo make install\fP
-to rebuild in place.
-.PP
-For the terminal font you usually do \fBnot\fP need to rebuild: this build of st reads
-X resources, so \f(CW*.font\fP in \f(CW~/.config/x11/xresources\fP wins over
-\f(CWconfig.h\fP. Change the \f(CWpixelsize\fP there, run \f(CWxrdb ~/.config/x11/xresources\fP,
-and open a new terminal; existing windows keep the old font.
-.PP
-Beware that \f(CWxrdb\fP passes that file through \f(CWcpp\fP, so \f(CW/*\fP starts a real
-comment that runs until its closing \f(CW*/\fP. Comment lines with \f(CW!\fP instead \(en a
-stray \f(CW/*\fP silently swallowed the font line for a long time, which is why the
-font was small.
-.HEADING 1 "Contact and credit"
+The foundation is Luke Smith's LARBS: this fork keeps his structure and most of his
+scripts, and the credit for those is his.
+The parts marked \fBfork\fP are mine, and so are their mistakes.
 .LI
 .ITEM
 .PDF_WWW_LINK "https://github.com/eth-man/voidrice" "github.com/eth-man/voidrice"
-\(en these dotfiles.
+\(en these dotfiles
 .ITEM
 .PDF_WWW_LINK "https://github.com/eth-man/larbs" "github.com/eth-man/larbs"
-\(en the installer and package list.
-.LIST OFF
-.PP
-The original LARBS is Luke Smith's work and this fork keeps his structure and
-most of his scripts. Credit for the foundation is his; the mistakes in the parts
-marked \fBfork\fP are mine.
-.LI
+\(en the installer and package list
+.ITEM
+.PDF_WWW_LINK "https://github.com/eth-man/ablocks" "github.com/eth-man/ablocks"
+\(en the status bar and suckless icons
 .ITEM
 .PDF_WWW_LINK "https://github.com/LukeSmithxyz/voidrice" "Upstream voidrice"
-.ITEM
+and
 .PDF_WWW_LINK "https://larbs.xyz" "larbs.xyz"
 .LIST OFF
