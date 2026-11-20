@@ -1,0 +1,71 @@
+# Tab completion for this fork's own tools. Written for bash; zsh loads it
+# through bashcompinit, so one file serves both shells. Each function sets
+# ksharrays under zsh, whose arrays otherwise count from 1, not 0.
+#
+# A tool that takes arguments gets a function here, so that completing it
+# offers its real choices: theme names, dotsync verbs, signal numbers.
+
+# _vr_offer WORDS -- complete the current word from WORDS.
+_vr_offer() { COMPREPLY=($(compgen -W "$1" -- "${COMP_WORDS[COMP_CWORD]}")) ;}
+
+_vr_retheme() {
+	[ -n "$ZSH_VERSION" ] && setopt localoptions ksharrays
+	local cur="${COMP_WORDS[COMP_CWORD]}" prev="${COMP_WORDS[COMP_CWORD-1]}"
+	if [ "$prev" = "-d" ]; then
+		COMPREPLY=($(compgen -d -- "$cur"))
+		return
+	fi
+	case "$cur" in
+		-*) _vr_offer "-c -d -l -m" ;;
+		*) _vr_offer "$(ls "${XDG_CONFIG_HOME:-$HOME/.config}/theme" | grep -vx palette)" ;;
+	esac
+}
+complete -F _vr_retheme retheme theme
+
+_vr_dotsync() {
+	[ -n "$ZSH_VERSION" ] && setopt localoptions ksharrays
+	if [ "$COMP_CWORD" -eq 1 ]; then
+		_vr_offer "status diff capture deploy"
+		return
+	fi
+	case "${COMP_WORDS[1]}" in
+		diff) _vr_offer "$(git -C "${DOTREPO:-$HOME/voidrice-repo}" ls-files 2>/dev/null)" ;;
+		capture|deploy) _vr_offer "-y" ;;
+	esac
+}
+complete -F _vr_dotsync dotsync
+
+# The signal numbers the bar's blocks listen on.
+_vr_sigbar() {
+	[ -n "$ZSH_VERSION" ] && setopt localoptions ksharrays
+	[ "$COMP_CWORD" -eq 1 ] && _vr_offer "$(sed -n 's/^signal=//p' "${XDG_CONFIG_HOME:-$HOME/.config}/i3blocks/config" 2>/dev/null | sort -nu)"
+}
+complete -F _vr_sigbar sigbar
+
+_vr_getkeys() {
+	[ -n "$ZSH_VERSION" ] && setopt localoptions ksharrays
+	[ "$COMP_CWORD" -eq 1 ] && _vr_offer "$(ls "${XDG_CONFIG_HOME:-$HOME/.config}/getkeys" 2>/dev/null)"
+}
+complete -F _vr_getkeys getkeys
+
+_vr_lmc() {
+	[ -n "$ZSH_VERSION" ] && setopt localoptions ksharrays
+	[ "$COMP_CWORD" -eq 1 ] && _vr_offer "up down mute truemute play toggle pause next prev forward back replay"
+}
+complete -F _vr_lmc lmc
+
+_vr_dmenurecord() {
+	[ -n "$ZSH_VERSION" ] && setopt localoptions ksharrays
+	[ "$COMP_CWORD" -eq 1 ] && _vr_offer "screencast audio video webcam kill"
+}
+complete -F _vr_dmenurecord dmenurecord
+
+_vr_flags() { # complete the one set of flags the command was registered with
+	[ -n "$ZSH_VERSION" ] && setopt localoptions ksharrays
+	case "${COMP_WORDS[0]}" in
+		voidrice-doctor) _vr_offer "-q" ;;
+		ports) _vr_offer "-d" ;;
+		sac) _vr_offer "-p -X -h" ;;
+	esac
+}
+complete -F _vr_flags voidrice-doctor ports sac

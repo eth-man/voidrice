@@ -361,6 +361,11 @@ With \f(CWd\fP for \f(CW~/Documents\fP, for example:
 \f(CWmd\fP / \f(CWYd\fP in ranger \(en move/copy the selected files there
 .LIST OFF
 A key in \f(CWbmfiles\fP becomes an alias that opens that file in your editor.
+By Luke's convention the config files start with \f(CWcf\fP: \f(CWcfi\fP for i3,
+\f(CWcfv\fP vim, \f(CWcfz\fP zsh, \f(CWcfx\fP xresources, \f(CWcfd\fP dunst,
+\f(CWcfab\fP the bar's blocks, \f(CWcfs\fP your ssh hosts and \f(CWcft\fP the theme in use.
+\f(CWcf\fP is only for config files: the theme command is simply \f(CWtheme\fP, as in
+\f(CWtheme nord\fP, and Tab completes its names, like the other tools of this fork.
 Saving either file in vim regenerates everything, and new shells and ranger
 windows pick it up.
 Just don't give a bookmark the name of a command you need.

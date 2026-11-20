@@ -177,6 +177,11 @@ Test a statusbar module the way i3blocks calls it — as a bare command with the
   `/bin/sh` being bash on this Arch box hides such mistakes until the script runs elsewhere.
 - User-facing errors go through `notify-send`, guarded by `pgrep -x dunst >/dev/null` when the script may
   run outside a graphical session.
+- A tool that takes arguments gets a completion function in `.config/completionrc`: bash syntax, loaded
+  by bash directly and by zsh through `bashcompinit`. Start each function with
+  `[ -n "$ZSH_VERSION" ] && setopt localoptions ksharrays`, or zsh's 1-based arrays shift every index.
+- `cf` aliases (from `.config/bmfiles`) open **config files** only. A command gets a plain alias in
+  `.config/aliasrc` instead, as `theme` does for `retheme`.
 
 ## Generated files — do not hand-edit
 

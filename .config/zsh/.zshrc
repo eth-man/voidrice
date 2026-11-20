@@ -12,6 +12,10 @@ zstyle ':completion:*' menu select
 zmodload zsh/complist
 compinit
 
+# Completion for this fork's own tools, written for bash and shared.
+autoload -U bashcompinit && bashcompinit
+[ -f "$HOME/.config/completionrc" ] && source "$HOME/.config/completionrc"
+
 # Include hidden files in autocomplete:
 _comp_options+=(globdots)
 

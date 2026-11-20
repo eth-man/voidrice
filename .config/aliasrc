@@ -23,6 +23,7 @@ alias ka="killall" \
 	YT="youtube-viewer" \
 	ref="shortcuts >/dev/null; source ~/.config/shortcutrc" \
 	upc="sudo pacman -Syu; sigbar 8" \
+	theme="retheme" \
 	lsp="pacman -Qett --color=always | less" \
 	ffmpeg="ffmpeg -hide_banner" \
 	lpkg="expac --timefmt='%Y-%m-%d %T' '%l\t%n'|sort -n" \
