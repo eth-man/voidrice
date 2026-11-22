@@ -5,11 +5,28 @@ Dotfiles for an Arch + i3 setup, forked from
 around day-to-day sysadmin work.
 
 Upstream has since moved to dwm and dwmblocks. This fork deliberately stays on
-**i3-gaps, i3blocks and ranger**, and keeps `~/.local/bin` organised into
+**i3 and ranger**, draws its bar with [ablocks](https://github.com/eth-man/ablocks)
+(i3blocks still works as a fallback), and keeps `~/.local/bin` organised into
 subdirectories rather than flattened.
 
 Everything is a config file or a POSIX shell script — no build step, no
 runtime, nothing to install beyond the programs being configured.
+
+## Standing on Luke's shoulders
+
+None of this would exist without [Luke Smith](https://lukesmith.xyz). He wrote
+[LARBS](https://larbs.xyz) and the original voidrice, and, just as much, he
+spent years explaining *why* a computer can be small, understandable and yours:
+that a shell script beats an app, that your keyboard should do the work, and
+that you should be able to read every line of your own setup.
+
+Most of what makes this feel like home is his: the bones of the i3 config, the
+dmenu scripts, the status bar modules, the bookmark system that turns
+`bmdirs` and `bmfiles` into `cf` aliases, the PDF guide behind `Mod+F1`. I
+kept his structure because it's good, and the scripts I changed were his first.
+If you like anything here, go and look at
+[his voidrice](https://github.com/LukeSmithxyz/voidrice) and
+[his site](https://lukesmith.xyz). Thanks, Luke.
 
 ## What this fork adds
 
@@ -41,8 +58,8 @@ Every module colours itself from one palette, `.config/theme/palette`, and so
 does everything else: window borders, the terminal, dmenu, notifications.
 It's a calm one. Normal is white, off is grey, and red means you should
 probably look. Change a colour, run `retheme`, and the whole desktop follows.
-Bored of blue-grey? `retheme gruvbox` takes everything back to warm retro
-brown, and `retheme nord` brings it back. Beyond upstream's modules:
+Bored of blue-grey? `theme gruvbox` takes everything back to warm retro
+brown, and `theme nord` brings it back. Beyond upstream's modules:
 
 - **repo** — whether these dotfiles are behind, ahead or dirty; click to fetch
 - **failed** — failed systemd units, system and user; hidden when there are none
@@ -126,8 +143,21 @@ Directories in `~/.config/bmdirs` and files in `~/.config/bmfiles` get shell
 aliases and ranger/vifm bindings generated automatically by `shortcuts`, which
 the editor runs whenever those files are saved.
 
+Luke's `cf` aliases come from there: `cf` plus a letter or two opens that config
+file in your editor. `cfi` is the i3 config, `cfv` vim, `cfz` zsh, `cfx`
+xresources, `cfd` dunst, `cfp` the profile, `cfab` the bar's blocks, `cfs` your
+ssh hosts, and `cft` the theme you're wearing (save it and the desktop
+repaints). `cf` is for config files only; the theme *command* is just `theme`,
+as in `theme nord`.
+
+Tab completes this fork's own tools in bash and zsh alike: theme names after
+`theme`, `dotsync`'s verbs, the bar's signal numbers after `sigbar`, and so on.
+It all lives in `.config/completionrc`.
+
 ## Credit
 
-The original [LARBS](https://larbs.xyz) and voidrice are Luke Smith's work, and
-this fork keeps his structure and most of his scripts. The installer lives
-separately at [eth-man/larbs](https://github.com/eth-man/larbs).
+The foundation is Luke Smith's: [LARBS](https://larbs.xyz) and
+[voidrice](https://github.com/LukeSmithxyz/voidrice), and the credit for those
+is his (see [Standing on Luke's shoulders](#standing-on-lukes-shoulders)). The
+mistakes in the parts I added are mine. The installer lives separately at
+[eth-man/larbs](https://github.com/eth-man/larbs).
