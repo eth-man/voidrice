@@ -201,8 +201,8 @@ the next window will open.
 \f(CWMod+Home\fP / \f(CWMod+End\fP \(en the first/last workspace
 .ITEM
 \f(CWMod+Shift+Delete\fP \(en the panic button: mutes everything, pauses all music
-and video, and jumps to an empty workspace with \f(CWhtop\fP open, so the screen
-looks like work.
+and video, and jumps to an empty workspace with \f(CWhtop\fP and a file manager
+open, so the screen looks like work.
 .LIST OFF
 .HEADING 2 "Programs"
 .LI
