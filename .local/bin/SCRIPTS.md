@@ -16,12 +16,12 @@ Scripts marked **(fork)** do not exist in Luke Smith's upstream voidrice.
 
 ## `statusbar/`
 
-i3blocks modules. Each is wired up by a `[block]` section in
-`~/.config/i3blocks/config`, which sets `command=~/.local/bin/statusbar/$BLOCK_NAME`
-globally. Modules handle clicks through `$BLOCK_BUTTON` and, because
-`markup=pango` is set, colour themselves with `<span color='#rrggbb'>`. Icons
-are Nerd Fonts glyphs, not emoji. A module with a `signal=N` line is refreshed
-on demand by `sigbar N`.
+Status bar modules. The bar is ablocks, whose blocks are compiled in from
+`~/ablocks/config.h`; `~/.config/i3blocks/config` lists the same blocks for
+i3blocks, kept as a fallback. Modules handle clicks through `$BLOCK_BUTTON`,
+colour themselves with pango `<span>`s in the theme's colours (`sb-theme`), and
+draw their icons from the suckless icons font. A module registered on signal N
+is refreshed on demand by `sigbar N`.
 
 - `battery` -- Power remaining, with the icon and colour tracking charge level. Takes the battery name as an argument (`battery BAT0`). Middle click hides or shows the percentage; hidden, it still shows while the battery is red and as the charger goes in or out. Below 10% while discharging it raises a critical dunst notification that stays on screen and is re-raised on the next 5s refresh if dismissed, and at 5% it suspends the machine after a 10s grace period which plugging in cancels. It will not suspend again for 5 minutes, so waking a still-critical machine does not drop straight back to sleep; connecting the charger re-arms it. Thresholds are the `warn_capacity` and `suspend_capacity` variables at the top of the low-battery section. Below 20% while discharging it dims the screen to 30% with `xbacklight`, once per discharge: turned back up, it stays up until the charger has been in. Its state lives in `~/.local/state/sb-battery/`. Under ablocks it also asks for the `lowbat` animation at or below `anim_capacity` (20%) while discharging: a red battery filling up, three times every 30s. Plugging the charger in plays a purple animation once: the battery fills and the bolt pulses; pulling it out fades the bolt away.
 - `backlightupdate` -- **(fork)** Daemon that refreshes the `brightness` block (signal 13) whenever udev reports a backlight change, from the keys, a scroll or any other tool, so the new level shows at once. Started from `xprofile`, like `powerupdate`.
@@ -32,7 +32,7 @@ on demand by `sigbar N`.
 - `failed` -- **(fork)** Count of failed systemd units, system and user. Hidden entirely when nothing has failed, so it costs no bar width until it matters; a failed unit is otherwise invisible until you happen to run `systemctl`. Left click lists them. Signal 15.
 - `help` -- A question mark that opens the readme when clicked.
 - `i3-keyboard-layout` -- **(fork)** Current keyboard layout; cycled by `$mod+control+space`. Signal 30.
-- `internet` -- **(fork, reworked)** Wifi and ethernet state. Icons grey out (`#969993`) when a link is down. The wifi icon lights one arc per quarter of signal, the rest faint beneath, with the percentage beside it; middle click hides or shows the percentage. Click for `nmtui`. Signal 20. Under ablocks the wifi icon animates on a change of state: red bars draining on a disconnect, repeated every 30s while offline, green bars filling once on a reconnect. Clicking it opens `nmtui` in the background and sweeps the bars as if scanning.
+- `internet` -- **(fork, reworked)** Wifi and ethernet state. Icons grey out (`C_DIM`) when a link is down. The wifi icon lights one arc per quarter of signal, the rest faint beneath, with the percentage beside it; middle click hides or shows the percentage. Click for `nmtui`. Signal 20. Under ablocks the wifi icon animates on a change of state: red bars draining on a disconnect, repeated every 30s while offline, green bars filling once on a reconnect. Clicking it opens `nmtui` in the background and sweeps the bars as if scanning.
 - `iplocate` -- Geolocation of the current public IP. Needs `geoiplookup`.
 - `mailbox` -- Unread mail count, for use with mutt-wizard. Signal 12. Under ablocks the icon bounces when the unread count goes up.
 - `memory` -- Memory usage. Click for the most memory-intensive processes.
@@ -41,14 +41,14 @@ on demand by `sigbar N`.
 - `nettraf` -- **(fork)** Network throughput in bytes per second since the last run. An arrow dims while its direction idles (under 1 KiB/s). Under ablocks, from 1 MiB/s (teal) or 10 MiB/s (amber) the fast arrow streams in its direction, then shows its rate for a moment, over and over until it drops under half that. Middle click hides or shows the rates; hidden, the block is just its two arrows and a fast rate briefly covers both, as a whole number (`2M`), in the same width. Complements `ping-lat` (latency) and `internet` (link state).
 - `news` -- Unread newsboat articles. Opens newsboat or refreshes feeds. Signal 6.
 - `pacpackages` -- **(fork, reworked)** Count of upgradable packages via `yay`. Only meaningful if a cronjob syncs repositories. Signal 8.
-- `ping-lat` -- **(fork)** Network latency monitor. Colours by threshold and raises a dunst notification above 80ms/110ms. Signal 31.
+- `ping-lat` -- **(fork)** Network latency monitor. Colours by threshold and raises a dunst notification above 80ms/110ms. Signal 18.
 - `popupgrade` -- Spawns a `yay` upgrade, then refreshes `pacpackages`.
 - `gitcheck` -- **(fork)** State of this dotfiles repository: a tick when clean and level with origin, a down arrow and count when updates are waiting to pull, an up arrow when commits are unpushed, a warning sign when there are uncommitted changes. Fetches at most once every 15 minutes and runs with `GIT_TERMINAL_PROMPT=0` so it can never block the bar on a credential prompt. Signal 14.
 - `sb-theme` -- **(fork)** Not a module: sources the desktop's palette, `~/.config/theme/palette` (`C_NORM`, `C_DIM`, `C_OK`, `C_INFO`, `C_WARN`, `C_ALERT`, `C_ACCENT`, ...), and adds an `sb()` helper, so every module colours by name and the whole bar is recoloured from one file.
 - `sb-bluetooth` -- **(fork)** Bluetooth state. Distinguishes off, blocked by rfkill, scanning, and connected; when a device is connected it shows an icon matching the device class (headset, phone, mouse, keyboard) plus that device's own battery when it reports one, turning amber below 20%. Left click opens the device menu, middle click toggles adapter power. Signal 17.
 - `sb-price` -- **(fork)** Cryptocurrency ticker. Signal 29.
 - `screen-timeout` -- **(fork)** Toggles and displays the DPMS screen timeout.
-- `spotifyControls`, `spotifyPlay` -- **(fork)** Spotify transport controls and now-playing. Signal 32.
+- `spotifyControls`, `spotifyPlay` -- **(fork)** Spotify transport controls and now-playing. Signal 19.
 - `tasks` -- **(fork)** Outstanding background jobs queued with task spooler by `qndl`/`queueandnotify`, shown as total(queued). Hidden when the queue is empty. Signal 16.
 - `powerupdate` -- **(fork)** Daemon that refreshes the `battery` block (signal 21) whenever udev reports a power_supply change, so plugging the charger in shows at once, with the purple plug-in animation under ablocks. Started from `xprofile`, like `vpnupdate`.
 - `torrent` -- Torrents idle, downloading or seeding. Signal 7.
