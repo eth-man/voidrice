@@ -138,7 +138,7 @@ Bound to keys in `~/.config/i3/config`; mostly dmenu interfaces.
 - `sysact` -- **(fork, new)** Session and power menu: lock, leave/restart i3, sleep, hibernate, reboot, shutdown, display off. `$mod+BackSpace`.
 - `td-toggle` -- Starts or stops `transmission-daemon`. `$mod+F7`.
 - `tmuxdd` -- Startup script for the dropdown terminal.
-- `toggletouchpad` -- Toggles the touchpad.
+- `toggletouchpad` -- Turns the touchpad off and on through `xinput`, which works with libinput; `on` or `off` sets it, for the dedicated keys. Leaves a TrackPoint alone. Needs `xorg-xinput`.
 - `torwrap` -- Opens the transmission TUI, starting the daemon if needed.
 - `tutorialvids` -- Menu of tutorial videos. `$mod+Shift+e`.
 - `unmounter` -- **(fork, new)** Unmounts drives and phones, and re-locks LUKS volumes afterwards. `$mod+F10`. Supersedes `dmenuumount`.

@@ -1,4 +1,25 @@
 #!/usr/bin/env sh
-# Toggle touchpad. Requires xf86-input-synaptics.
-(synclient | grep "TouchpadOff.*1" && synclient TouchpadOff=0)>/dev/null && echo "TouchPad reactivated." && exit
-synclient TouchpadOff=1 && echo "TouchPad deactivated."
+# Turns the touchpad off and on: `toggletouchpad` flips it, and
+# `toggletouchpad on` or `off` sets it, for keyboards with a key for each.
+# Uses xinput, which works with libinput, the driver Xorg uses now; the
+# synclient this used to call only spoke to the old synaptics driver.
+# Only the touchpad is touched, so a TrackPoint keeps working while it is off.
+
+ifinstalled xinput || exit 1
+
+id=$(xinput list | grep -i -m1 -E 'touchpad|trackpad' | sed -n 's/.*id=\([0-9]*\).*/\1/p')
+if [ -z "$id" ]; then
+	pgrep -x dunst >/dev/null && notify-send "Touchpad" "No touchpad found."
+	exit 1
+fi
+
+case "$1" in
+	on) state=1 ;;
+	off) state=0 ;;
+	*) xinput list-props "$id" | grep -q 'Device Enabled ([0-9]*):[[:space:]]*1' && state=0 || state=1 ;;
+esac
+
+xinput set-prop "$id" "Device Enabled" "$state"
+if pgrep -x dunst >/dev/null; then
+	[ "$state" = 1 ] && notify-send "Touchpad on" || notify-send "Touchpad off"
+fi

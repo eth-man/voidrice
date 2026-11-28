@@ -227,6 +227,8 @@ open, so the screen looks like work.
 .ITEM
 \f(CWMod+Shift+a\fP \(en pulsemixer, the audio mixer
 .ITEM
+\f(CWMod+Shift+g\fP \(en GIMP, if you install it
+.ITEM
 \f(CWMod+e\fP \(en email in neomutt, once it is set up (see the FAQ)
 .LIST OFF
 .HEADING 2 "Music and volume"

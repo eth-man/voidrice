@@ -180,7 +180,8 @@ bindsym $mod+f			fullscreen toggle
 bindsym $mod+Shift+f		mode "$freeze" ;; exec --no-startup-id notify-send "Distraction-free mode activated." "Press Super+Shift+f to return."
 
 bindsym $mod+g			workspace prev
-bindsym $mod+Shift+g		exec --no-startup-id gimp; workspace $ws5
+# GIMP is optional: without it, the key only says it is not installed.
+bindsym $mod+Shift+g		exec --no-startup-id ifinstalled gimp && i3-msg -q workspace $ws5 && gimp
 
 bindsym $mod+h			focus left
 bindsym $mod+Shift+h		move left 30
@@ -407,8 +408,8 @@ bindsym XF86Reload		restart
 ##bindsym XF86Launch9		exec
 #bindsym XF86AudioMicMute	exec $micmute
 bindsym XF86TouchpadToggle	exec --no-startup-id toggletouchpad
-bindsym XF86TouchpadOn		exec --no-startup-id synclient TouchpadOff=0
-bindsym XF86TouchpadOff		exec --no-startup-id synclient TouchpadOff=1
+bindsym XF86TouchpadOn		exec --no-startup-id toggletouchpad on
+bindsym XF86TouchpadOff		exec --no-startup-id toggletouchpad off
 bindsym XF86Suspend		exec --no-startup-id lockscreen
 bindsym XF86Close		kill
 bindsym XF86WebCam		exec --no-startup-id camtoggle

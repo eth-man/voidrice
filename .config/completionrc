@@ -69,3 +69,9 @@ _vr_flags() { # complete the one set of flags the command was registered with
 	esac
 }
 complete -F _vr_flags voidrice-doctor ports sac
+
+_vr_toggletouchpad() {
+	[ -n "$ZSH_VERSION" ] && setopt localoptions ksharrays
+	[ "$COMP_CWORD" -eq 1 ] && _vr_offer "on off"
+}
+complete -F _vr_toggletouchpad toggletouchpad
